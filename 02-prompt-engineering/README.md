@@ -378,15 +378,12 @@ Issue: "Fix typo in README"
 | Chapter | Feature Added | Status |
 |---------|--------------|--------|
 | 00 | Basic issue summary | ✅ |
-| 01 | Structured output | ✅ |
+| 01 | Structured output with rich fields | ✅ |
 | **02** | **Reliable classification** | **🔲 ← You are here** |
 | 03 | Tool calling (file fetch) | 🔲 |
 | 04 | Streaming UX | 🔲 |
-| 05 | Concepts & mentoring | 🔲 |
-| 06 | RAG for large repos | 🔲 |
-| 07 | Safety & guardrails | 🔲 |
-| 08 | Evaluation & testing | 🔲 |
-| 09 | Production hardening | 🔲 |
+| 05 | Safety & guardrails | 🔲 |
+| 06 | Production & GitHub integration | 🔲 |
 
 ---
 

@@ -13,7 +13,7 @@
 
 > **✨ Learn to build intelligent, tool-using AI agents with the GitHub Copilot SDK by creating a production-ready GitHub Issue Reviewer.**
 
-This hands-on course teaches you to build AI agents that can reason, plan, and take action. You'll work through 10 lessons, each adding a new capability to the capstone project — a GitHub Issue Reviewer that classifies issues, extracts concepts, and provides mentoring advice.
+This hands-on course teaches you to build AI agents that can reason, plan, and take action. You'll work through 7 lessons, each adding a new capability to the capstone project — a GitHub Issue Reviewer that classifies issues, extracts concepts, and provides mentoring advice.
 
 **No AI agent experience required.** If you know basic Python, you can learn this.
 
@@ -21,9 +21,7 @@ This hands-on course teaches you to build AI agents that can reason, plan, and t
 
 ## 🎯 What You'll Learn
 
-## 🎯 What You'll Learn
-
-Across 10 chapters, you'll incrementally build an **AI-powered GitHub Issue Reviewer** that:
+Across 7 chapters, you'll incrementally build an **AI-powered GitHub Issue Reviewer** that:
 
 - Reads GitHub issues via the API
 - Analyzes referenced files from the repository
@@ -32,7 +30,6 @@ Across 10 chapters, you'll incrementally build an **AI-powered GitHub Issue Revi
 - Provides mentoring advice tailored to skill level
 - Streams progress updates to the terminal
 - Posts structured results back to GitHub
-- Includes evaluation, guardrails, and production hardening
 
 ![Diagram showing the capstone project architecture: GitHub Issue → Copilot SDK Agent → Classification, Advice, Labels → GitHub Comment](./images/capstone-architecture.png)
 
@@ -51,15 +48,18 @@ Across 10 chapters, you'll incrementally build an **AI-powered GitHub Issue Revi
 | Chapter | Title | What You'll Build |
 |:-------:|-------|-------------------|
 | 00 | 🚀 [Getting Started](./00-getting-started/README.md) | SDK setup & first agent |
-| 01 | 📦 [Structured Output](./01-structured-output/README.md) | JSON schema validation |
+| 01 | 📦 [Structured Output](./01-structured-output/README.md) | JSON schema validation with rich fields |
 | 02 | 🎯 [Prompt Engineering](./02-prompt-engineering/README.md) | Reliable classification |
 | 03 | 🔧 [Tool Calling](./03-tool-calling/README.md) | File access capabilities |
 | 04 | ⚡ [Agent Loop & Streaming](./04-agent-loop-streaming/README.md) | Responsive multi-step agent |
-| 05 | 🧠 [Concepts & Mentoring](./05-concepts-mentoring/README.md) | Contextual mentoring advice |
-| 06 | 📚 [Scaling with RAG](./06-scaling-rag/README.md) | Large repository handling |
-| 07 | 🛡️ [Safety & Guardrails](./07-safety-guardrails/README.md) | Security hardening |
-| 08 | 🧪 [Evaluation & Testing](./08-evaluation-testing/README.md) | Test harness for reliability |
-| 09 | 🚢 [Production Hardening](./09-production-hardening/README.md) | Ship to production |
+| 05 | 🛡️ [Safety & Guardrails](./05-safety-guardrails/README.md) | Security hardening |
+| 06 | 🚢 [Shipping to Production](./06-shipping-to-production/README.md) | GitHub integration & deployment |
+
+### 📎 Appendices (Optional)
+
+| Appendix | Title | When to Use |
+|:--------:|-------|-------------|
+| A | 📚 [Scaling with RAG](./appendices/scaling-rag/README.md) | Large repositories with 1000s of files |
 
 ## 📖 How This Course Works
 
@@ -130,6 +130,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines 
 
 | Course | Link |
 |--------|------|
+| GitHub Copilot CLI for Beginners | [github/github-copilot-cli-for-beginners](https://github.com/github/github-copilot-cli-for-beginners) |
 | Generative AI for Beginners | [microsoft/generative-ai-for-beginners](https://github.com/microsoft/generative-ai-for-beginners) |
 | ML for Beginners | [microsoft/ML-For-Beginners](https://github.com/microsoft/ML-For-Beginners) |
 | Web Dev for Beginners | [microsoft/Web-Dev-For-Beginners](https://github.com/microsoft/Web-Dev-For-Beginners) |

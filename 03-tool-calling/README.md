@@ -348,15 +348,12 @@ if not full_path.startswith(os.path.realpath(repo_root)):
 | Chapter | Feature Added | Status |
 |---------|--------------|--------|
 | 00 | Basic issue summary | ✅ |
-| 01 | Structured output | ✅ |
+| 01 | Structured output with rich fields | ✅ |
 | 02 | Reliable classification | ✅ |
 | **03** | **Tool calling (file fetch)** | **🔲 ← You are here** |
 | 04 | Streaming UX | 🔲 |
-| 05 | Concepts & mentoring | 🔲 |
-| 06 | RAG for large repos | 🔲 |
-| 07 | Safety & guardrails | 🔲 |
-| 08 | Evaluation & testing | 🔲 |
-| 09 | Production hardening | 🔲 |
+| 05 | Safety & guardrails | 🔲 |
+| 06 | Production & GitHub integration | 🔲 |
 
 **Your task:** Add a `get_file_contents` tool so the Issue Reviewer can read referenced files.
 

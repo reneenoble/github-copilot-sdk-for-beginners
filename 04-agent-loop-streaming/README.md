@@ -485,29 +485,27 @@ Test your understanding:
 | Chapter | Feature Added | Status |
 |---------|--------------|--------|
 | 00 | Basic issue summary | ✅ |
-| 01 | Structured output | ✅ |
+| 01 | Structured output with rich fields | ✅ |
 | 02 | Reliable classification | ✅ |
 | 03 | Tool calling (file fetch) | ✅ |
 | **04** | **Streaming UX** | **🔲 ← You are here** |
-| 05 | Concepts & mentoring | 🔲 |
-| 06 | RAG for large repos | 🔲 |
-| 07 | Safety & guardrails | 🔲 |
-| 08 | Evaluation & testing | 🔲 |
-| 09 | Production hardening | 🔲 |
+| 05 | Safety & guardrails | 🔲 |
+| 06 | Production & GitHub integration | 🔲 |
 
 ---
 
 ## ➡️ What's Next
 
-Your agent now shows real-time progress — but what if you want it to do more than just analyze issues?
+Your agent now analyzes issues, reads files, and streams progress in real time. But what happens when someone submits a malicious issue designed to trick your agent?
 
-In **[Chapter 05: Extracting Concepts & Mentoring Advice](../05-concepts-mentoring/README.md)**, you'll learn:
+In **[Chapter 05: Safety & Guardrails](../05-safety-guardrails/README.md)**, you'll learn:
 
-- How to extract skills and concepts from issues
-- Generating personalized mentoring advice
-- Building more sophisticated output schemas
+- How to defend against prompt injection attacks
+- Validating tool arguments with session hooks
+- Enforcing file access restrictions
+- Building defense in depth
 
-You'll expand the Issue Reviewer to identify what skills are needed and provide learning recommendations.
+You'll harden your Issue Reviewer to be production-safe.
 
 ---
 
@@ -519,4 +517,4 @@ You'll expand the Issue Reviewer to identify what skills are needed and provide 
 
 ---
 
-**[← Back to Chapter 03](../03-tool-calling/README.md)** | **[Continue to Chapter 05 →](../05-concepts-mentoring/README.md)**
+**[← Back to Chapter 03](../03-tool-calling/README.md)** | **[Continue to Chapter 05 →](../05-safety-guardrails/README.md)**

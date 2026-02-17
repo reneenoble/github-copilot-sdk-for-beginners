@@ -1,14 +1,14 @@
-# Chapter 07 — Safety & Guardrails
+# Chapter 05 — Safety & Guardrails
 
-![Chapter 07 banner illustration — a shield protecting an AI agent from malicious inputs](./images/banner.png)
+![Chapter 05 banner illustration — a shield protecting an AI agent from malicious inputs](./images/banner.png)
 
-<!-- TODO: Add banner image to ./07-safety-guardrails/images/banner.png — An illustration (1280×640) showing an AI agent behind a shield/barrier. Arrows labeled "prompt injection", "path traversal", "schema violation" bounce off the shield. Inside the shield, the agent safely processes a legitimate issue. Same art style as course. -->
+<!-- TODO: Add banner image to ./05-safety-guardrails/images/banner.png — An illustration (1280×640) showing an AI agent behind a shield/barrier. Arrows labeled "prompt injection", "path traversal", "schema violation" bounce off the shield. Inside the shield, the agent safely processes a legitimate issue. Same art style as course. -->
 
 > **An unguarded agent is a liability. A hardened agent is a product.**
 
-Your agent can now read files, stream responses, and provide mentoring advice. But what happens when someone submits a malicious issue designed to trick your agent into leaking secrets or accessing unauthorized files? This chapter teaches you to build **defense in depth** — multiple layers of protection that make your agent production-ready.
+Your agent can now read files and stream responses. But what happens when someone submits a malicious issue designed to trick your agent into leaking secrets or accessing unauthorized files? This chapter teaches you to build **defense in depth** — multiple layers of protection that make your agent production-ready.
 
-> ⚠️ **Prerequisites**: Make sure you've completed **[Chapter 05: Concepts & Mentoring](../05-concepts-mentoring/README.md)** first. Chapter 06 is optional.
+> ⚠️ **Prerequisites**: Make sure you've completed **[Chapter 04: Agent Loop & Streaming](../04-agent-loop-streaming/README.md)** first.
 
 ## 🎯 Learning Objectives
 
@@ -618,29 +618,26 @@ Your Issue Reviewer is now hardened against attacks!
 
 | Chapter | Feature | Status |
 |---------|---------|--------|
-| 0 | Basic SDK setup & issue summarization | ✅ |
-| 1 | Structured JSON output with Pydantic validation | ✅ |
-| 2 | Reliable classification with prompt engineering | ✅ |
-| 3 | Tool calling for file access | ✅ |
-| 4 | Streaming UX & agent loop awareness | ✅ |
-| 5 | Concept extraction & mentoring advice | ✅ |
-| 6 | RAG for large repositories (optional) | ✅ |
-| **7** | **Safety & guardrails** | **✅ New!** |
-| 8 | Evaluation & testing | ⬜ |
-| 9 | Production hardening & GitHub integration | ⬜ |
+| 00 | Basic SDK setup & issue summarization | ✅ |
+| 01 | Structured JSON output with Pydantic validation | ✅ |
+| 02 | Reliable classification with prompt engineering | ✅ |
+| 03 | Tool calling for file access | ✅ |
+| 04 | Streaming UX & agent loop awareness | ✅ |
+| **05** | **Safety & guardrails** | **🔲 ← You are here** |
+| 06 | Production & GitHub integration | 🔲 |
 
 ---
 
 ## ➡️ What's Next
 
-Your agent is now protected against common attacks. In **[Chapter 08: Evaluation & Testing](../08-evaluation-testing/README.md)**, you'll learn:
+Your agent is now protected against common attacks. In **[Chapter 06: Shipping to Production](../06-shipping-to-production/README.md)**, you'll learn:
 
-- How to build a test harness for your agent
-- Measuring consistency and accuracy across runs
-- Evaluating your agent against a golden dataset
-- Automated testing patterns for LLM applications
+- Connecting to the GitHub API to fetch real issues
+- Posting structured review comments automatically
+- Environment configuration and logging
+- Error handling and retry patterns
 
-You'll ensure your Issue Reviewer performs reliably before going to production.
+You'll take your Issue Reviewer from a local prototype to a production-ready GitHub integration.
 
 ---
 
@@ -651,4 +648,4 @@ You'll ensure your Issue Reviewer performs reliably before going to production.
 
 ---
 
-**[← Back to Chapter 06](../06-scaling-rag/README.md)** | **[Continue to Chapter 08 →](../08-evaluation-testing/README.md)**
+**[← Back to Chapter 04](../04-agent-loop-streaming/README.md)** | **[Continue to Chapter 06 →](../06-shipping-to-production/README.md)**

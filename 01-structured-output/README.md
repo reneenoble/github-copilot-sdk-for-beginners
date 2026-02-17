@@ -74,28 +74,6 @@ Let's understand the building blocks before diving into code.
 
 ---
 
-## The Problem: Unpredictable Output
-
-When you ask a model for free-form text, you get responses that vary in format every time:
-
-```
-"This is a medium-difficulty issue, probably a 3 out of 5..."
-"Difficulty: Medium (3/5)"
-"I'd rate this as moderately difficult."
-```
-
-All say roughly the same thing, but parsing any of these programmatically is fragile. **Structured output** solves this by having the model return a consistent JSON object:
-
-```json
-{
-  "summary": "Login crash on mobile Safari due to premature autofocus",
-  "difficulty_score": 3,
-  "recommended_level": "Mid"
-}
-```
-
----
-
 ## How to Get Structured Output
 
 With the Copilot SDK, you get structured output by being explicit in your **system message**. You tell the model exactly what JSON shape to return and instruct it to respond only with JSON.
@@ -301,9 +279,9 @@ After completing the demos above, try these experiments:
 
 1. **Add a new required field** — Add `estimated_hours: int` to the schema and update the system prompt
 
-2. **Break the schema intentionally** — Remove a required field from the system prompt but keep it in Pydantic. What error do you get?
+2. **Add a list field** — Add `concepts_required: list[str]` to capture the skills needed to solve the issue
 
-3. **Observe model corrections** — Ask for `difficulty_score` as a string like "three" and see if validation catches it
+3. **Break the schema intentionally** — Remove a required field from the system prompt but keep it in Pydantic. What error do you get?
 
 4. **Test edge cases** — What happens with a very short issue? A very long one?
 
@@ -311,27 +289,41 @@ After completing the demos above, try these experiments:
 
 ## 📝 Assignment
 
-### Main Challenge: Add Structured Output to Your Issue Reviewer
+### Main Challenge: Build a Rich Issue Analyzer
 
-Extend your Issue Reviewer from Chapter 00 to return structured output:
+Extend your Issue Reviewer from Chapter 00 to return structured output with multiple fields:
 
 1. Define a Pydantic `IssueAnalysis` model with:
    - `summary: str` — One-sentence summary
    - `difficulty_score: int` — 1-5 scale
    - `recommended_level: str` — Junior, Mid, Senior, or Senior+
+   - `concepts_required: list[str]` — Specific skills needed (e.g., "JWT validation", not vague like "security")
+   - `mentoring_advice: str` — Guidance appropriate to the difficulty level
 
-2. Create a system prompt that instructs the model to return JSON
+2. Create a system prompt that instructs the model to return JSON matching this schema
 
 3. Parse and validate the response with Pydantic
 
 4. Handle errors gracefully with try/except
 
-**Success criteria**: Running your script multiple times produces the same JSON structure every time.
+**Success criteria**: Running your script produces validated JSON with all fields populated appropriately.
+
+> 💡 **Tip**: For `concepts_required`, tell the model to be specific in your system prompt. Give examples: "✅ JWT token validation, Python decorators" vs "❌ security, coding (too vague)"
 
 See [assignment.md](./assignment.md) for full instructions.
 
 <details>
 <summary>💡 Hints</summary>
+
+**Full schema:**
+```python
+class IssueAnalysis(BaseModel):
+    summary: str = Field(description="One-sentence summary")
+    difficulty_score: int = Field(ge=1, le=5)
+    recommended_level: str = Field(description="Junior, Mid, Senior, or Senior+")
+    concepts_required: list[str] = Field(description="Specific skills needed")
+    mentoring_advice: str = Field(description="Guidance for the difficulty level")
+```
 
 **System prompt structure:**
 ```python
@@ -340,10 +332,14 @@ Respond with ONLY a JSON object matching this schema:
 {
   "summary": "...",
   "difficulty_score": 1-5,
-  "recommended_level": "Junior | Mid | Senior | Senior+"
+  "recommended_level": "Junior | Mid | Senior | Senior+",
+  "concepts_required": ["specific skill 1", "specific skill 2"],
+  "mentoring_advice": "..."
 }
-Rules:
-- Return ONLY the JSON, no markdown or extra text
+
+For concepts_required, be specific:
+✅ "JWT token validation", "Python decorator pattern"
+❌ "security", "coding" (too vague)
 """
 ```
 
@@ -396,15 +392,12 @@ Rules:
 | Chapter | Feature Added | Status |
 |---------|--------------|--------|
 | 00 | Basic issue summary | ✅ |
-| **01** | **Structured output** | **🔲 ← You are here** |
+| **01** | **Structured output with rich fields** | **🔲 ← You are here** |
 | 02 | Reliable classification | 🔲 |
 | 03 | Tool calling (file fetch) | 🔲 |
 | 04 | Streaming UX | 🔲 |
-| 05 | Concepts & mentoring | 🔲 |
-| 06 | RAG for large repos | 🔲 |
-| 07 | Safety & guardrails | 🔲 |
-| 08 | Evaluation & testing | 🔲 |
-| 09 | Production hardening | 🔲 |
+| 05 | Safety & guardrails | 🔲 |
+| 06 | Production & GitHub integration | 🔲 |
 
 ---
 

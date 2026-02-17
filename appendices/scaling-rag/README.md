@@ -1,18 +1,20 @@
-# Chapter 06 — Scaling with Retrieval (RAG)
+# Appendix: Scaling with Retrieval (RAG)
 
-![Chapter 06 banner illustration — a large codebase being filtered through a funnel into a small context window](./images/banner.png)
+![RAG banner illustration — a large codebase being filtered through a funnel into a small context window](./images/banner.png)
 
-<!-- TODO: Add banner image to ./06-scaling-rag/images/banner.png — An illustration (1280×640) showing a large repository (many folders/files) on the left, passing through a funnel labeled "Retrieval" that filters down to a small context window on the right containing only the relevant chunks. An AI agent sits at the right side, reading from the small context. Same art style as course. -->
+<!-- TODO: Add banner image to ./appendices/scaling-rag/images/banner.png — An illustration (1280×640) showing a large repository (many folders/files) on the left, passing through a funnel labeled "Retrieval" that filters down to a small context window on the right containing only the relevant chunks. An AI agent sits at the right side, reading from the small context. Same art style as course. -->
 
-> **You can't send the entire codebase to the model — but you can send the right parts. Learn how to retrieve only what matters.**
+> **You can't send the entire codebase to the model — but you can send the right parts.**
 
-When repositories grow large, sending entire files to the model becomes impractical. Context windows have limits, and stuffing everything in leads to errors or ignored content. This chapter teaches you Retrieval-Augmented Generation (RAG) — a technique to index your codebase, search for relevant chunks, and inject only the most useful pieces into your agent's context.
+> ⚠️ **This is optional advanced content.** The main course (Chapters 00-06) covers everything you need to build a production Issue Reviewer. This appendix is for learners who want to handle enterprise-scale repositories.
 
-> ⚠️ **Prerequisites**: Make sure you've completed **[Chapter 05: Concepts & Mentoring](../05-concepts-mentoring/README.md)** first. You'll need `github-copilot-sdk`, `pydantic`, and `numpy` installed (`pip install numpy`).
+When repositories grow large, sending entire files to the model becomes impractical. Context windows have limits, and stuffing everything in leads to errors or ignored content. This appendix teaches you Retrieval-Augmented Generation (RAG) — a technique to index your codebase, search for relevant chunks, and inject only the most useful pieces into your agent's context.
+
+> ⚠️ **Prerequisites**: Complete the main course first. You'll need `github-copilot-sdk`, `pydantic`, and `numpy` installed (`pip install numpy`).
 
 ## 🎯 Learning Objectives
 
-By the end of this chapter, you'll be able to:
+By the end of this appendix, you'll be able to:
 
 - Explain why context window limits matter for large repositories
 - Chunk large files into smaller pieces
