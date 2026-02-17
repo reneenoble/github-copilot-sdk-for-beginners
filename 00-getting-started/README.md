@@ -1,25 +1,31 @@
-# Chapter 0 — Getting Started with the Copilot SDK
+# Chapter 00 — Getting Started with the Copilot SDK
 
-![Chapter 0 banner illustration — a developer at a terminal seeing their first AI response](./images/banner.png)
+![Chapter 00 banner illustration — a developer at a terminal seeing their first AI response](./images/banner.png)
 
 <!-- TODO: Add banner image to ./00-getting-started/images/banner.png — A warm, inviting illustration (1280×640) showing a developer at their terminal, with a speech bubble from an AI assistant displaying a friendly "Hello!" response. Use the same art style as the repo banner. -->
 
-> *"The best way to learn is to start small — one prompt, one response, one 'aha!' moment."*
+> **Install the SDK, run your first prompt, and understand the client → session → message pattern that powers everything you'll build.**
 
-## What You'll Learn
+This chapter is where your journey begins! You'll set up the GitHub Copilot SDK, send your first prompt, and understand the mental model that makes it all work. By the end, you'll have a working "hello world" agent and the foundation for the Issue Reviewer capstone project.
 
-After this lesson, you will be able to:
+> ⚠️ **Prerequisites**: Make sure you have **Python 3.9+** installed, a **GitHub account with Copilot access**, and the **[GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)** installed and authenticated.
 
-- ✅ Explain what the GitHub Copilot SDK is and how it differs from chat-based AI
-- ✅ Install the SDK and verify your setup
-- ✅ Send your first prompt and receive a response
-- ✅ Understand the agent mental model (client → session → message)
+## 🎯 Learning Objectives
 
-## Pre-requisites
+By the end of this chapter, you'll be able to:
 
-- Python 3.9+ installed
-- A GitHub account with a Copilot subscription
-- GitHub Copilot CLI installed ([Installation guide](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli))
+- Explain what the GitHub Copilot SDK is and how it differs from chat-based AI
+- Install the SDK and verify your setup
+- Send your first prompt and receive a response
+- Understand the agent mental model (client → session → message)
+
+> ⏱️ **Estimated Time**: ~30 minutes (10 min reading + 20 min hands-on)
+
+---
+
+# Your First Copilot SDK Experience
+
+Jump right in and see what the Copilot SDK can do.
 
 ---
 
@@ -42,7 +48,11 @@ You wouldn't call a help desk and immediately start talking without being connec
 
 ---
 
-## Introduction
+# Key Concepts
+
+<img src="./images/sdk-architecture.png" alt="SDK Architecture diagram" width="800"/>
+
+Let's understand what you're working with before diving into code.
 
 Imagine you're a developer who reviews dozens of GitHub issues every day. Some are simple bug fixes, others require deep system knowledge. Wouldn't it be great if an AI assistant could read each issue, understand the codebase, and give you a structured analysis — automatically?
 
@@ -52,9 +62,9 @@ The GitHub Copilot SDK lets you embed Copilot's agentic workflows directly into 
 
 In this first chapter, you'll install the SDK, send your first prompt, and see a response come back. It's that simple to get started.
 
-## Key Concepts
+---
 
-### What Is the GitHub Copilot SDK?
+## What Is the GitHub Copilot SDK?
 
 The **GitHub Copilot SDK** is a programmable interface to the same engine behind the Copilot CLI. It exposes a production-tested agent runtime you can invoke from Python (also available in TypeScript, Go, and .NET).
 
@@ -68,7 +78,9 @@ Key things to know:
 - The SDK manages the CLI process lifecycle automatically.
 - You authenticate through your GitHub account or a token.
 
-### SDK vs. Chat Completion APIs
+---
+
+## SDK vs. Chat Completion APIs
 
 You may have used OpenAI's API or similar chat completion services. How is the Copilot SDK different?
 
@@ -82,7 +94,9 @@ You may have used OpenAI's API or similar chat completion services. How is the C
 
 > 💡 **Tip:** Think of the Copilot SDK as a "batteries-included" agent framework — you define what the agent should do, and Copilot handles the how.
 
-### The Agent Mental Model
+---
+
+## The Agent Mental Model
 
 Working with the SDK follows a simple three-step pattern:
 
@@ -97,7 +111,9 @@ CopilotClient (manages connection)
               └── Events (responses, tool calls, streaming)
 ```
 
-### Basic Message Structure
+---
+
+## Basic Message Structure
 
 When you send a message, the SDK:
 
@@ -108,11 +124,13 @@ When you send a message, the SDK:
 
 ---
 
-## Demo / Code Walkthrough
+# See It In Action
 
 Let's write your first Copilot SDK program. This minimal example sends a prompt and prints the response.
 
-### Step 1: Set Up Your Project
+> 💡 **About Example Outputs**: The sample outputs shown throughout this course are illustrative. Because AI responses vary each time, your results will differ in wording, formatting, and detail. Focus on the *type* of information returned, not the exact text.
+
+## Step 1: Set Up Your Project
 
 ```bash
 mkdir copilot-issue-reviewer && cd copilot-issue-reviewer
@@ -121,7 +139,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install github-copilot-sdk
 ```
 
-### Step 2: Verify the Copilot CLI
+## Step 2: Verify the Copilot CLI
 
 ```bash
 copilot --version
@@ -129,7 +147,7 @@ copilot --version
 
 You should see a version number. If not, follow the [Copilot CLI installation guide](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli).
 
-### Step 3: Your First Agent
+## Step 3: Your First Agent
 
 Create a file called `hello_agent.py`:
 
@@ -174,7 +192,20 @@ You should see:
 
 🎉 **Congratulations!** You've just run your first Copilot SDK agent.
 
-### Step 4: Try a Concept Demo
+<details>
+<summary>🎬 See it in action!</summary>
+
+![Hello Agent Demo](./images/hello-agent-demo.gif)
+
+<!-- TODO: Add GIF to ./00-getting-started/images/hello-agent-demo.gif — A terminal recording showing: (1) python hello_agent.py command, (2) brief pause, (3) "4" output. Keep it short and clean. -->
+
+*Demo output varies. Your results will differ from what's shown here.*
+
+</details>
+
+---
+
+## Step 4: Try a Concept Demo
 
 Now let's try something more relevant to our capstone — asking the model to summarize a GitHub issue description:
 
@@ -225,26 +256,128 @@ asyncio.run(main())
 
 <!-- TODO: Add screenshot to ./00-getting-started/images/terminal-output.png — A terminal screenshot showing the output of the concept demo script: "Issue Summary:" followed by a 2-3 sentence AI-generated summary of the sample issue. Show a clean terminal with readable text. -->
 
+<details>
+<summary>🎬 See it in action!</summary>
+
+![Issue Summary Demo](./images/issue-summary-demo.gif)
+
+<!-- TODO: Add GIF to ./00-getting-started/images/issue-summary-demo.gif — A terminal recording showing: (1) python issue_summary.py command, (2) "Issue Summary:" header appears, (3) AI-generated summary text streams in. -->
+
+*Demo output varies. Your results will differ from what's shown here.*
+
+</details>
+
 > 💡 **Try it yourself:** Modify the `SAMPLE_ISSUE` text with a real issue from one of your GitHub repositories and see how the summary changes.
 
 ---
 
-## 🧠 Knowledge Check
+# Practice
 
-1. What protocol does the Copilot SDK use to communicate with the CLI?
-   - A) HTTP REST
-   - B) JSON-RPC ✅
-   - C) GraphQL
+<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
 
-2. What is the correct order of operations when using the SDK?
-   - A) Send message → Create session → Create client
-   - B) Create client → Create session → Send message ✅
-   - C) Create session → Create client → Send message
+<!-- TODO: Add shared practice image to ./images/practice.png — A warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice. Reuse across all chapters. -->
 
-3. What does `send_and_wait()` do?
-   - A) Sends a message and returns immediately
-   - B) Sends a message and waits until the session is idle, then returns the response ✅
-   - C) Sends multiple messages in parallel
+Time to put what you've learned into action.
+
+---
+
+## ▶️ Try It Yourself
+
+After completing the demos above, try these variations:
+
+1. **Change the prompt** — Instead of "Summarize this issue", try "What is the root cause of this issue?"
+
+2. **Add system instructions** — Add a `system_message` to give the model a persona:
+   ```python
+   session = await client.create_session({
+       "model": "gpt-4.1",
+       "system_message": {
+           "mode": "replace",
+           "content": "You are a senior software engineer reviewing GitHub issues."
+       }
+   })
+   ```
+
+3. **Try a different question** — Ask the model to suggest a fix for the issue
+
+4. **Inspect the response** — Print `response.type` and `response.data` to explore the response object structure
+
+---
+
+## 📝 Assignment
+
+### Main Challenge: Build Your First Issue Summarizer
+
+Create a Python script called `issue_summary.py` that:
+
+1. Creates a `CopilotClient` and starts it
+2. Creates a session with the `gpt-4.1` model
+3. Sends a hardcoded GitHub issue to the model asking for a summary
+4. Prints the summary to the terminal
+5. Cleans up the session and client properly
+
+**Success criteria**: Your script runs without errors and prints a sensible summary.
+
+See [assignment.md](./assignment.md) for full instructions and stretch goals.
+
+<details>
+<summary>💡 Hints</summary>
+
+**Basic structure:**
+```python
+import asyncio
+from copilot import CopilotClient
+
+async def main():
+    client = CopilotClient()
+    await client.start()
+    # ... your code here ...
+    await client.stop()
+
+asyncio.run(main())
+```
+
+**Common issues:**
+- Forgetting `await` on async calls
+- Not cleaning up with `client.stop()`
+- Missing the `asyncio.run(main())` at the bottom
+
+</details>
+
+---
+
+<details>
+<summary>🔧 Common Mistakes & Troubleshooting</summary>
+
+| Mistake | What Happens | Fix |
+|---------|--------------|-----|
+| Forgetting `await` | `TypeError: 'coroutine' object is not subscriptable` | Add `await` before all async SDK calls |
+| Not calling `client.stop()` | Process hangs or orphaned CLI process | Always clean up in a try/finally block |
+| Copilot CLI not installed | `FileNotFoundError` or connection error | Install CLI: `brew install github/gh/copilot-cli` or see docs |
+| Not authenticated | Authentication error | Run `copilot auth login` in terminal first |
+
+### Troubleshooting
+
+**"Connection refused"** — The Copilot CLI isn't running. Make sure it's installed and you're authenticated.
+
+**"Model not available"** — Your subscription may not include all models. Try `gpt-4.1` which is widely available.
+
+**Script hangs forever** — You likely forgot to call `await client.stop()`. Press Ctrl+C and add the cleanup code.
+
+</details>
+
+---
+
+# Summary
+
+## 🔑 Key Takeaways
+
+1. **The SDK is batteries-included** — it handles tool orchestration, retries, and the agent loop for you
+2. **Client → Session → Message** — this three-step pattern is the foundation of everything you'll build
+3. **Always clean up** — call `session.destroy()` and `client.stop()` to avoid orphaned processes
+4. **Async all the way** — the SDK uses Python's async/await, so all calls need `await`
+
+> 📚 **Glossary**: New to terms like "agent", "session", or "token"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
 
@@ -263,21 +396,29 @@ asyncio.run(main())
 | 08 | Evaluation & testing | 🔲 |
 | 09 | Production hardening | 🔲 |
 
-**Your task:** Create a simple CLI tool that accepts a GitHub issue description and prints a summary.
+---
 
-See [assignment.md](./assignment.md) for full instructions.
+## ➡️ What's Next
+
+Now that you can send prompts and receive responses, let's make those responses **structured and predictable**. 
+
+In **[Chapter 01: Structured Output](../01-structured-output/README.md)**, you'll learn:
+
+- Why free-form text is unreliable for automation
+- How to constrain model output to JSON schemas
+- Using Pydantic for validation
+
+You'll upgrade your Issue Reviewer to return structured data instead of prose — the first step toward a production-ready tool.
 
 ---
 
 ## Additional Resources
 
-- 📖 [GitHub Copilot SDK Repository](https://github.com/github/copilot-sdk)
-- 📖 [Python SDK Reference](https://github.com/github/copilot-sdk/blob/main/python/README.md)
-- 📖 [Getting Started Guide](https://github.com/github/copilot-sdk/blob/main/docs/getting-started.md)
-- 📖 [Copilot CLI Installation](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)
+- 📚 [GitHub Copilot SDK Repository](https://github.com/github/copilot-sdk)
+- 📚 [Python SDK Reference](https://github.com/github/copilot-sdk/blob/main/python/README.md)
+- 📚 [Getting Started Guide](https://github.com/github/copilot-sdk/blob/main/docs/getting-started.md)
+- 📚 [Copilot CLI Installation](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)
 
 ---
 
-## Next Steps
-
-In the next lesson, you'll learn how to **constrain the model's output using schemas** — so instead of free-form text, you get structured, machine-readable JSON. → [Chapter 1 — Structured Output](../01-structured-output/README.md)
+**[← Back to Course Home](../README.md)** | **[Continue to Chapter 01 →](../01-structured-output/README.md)**

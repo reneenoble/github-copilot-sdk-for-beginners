@@ -1,28 +1,33 @@
-# Chapter 7 — Safety & Guardrails
+# Chapter 07 — Safety & Guardrails
 
-![Chapter 7 banner illustration — a shield protecting an AI agent from malicious inputs](./images/banner.png)
+![Chapter 07 banner illustration — a shield protecting an AI agent from malicious inputs](./images/banner.png)
 
 <!-- TODO: Add banner image to ./07-safety-guardrails/images/banner.png — An illustration (1280×640) showing an AI agent behind a shield/barrier. Arrows labeled "prompt injection", "path traversal", "schema violation" bounce off the shield. Inside the shield, the agent safely processes a legitimate issue. Same art style as course. -->
 
-> *"An unguarded agent is a liability. A hardened agent is a product."*
+> **An unguarded agent is a liability. A hardened agent is a product.**
 
-## What You'll Learn
+Your agent can now read files, stream responses, and provide mentoring advice. But what happens when someone submits a malicious issue designed to trick your agent into leaking secrets or accessing unauthorized files? This chapter teaches you to build **defense in depth** — multiple layers of protection that make your agent production-ready.
 
-After this lesson, you will be able to:
+> ⚠️ **Prerequisites**: Make sure you've completed **[Chapter 05: Concepts & Mentoring](../05-concepts-mentoring/README.md)** first. Chapter 06 is optional.
 
-- ✅ Identify common prompt injection attacks
-- ✅ Harden system prompts against manipulation
-- ✅ Validate tool arguments using session hooks
-- ✅ Enforce file access restrictions
-- ✅ Validate output schemas strictly
-- ✅ Set iteration caps to prevent runaway agents
+## 🎯 Learning Objectives
 
-## Pre-requisites
+By the end of this chapter, you'll be able to:
 
-- Completed [Chapter 5 — Concepts & Mentoring](../05-concepts-mentoring/README.md) (Chapter 6 is optional)
-- Understanding of tool calling and system prompts
+- Identify common prompt injection attacks
+- Harden system prompts against manipulation
+- Validate tool arguments using session hooks
+- Enforce file access restrictions
+- Validate output schemas strictly
+- Set iteration caps to prevent runaway agents
+
+> ⏱️ **Estimated Time**: ~45 minutes (15 min reading + 30 min hands-on)
 
 ---
+
+# Protecting Your Agent
+
+<img src="./images/analogy-airport-security.png" alt="An airport security checkpoint with multiple layers of defense" width="800"/>
 
 ## 🧩 Real-World Analogy: Airport Security
 
@@ -40,11 +45,11 @@ No single layer is perfect, but **together** they make attacks extremely difficu
 
 This is called **defense in depth**, and it's exactly what you'll build in this chapter — multiple independent guardrails, each backstopping the others.
 
-![Real-world analogy illustration — passengers going through multiple security checkpoints at an airport](./images/analogy-airport-security.png)
-
 <!-- TODO: Add analogy image to ./07-safety-guardrails/images/analogy-airport-security.png — An illustration showing passengers (labeled as "inputs") passing through successive airport checkpoints: ticket check, bag scanner, metal detector, with a guard at the end checking the boarding pass ("output validation"). Some suspicious items are caught at each stage. Same art style as course. -->
 
 ---
+
+# Key Concepts
 
 ## Introduction
 
@@ -70,9 +75,7 @@ This chapter teaches you to **defend against these attacks**.
 
 ---
 
-## Key Concepts
-
-### Prompt Injection
+## Prompt Injection
 
 **Prompt injection** is when user input contains instructions that override the system prompt. There are two types:
 
@@ -83,7 +86,7 @@ This chapter teaches you to **defend against these attacks**.
 1. **Direct injection** — the issue text itself contains override instructions
 2. **Indirect injection** — a file fetched by a tool contains hidden instructions
 
-### Defense 1: Hardened System Prompt
+## Defense 1: Hardened System Prompt
 
 A hardened system prompt explicitly instructs the model to resist manipulation:
 
@@ -113,7 +116,7 @@ no markdown, no code blocks — just the JSON.
 
 > 💡 **Tip**: Placing security rules at the **top** of the system prompt gives them higher priority. The model pays more attention to instructions that appear early.
 
-### Defense 2: Tool Argument Validation with Hooks
+## Defense 2: Tool Argument Validation with Hooks
 
 The SDK provides **session hooks** that let you inspect and modify tool calls before they execute. Use `on_pre_tool_use` to validate arguments:
 
@@ -165,7 +168,7 @@ session = await client.create_session({
 })
 ```
 
-### Defense 3: Output Validation
+## Defense 3: Output Validation
 
 Even with a hardened prompt, the model might occasionally return unexpected output. Always validate:
 
@@ -204,7 +207,7 @@ def validate_response(raw_content: str) -> IssueReview | None:
     return review
 ```
 
-### Defense 4: Iteration Caps
+## Defense 4: Iteration Caps
 
 Set explicit limits on how many tool calls the agent can make:
 
@@ -226,7 +229,7 @@ class ToolCallCounter:
 
 ---
 
-## Demo Walkthrough
+# See It In Action
 
 Let's build a hardened reviewer that defends against attacks. Create `safe_reviewer.py`:
 
@@ -439,7 +442,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### Expected Output
+## Expected Output
 
 ```
 🧪 Test: Legitimate Issue
@@ -462,6 +465,15 @@ asyncio.run(main())
 
 <!-- TODO: Add screenshot to ./07-safety-guardrails/images/safety-tests.png — A terminal screenshot (dark theme) showing the output of running safe_reviewer.py: legitimate issue passes normally, injection attack is flagged, path traversal is blocked with red "BLOCKED" messages. Show the contrast between passing and failing tests. -->
 
+<details>
+<summary>🎬 See it in action!</summary>
+
+![Safety Tests Demo](./images/safety-tests.png)
+
+*Demo output varies. Your results will differ from what's shown here.*
+
+</details>
+
 ---
 
 ## Defense Layers Summary
@@ -478,38 +490,129 @@ asyncio.run(main())
 
 ---
 
-## Knowledge Check ✅
+# Practice
+
+<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
+
+Time to put what you've learned into action.
+
+---
+
+## ▶️ Try It Yourself
+
+After completing the demo above, try these experiments:
+
+1. **Create a new attack** — Write an issue that attempts to bypass your guardrails using a technique not shown in the demo
+
+2. **Add more sensitive patterns** — Extend the `validate_tool_args` hook to block additional dangerous patterns (e.g., `/proc/`, `authorized_keys`)
+
+3. **Test edge cases** — What happens if someone tries URL-encoded path traversal like `%2e%2e%2f`?
+
+4. **Log blocked attempts** — Add logging to track when attacks are blocked (useful for security monitoring)
+
+---
+
+## 📝 Assignment
+
+### Main Challenge: Harden Your Issue Reviewer
+
+Add comprehensive security guardrails to your Issue Reviewer:
+
+1. **Harden your system prompt** with explicit security rules at the top
+
+2. **Add an `on_pre_tool_use` hook** that validates tool arguments:
+   - Block absolute paths
+   - Block path traversal (`..`)
+   - Block sensitive file patterns
+
+3. **Validate output** using Pydantic and check for suspicious content
+
+4. **Add a security flag** to your output schema to identify potential attacks
+
+**Success criteria**: Your reviewer correctly flags injection attempts and blocks path traversal attacks.
+
+See [assignment.md](./assignment.md) for full instructions.
+
+<details>
+<summary>💡 Hints</summary>
+
+**Hook registration:**
+```python
+session = await client.create_session({
+    "tools": [get_file_contents],
+    "hooks": {"on_pre_tool_use": validate_tool_args}
+})
+```
+
+**Common issues:**
+- Forgetting to return `{"decision": "allow"}` for valid tool calls
+- Not checking for case-insensitive matches in sensitive file patterns
+- Security rules placed at the bottom of the system prompt (less effective)
+
+</details>
+
+---
+
+<details>
+<summary>🔧 Common Mistakes & Troubleshooting</summary>
+
+| Mistake | What Happens | Fix |
+|---------|--------------|-----|
+| Security rules at bottom of prompt | Model may ignore them | Move security rules to the very top |
+| Returning nothing from hook | Tool call may proceed unexpectedly | Always return `{"decision": "allow"}` or `{"decision": "reject"}` |
+| Case-sensitive pattern matching | Attackers bypass with `/ETC/passwd` | Use `.lower()` when checking patterns |
+| No output validation | Leaked content reaches user | Always validate model output with Pydantic |
+| Forgot `security_flag` field | Can't identify flagged issues | Add `security_flag: bool` to your schema |
+
+### Knowledge Check
+
+Test your understanding:
 
 1. **What is prompt injection?**
    - a) When the model injects code into your codebase
-   - b) When user input contains instructions that override the system prompt
+   - b) When user input contains instructions that override the system prompt ✅
    - c) When the SDK crashes due to invalid input
    - d) When Pydantic validation fails
 
 2. **Where should security rules appear in a system prompt?**
    - a) At the very end
    - b) In a separate file
-   - c) At the top, for maximum priority
+   - c) At the top, for maximum priority ✅
    - d) Only in comments
 
 3. **What does the `on_pre_tool_use` hook allow you to do?**
    - a) Modify the model's response
-   - b) Inspect and reject tool calls before they execute
+   - b) Inspect and reject tool calls before they execute ✅
    - c) Change the system prompt
    - d) Stream responses faster
 
-<details>
-<summary>Answers</summary>
+### Troubleshooting
 
-1. **b** — Prompt injection is when user input contains instructions that override or manipulate the system prompt.
-2. **c** — Placing security rules at the top of the prompt gives them higher priority in the model's attention.
-3. **b** — `on_pre_tool_use` lets you inspect tool names and arguments, then allow or reject the call before it runs.
+**"Hook is never called"** — Make sure you've registered the hook in your session config under `"hooks": {"on_pre_tool_use": your_function}`.
+
+**"Attacks are not being flagged"** — Check that your system prompt explicitly tells the model to set `security_flag: true` when it detects suspicious content.
+
+**"Path traversal still works"** — Your validation might be checking after the path is resolved. Check for `..` in the raw input before any path operations.
 
 </details>
 
 ---
 
-## Capstone Progress 🏗️
+# Summary
+
+## 🔑 Key Takeaways
+
+1. **Prompt injection is a real threat** — attackers can manipulate your agent through carefully crafted input
+2. **Defense in depth is essential** — no single layer is foolproof, so stack multiple protections
+3. **Validate at every boundary** — check inputs before tool execution AND validate outputs before returning to users
+4. **Place security rules first** — the model pays more attention to instructions at the top of the system prompt
+5. **Test with adversarial inputs** — regularly test your agent with attack scenarios
+
+> 📚 **Glossary**: New to terms like "prompt injection" or "guardrails"? See the [Glossary](../GLOSSARY.md) for definitions.
+
+---
+
+## 🏗️ Capstone Progress
 
 Your Issue Reviewer is now hardened against attacks!
 
@@ -526,13 +629,26 @@ Your Issue Reviewer is now hardened against attacks!
 | 8 | Evaluation & testing | ⬜ |
 | 9 | Production hardening & GitHub integration | ⬜ |
 
-## Next Step
+---
 
-In [Chapter 8 — Evaluation & Testing](../08-evaluation-testing/README.md), you'll build a test harness to measure your reviewer's consistency, accuracy, and reliability across multiple runs.
+## ➡️ What's Next
+
+Your agent is now protected against common attacks. In **[Chapter 08: Evaluation & Testing](../08-evaluation-testing/README.md)**, you'll learn:
+
+- How to build a test harness for your agent
+- Measuring consistency and accuracy across runs
+- Evaluating your agent against a golden dataset
+- Automated testing patterns for LLM applications
+
+You'll ensure your Issue Reviewer performs reliably before going to production.
 
 ---
 
-## Additional Resources
+## 📚 Additional Resources
 
-- [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
-- [Prompt injection — Simon Willison's analysis](https://simonwillison.net/series/prompt-injection/)
+- 📚 [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
+- 📚 [Prompt injection — Simon Willison's analysis](https://simonwillison.net/series/prompt-injection/)
+
+---
+
+**[← Back to Chapter 06](../06-scaling-rag/README.md)** | **[Continue to Chapter 08 →](../08-evaluation-testing/README.md)**

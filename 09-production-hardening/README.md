@@ -1,29 +1,31 @@
-# Chapter 9 — Production Hardening & GitHub Integration
+# Chapter 09 — Production Hardening & GitHub Integration
 
 ![Chapter 9 banner illustration — the Issue Reviewer shipping to production connected to GitHub](./images/banner.png)
 
 <!-- TODO: Add banner image to ./09-production-hardening/images/banner.png — An illustration (1280×640) showing a rocket launching (representing shipping to production). The rocket is labeled "Issue Reviewer" and trails connect to GitHub's octocat, a logging dashboard, and retry arrows. On the right, a GitHub issue shows an auto-posted comment with the structured review. Same art style as course. -->
 
-> *"Building it is half the work. Shipping it is the other half."*
+> **Building it is half the work. Shipping it is the other half. Learn to connect your AI agent to GitHub and make it production-ready.**
 
-## What You'll Learn
+You've built a powerful Issue Reviewer with structured output, tool calling, mentoring, safety guardrails, and evaluation tests. But it's still running on your laptop with hardcoded test data. This chapter teaches you to **ship it to production** — connecting to the real GitHub API, adding logging and retries, and making your reviewer ready for the real world.
 
-After this lesson, you will be able to:
+> ⚠️ **Prerequisites**: Make sure you've completed **[Chapter 08: Evaluation & Testing](../08-evaluation-testing/README.md)** first. You'll also need a GitHub personal access token and `pip install httpx` for async HTTP requests.
 
-- ✅ Connect to the GitHub API to read issues and post comments
-- ✅ Format structured reviews as GitHub-flavored Markdown comments
-- ✅ Add environment-based configuration
-- ✅ Implement structured logging with session hooks
-- ✅ Handle errors gracefully with retries
-- ✅ Track token usage and cost awareness
+## 🎯 Learning Objectives
 
-## Pre-requisites
+By the end of this chapter, you'll be able to:
 
-- Completed [Chapter 8 — Evaluation & Testing](../08-evaluation-testing/README.md)
-- A GitHub personal access token (for GitHub API calls)
-- `pip install httpx` (for async HTTP requests)
+- Connect to the GitHub API to read issues and post comments
+- Format structured reviews as GitHub-flavored Markdown comments
+- Add environment-based configuration
+- Implement structured logging with session hooks
+- Handle errors gracefully with retries
+- Track token usage and cost awareness
+
+> ⏱️ **Estimated Time**: ~60 minutes (15 min reading + 45 min hands-on)
 
 ---
+
+# Shipping to Production
 
 ## 🧩 Real-World Analogy: Opening a Restaurant vs. Cooking at Home
 
@@ -39,35 +41,15 @@ You've been cooking great meals at home for months. Your friends love the food. 
 
 The food itself didn't change. What changed is everything *around* it — the infrastructure that makes it reliable, observable, and ready for real customers. That's exactly what production hardening is: taking something that works on your laptop and making it work in the real world.
 
-![Real-world analogy illustration — a cozy home kitchen on the left vs. a professional restaurant kitchen on the right](./images/analogy-restaurant.png)
+<img src="./images/analogy-restaurant.png" alt="Real-world analogy illustration — a cozy home kitchen on the left vs. a professional restaurant kitchen on the right" width="800"/>
 
 <!-- TODO: Add analogy image to ./09-production-hardening/images/analogy-restaurant.png — A split illustration: left side shows a developer happily cooking in a cozy home kitchen ("works on my machine"); right side shows a professional restaurant kitchen with order tickets, logging screens, fire suppression systems, and delivery trucks ("production"). Same art style as course. -->
 
 ---
 
-## Introduction
+# Key Concepts
 
-Congratulations — you've built an AI-powered Issue Reviewer that can classify issues, extract concepts, provide mentoring, defend against attacks, and pass evaluation tests. Now it's time to **ship it**.
-
-In this final chapter, you'll connect everything to GitHub so your reviewer:
-
-1. **Reads issues** from the GitHub API (not hardcoded text)
-2. **Posts comments** with the structured review
-3. **Applies labels** based on the difficulty score
-4. **Logs** every step for observability
-5. **Handles errors** with retry logic
-
-By the end, you'll have a **production-ready GitHub Issue Reviewer bot**.
-
-![Architecture diagram showing the production Issue Reviewer system](./images/production-architecture.png)
-
-<!-- TODO: Add diagram to ./09-production-hardening/images/production-architecture.png — A system architecture diagram (1000×500): LEFT "GitHub" box with Issues API arrow → CENTER "Issue Reviewer" box containing: SDK Client, Safety Hooks, Tools, Logging → RIGHT arrows going back to GitHub: "Post Comment", "Apply Label". Below the center box: "Config" (env vars) and "Logs" (structured JSON). Show retry arrows on the GitHub connections. -->
-
----
-
-## Key Concepts
-
-### GitHub API Integration
+## GitHub API Integration
 
 Use `httpx` for async HTTP calls to the GitHub API:
 
@@ -110,7 +92,9 @@ async def add_labels(owner: str, repo: str, issue_number: int, labels: list[str]
         return response.json()
 ```
 
-### Formatting the Review as a GitHub Comment
+---
+
+## Formatting the Review as a GitHub Comment
 
 Convert the structured review into a readable Markdown comment:
 
@@ -148,7 +132,9 @@ def format_review_comment(review: IssueReview) -> str:
 """
 ```
 
-### Environment Configuration
+---
+
+## Environment Configuration
 
 Use environment variables for all configurable values:
 
@@ -172,7 +158,9 @@ class Config:
             raise ValueError(f"Missing required env vars: {', '.join(missing)}")
 ```
 
-### Structured Logging with Session Hooks
+---
+
+## Structured Logging with Session Hooks
 
 Use session hooks for observability:
 
@@ -203,7 +191,9 @@ async def on_error(event):
     return {}
 ```
 
-### Error Handling & Retries
+---
+
+## Error Handling & Retries
 
 Wrap API calls with retry logic:
 
@@ -224,7 +214,9 @@ async def with_retry(func, *args, max_retries: int = 3, delay: float = 1.0):
             await asyncio.sleep(wait)
 ```
 
-### Difficulty-to-Label Mapping
+---
+
+## Difficulty-to-Label Mapping
 
 Map difficulty scores to GitHub labels:
 
@@ -240,7 +232,7 @@ DIFFICULTY_LABELS = {
 
 ---
 
-## Demo Walkthrough
+# See It In Action
 
 Here's the complete production reviewer. Create `production_reviewer.py`:
 
@@ -582,40 +574,165 @@ And on GitHub, the issue gets a formatted comment:
 
 <!-- TODO: Add screenshot to ./09-production-hardening/images/github-comment.png — A screenshot of a real GitHub issue page showing an auto-posted comment from the AI Issue Reviewer. The comment should have the "🤖 AI Issue Review" header, a summary, difficulty table with bar chart, concepts list, and mentoring advice. Show the "advanced" label applied to the issue. Dark or light GitHub theme. -->
 
----
-
-## Knowledge Check ✅
-
-1. **Why use environment variables for configuration instead of hardcoding values?**
-   - a) Environment variables are faster
-   - b) They keep secrets out of source code and allow different configs per environment
-   - c) Python requires them
-   - d) The SDK only works with environment variables
-
-2. **What's the purpose of exponential backoff in retries?**
-   - a) To make requests faster
-   - b) To gradually increase wait time between retries, reducing load on the server
-   - c) To decrease the timeout on each attempt
-   - d) To parallelize requests
-
-3. **What information should structured logging capture?**
-   - a) Only errors
-   - b) Every character of every response
-   - c) Key events: tool calls, decisions, errors, and timing
-   - d) Only the final output
-
 <details>
-<summary>Answers</summary>
+<summary>🎬 See it in action!</summary>
 
-1. **b** — Environment variables keep secrets (like API tokens) out of source code and allow different configurations for development, staging, and production.
-2. **b** — Exponential backoff increases the wait time between retries (1s, 2s, 4s...), giving the server time to recover without overwhelming it.
-3. **c** — Log key events that help you understand what happened during a review: which tools were called, what decisions were made, any errors, and how long it took.
+![Production Reviewer Demo](./images/production-reviewer-demo.gif)
+
+<!-- TODO: Add GIF to ./09-production-hardening/images/production-reviewer-demo.gif — A terminal recording showing: (1) running production_reviewer.py with environment variables set, (2) the logging output as it fetches the issue, (3) tool calls being logged, (4) comment posted confirmation. -->
+
+*Demo output varies. Your results will differ from what's shown here.*
 
 </details>
 
 ---
 
-## Capstone Progress 🏗️ — COMPLETE! 🎉
+# Practice
+
+<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
+
+Time to put what you've learned into action.
+
+---
+
+## ▶️ Try It Yourself
+
+After completing the demos above, try these experiments:
+
+1. **Test with a Real Issue** — Run the production reviewer against a real issue in one of your repositories:
+
+```bash
+export GITHUB_TOKEN="ghp_your_token_here"
+export GITHUB_OWNER="your-username"
+export GITHUB_REPO="your-test-repo"
+python production_reviewer.py 1
+```
+
+2. **Add Rate Limit Handling** — Enhance the retry logic to check for rate limit headers:
+
+```python
+async def github_request_with_rate_limit(method: str, url: str, **kwargs) -> dict:
+    """Make a GitHub API request with rate limit awareness."""
+    response = await client.request(method, url, headers=headers, **kwargs)
+    
+    remaining = int(response.headers.get("X-RateLimit-Remaining", 1))
+    if remaining < 10:
+        logger.warning("Rate limit low: %d remaining", remaining)
+    
+    response.raise_for_status()
+    return response.json()
+```
+
+3. **Add Token Usage Tracking** — Track how many tokens each review uses:
+
+```python
+async def on_session_end(event):
+    usage = event.data.usage
+    logger.info("Tokens used — prompt: %d, completion: %d, total: %d",
+                usage.prompt_tokens, usage.completion_tokens, usage.total_tokens)
+```
+
+---
+
+## 📝 Assignment
+
+### Main Challenge: Deploy Your Issue Reviewer
+
+Take your production reviewer and set it up for real-world use:
+
+1. Create a test repository with a few sample issues
+2. Generate a GitHub Personal Access Token with `issues` scope
+3. Run your reviewer against 3 different issues
+4. Verify comments appear on GitHub
+5. Check that labels are applied correctly
+
+**Success criteria**: Your reviewer successfully posts comments and applies labels to at least 3 issues.
+
+<details>
+<summary>💡 Hints</summary>
+
+**Setting up your token:**
+- Go to GitHub → Settings → Developer Settings → Personal Access Tokens
+- Create a fine-grained token with `issues` read/write permission for your test repo
+
+**Common issues:**
+- 401 errors: Your token doesn't have the right permissions
+- 404 errors: The repo/issue doesn't exist or token can't access it
+- 403 errors: You're rate limited — wait and retry
+
+**Testing safely:**
+- Use a test repository you own (don't spam real projects!)
+- Start with closed issues to avoid notifying real users
+
+</details>
+
+---
+
+<details>
+<summary>🔧 Common Mistakes & Troubleshooting</summary>
+
+| Mistake | What Happens | Fix |
+|---------|--------------|-----|
+| Hardcoding tokens | Secrets exposed in git history | Always use environment variables |
+| No retry logic | Single failures crash the whole process | Add exponential backoff retries |
+| Missing rate limit handling | 403 errors during heavy use | Check rate limit headers, add delays |
+| No logging | Can't debug production issues | Log every significant event |
+| Insufficient error messages | "Error" with no context | Include request details in error logs |
+
+### Troubleshooting
+
+**"401 Unauthorized"** — Your GitHub token is invalid or expired. Generate a new one.
+
+**"403 Forbidden"** — Either rate limited or the token lacks permission. Check `X-RateLimit-Remaining` header.
+
+**"404 Not Found"** — The repo or issue doesn't exist, or your token can't see private repos.
+
+**"422 Unprocessable Entity"** — The label you're trying to apply doesn't exist on the repo. Create it first.
+
+---
+
+### 🧠 Knowledge Check
+
+<details>
+<summary>1. Why use environment variables for configuration instead of hardcoding values?</summary>
+
+**b) They keep secrets out of source code and allow different configs per environment** — Environment variables keep secrets (like API tokens) out of source code and allow different configurations for development, staging, and production.
+
+</details>
+
+<details>
+<summary>2. What's the purpose of exponential backoff in retries?</summary>
+
+**b) To gradually increase wait time between retries, reducing load on the server** — Exponential backoff increases the wait time between retries (1s, 2s, 4s...), giving the server time to recover without overwhelming it.
+
+</details>
+
+<details>
+<summary>3. What information should structured logging capture?</summary>
+
+**c) Key events: tool calls, decisions, errors, and timing** — Log key events that help you understand what happened during a review: which tools were called, what decisions were made, any errors, and how long it took.
+
+</details>
+
+</details>
+
+---
+
+# Summary
+
+## 🔑 Key Takeaways
+
+1. **Connect to real APIs, not hardcoded data** — use httpx for async GitHub API calls with proper authentication headers
+2. **Environment configuration is essential** — keep secrets out of code and allow different configs per environment
+3. **Structured logging enables observability** — log key events (tool calls, decisions, errors) with timestamps
+4. **Retry with exponential backoff** — handle transient failures gracefully without overwhelming the server
+5. **Format output for the platform** — convert structured data into platform-native formats (GitHub Markdown)
+
+> 📚 **Glossary**: New to terms like "exponential backoff" or "environment variables"? See the [Glossary](../GLOSSARY.md) for definitions.
+
+---
+
+## 🏗️ Capstone Progress — COMPLETE! 🎉
 
 You've built a production-ready AI Issue Reviewer!
 
@@ -632,21 +749,27 @@ You've built a production-ready AI Issue Reviewer!
 | 8 | Evaluation & testing | ✅ |
 | **9** | **Production hardening & GitHub integration** | **✅ Complete!** |
 
-## 🏁 What You've Built
+---
+
+## 🎓 Course Complete!
+
+Congratulations — you've finished the GitHub Copilot SDK for Beginners course!
+
+### 🏁 What You've Built
 
 By completing this course, you now have:
 
-- ✅ A **fully working AI GitHub automation tool**
-- ✅ Knowledge of **core SDK architecture** (Client → Session → Message)
-- ✅ **Streaming UX** for responsive real-time interfaces
-- ✅ **Tool calling mastery** with safety hooks
-- ✅ **Retrieval fundamentals** for handling large codebases
-- ✅ **Evaluation & testing discipline** with golden tests
-- ✅ **Production best practices** — logging, retries, configuration
+- A **fully working AI GitHub automation tool**
+- Knowledge of **core SDK architecture** (Client → Session → Message)
+- **Streaming UX** for responsive real-time interfaces
+- **Tool calling mastery** with safety hooks
+- **Retrieval fundamentals** for handling large codebases
+- **Evaluation & testing discipline** with golden tests
+- **Production best practices** — logging, retries, configuration
 
-## What's Next?
+### 🚀 Where to Go From Here
 
-Here are ways to extend your Issue Reviewer:
+Here are ways to extend your Issue Reviewer and continue learning:
 
 - **GitHub Actions**: Trigger the reviewer automatically when issues are opened
 - **Multi-repo support**: Review issues across multiple repositories
@@ -656,9 +779,13 @@ Here are ways to extend your Issue Reviewer:
 
 ---
 
-## Additional Resources
+## 📚 Additional Resources
 
 - [GitHub REST API documentation](https://docs.github.com/en/rest)
 - [GitHub Actions — Webhook events](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows)
 - [GitHub Copilot SDK documentation](https://github.com/nicolo-ribaudo/copilot-sdk)
 - [12-Factor App methodology](https://12factor.net/)
+
+---
+
+**[← Back to Chapter 08](../08-evaluation-testing/README.md)** | **[Back to Course Home →](../README.md)**

@@ -1,28 +1,35 @@
-# Chapter 5 — Extracting Concepts & Mentoring Advice
+# Chapter 05 — Extracting Concepts & Mentoring Advice
 
 ![Chapter 5 banner illustration — an AI agent analyzing code and producing a mentoring report](./images/banner.png)
 
 <!-- TODO: Add banner image to ./05-concepts-mentoring/images/banner.png — An illustration (1280×640) showing an AI agent with a magnifying glass over code, producing an output card with sections: "Concepts Required: JWT, OAuth, middleware" and "Mentoring Advice: Start with the token validation..." with a friendly mentor vibe. Same art style as course. -->
 
-> *"A great reviewer doesn't just classify — it teaches."*
+> **A great reviewer doesn't just classify — it teaches. Learn to extract concepts and provide mentoring advice that adapts to the learner's level.**
 
-## What You'll Learn
+Your Issue Reviewer can already classify issues by difficulty and read referenced files. But a number alone isn't very helpful to a developer wondering *"Can I tackle this?"* In this chapter, you'll expand the reviewer to extract the specific concepts required and provide personalized mentoring guidance — transforming your tool from a simple classifier into a **development coach**.
 
-After this lesson, you will be able to:
+> ⚠️ **Prerequisites**: Make sure you've completed **[Chapter 04: The Agent Loop & Streaming](../04-agent-loop-streaming/README.md)** first. You'll need familiarity with Pydantic models.
 
-- ✅ Design multi-field structured output schemas
-- ✅ Extract required concepts and skills from code issues
-- ✅ Generate mentoring advice tailored to difficulty level
-- ✅ Use conditional generation to adjust tone and depth
+## 🎯 Learning Objectives
 
-## Pre-requisites
+By the end of this chapter, you'll be able to:
 
-- Completed [Chapter 4 — The Agent Loop & Streaming](../04-agent-loop-streaming/README.md)
-- Familiarity with Pydantic models
+- Design multi-field structured output schemas
+- Extract required concepts and skills from code issues
+- Generate mentoring advice tailored to difficulty level
+- Use conditional generation to adjust tone and depth
+
+> ⏱️ **Estimated Time**: ~40 minutes (10 min reading + 30 min hands-on)
 
 ---
 
+# Generating Deeper Output
+
 ## 🧩 Real-World Analogy: The Adaptive Tutor
+
+<img src="./images/analogy-adaptive-tutor.png" alt="Real-world analogy illustration — a tutor adjusting their teaching style for different students" width="800"/>
+
+<!-- TODO: Add analogy image to ./05-concepts-mentoring/images/analogy-adaptive-tutor.png — An illustration showing one tutor at a whiteboard, with three students at different levels: a beginner getting simple diagrams, a mid-level student getting code examples, and an advanced student getting architecture diagrams. The tutor's speech bubbles adjust in complexity. Same art style as course. -->
 
 Think about a great tutor — not one who gives every student the same lecture, but one who **adjusts to the learner**.
 
@@ -40,28 +47,15 @@ Same topic. Completely different depth, vocabulary, and approach.
 
 That's what conditional mentoring does. Your reviewer already knows the difficulty score — now it uses that score to adjust its advice, just like a tutor who checks the student's level before choosing how to explain.
 
-![Real-world analogy illustration — a tutor adjusting their teaching style for different students](./images/analogy-adaptive-tutor.png)
+---
 
-<!-- TODO: Add analogy image to ./05-concepts-mentoring/images/analogy-adaptive-tutor.png — An illustration showing one tutor at a whiteboard, with three students at different levels: a beginner getting simple diagrams, a mid-level student getting code examples, and an advanced student getting architecture diagrams. The tutor's speech bubbles adjust in complexity. Same art style as course. -->
+# Key Concepts
+
+Let's understand the building blocks before diving into code.
 
 ---
 
-## Introduction
-
-Your Issue Reviewer can already classify issues by difficulty and read referenced files. But a number alone isn't very helpful to a developer wondering *"Can I tackle this?"*
-
-In this chapter, you'll expand the reviewer to:
-
-1. **Extract concepts** — list the specific technologies and skills needed to solve the issue
-2. **Provide mentoring advice** — give personalized guidance appropriate to the issue's difficulty
-
-This transforms your tool from a simple classifier into a **development coach**.
-
----
-
-## Key Concepts
-
-### Multi-Field Structured Output
+## Multi-Field Structured Output
 
 In Chapter 1 you created a schema with `summary`, `difficulty_score`, and `recommended_level`. Now you'll add richer fields:
 
@@ -93,7 +87,9 @@ The key additions are:
 - **`concepts_required`** — a list of specific skills like `["JWT validation", "middleware", "error handling"]`
 - **`mentoring_advice`** — a paragraph of guidance that changes based on the difficulty level
 
-### Conditional Generation
+---
+
+## Conditional Generation
 
 The model should adjust its mentoring style based on the difficulty:
 
@@ -103,7 +99,7 @@ The model should adjust its mentoring style based on the difficulty:
 | 3 | Mid | Outline approach, mention key considerations, point to relevant patterns |
 | 4–5 | Senior / Senior+ | High-level strategy, trade-off analysis, architecture considerations |
 
-![Visual comparison showing different mentoring styles for Junior vs Senior issues](./images/mentoring-styles.png)
+<img src="./images/mentoring-styles.png" alt="Visual comparison showing different mentoring styles for Junior vs Senior issues" width="800"/>
 
 <!-- TODO: Add diagram to ./05-concepts-mentoring/images/mentoring-styles.png — A side-by-side comparison (800×400): LEFT shows a Junior issue (Score 1, "Fix typo in README") with friendly mentoring: "Great first issue! Open the file, find the typo, and submit a PR." RIGHT shows a Senior+ issue (Score 5, "Migrate auth to OAuth 2.0") with strategic mentoring: "Start by mapping the current auth flows. Consider backward compatibility..." Use speech bubble styling. -->
 
@@ -143,7 +139,9 @@ List specific technologies, patterns, and skills. Be precise:
   Treat as a peer discussion."""
 ```
 
-### Concept Extraction Quality
+---
+
+## Concept Extraction Quality
 
 Getting good concept extraction requires specificity in the prompt. Compare:
 
@@ -171,7 +169,11 @@ The rubric in the system prompt — with ✅ and ❌ examples — guides the mod
 
 ---
 
-## Demo Walkthrough
+# See It In Action
+
+> 💡 **About Example Outputs**: The sample outputs shown throughout this course are illustrative. Because AI responses vary each time, your results will differ in wording, formatting, and detail.
+
+## The Mentor Reviewer
 
 Here's the complete mentor reviewer. Create `concepts_mentor.py`:
 
@@ -318,13 +320,24 @@ async def main():
 asyncio.run(main())
 ```
 
-### Expected Output
+## Expected Output
 
 Running this produces two very different reviews:
 
 ![Terminal showing two issue reviews — one easy with simple advice, one hard with strategic advice](./images/mentoring-comparison.png)
 
 <!-- TODO: Add screenshot to ./05-concepts-mentoring/images/mentoring-comparison.png — A terminal screenshot (dark theme) showing two reviews: (1) Easy issue: Score 1, concepts ["Markdown", "typo correction"], advice "Great first issue! Open README.md, find line 42..." (2) Hard issue: Score 5, concepts ["OAuth 2.0", "database migration", "backward compatibility"...], advice "Start by mapping current auth flows. Create a migration plan..." Show the contrast clearly. -->
+
+<details>
+<summary>🎬 See it in action!</summary>
+
+![Mentor Reviewer Demo](./images/mentor-demo.gif)
+
+<!-- TODO: Add GIF to ./05-concepts-mentoring/images/mentor-demo.gif — A terminal recording showing: (1) python concepts_mentor.py command, (2) both reviews displaying with contrasting mentoring advice. -->
+
+*Demo output varies. Your results will differ from what's shown here.*
+
+</details>
 
 Notice how the mentoring advice changes dramatically:
 
@@ -333,33 +346,99 @@ Notice how the mentoring advice changes dramatically:
 
 ---
 
-## Practice: Adjusting Mentoring Quality
+# Practice
 
-Try these experiments to improve mentoring output:
+<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
 
-### 1. Add a Confidence Score
-
-Add a `confidence: int = Field(ge=1, le=5)` field to the schema. Include in the prompt:
-
-```
-## Confidence Score
-Rate how confident you are in your assessment (1-5):
-- 5: Clear issue, obvious classification
-- 3: Some ambiguity, reasonable assessment
-- 1: Very ambiguous, best guess
-```
-
-### 2. Add Suggested Resources
-
-Add a `suggested_resources: list[str]` field and prompt the model to suggest relevant documentation, tutorials, or tools for the concepts required.
-
-### 3. Test Boundary Cases
-
-Create test issues that fall between difficulty levels (e.g., a "simple" bug that touches 4 files). See how the model handles ambiguity.
+Time to put what you've learned into action.
 
 ---
 
-## Knowledge Check ✅
+## ▶️ Try It Yourself
+
+After completing the demos above, try these experiments to improve mentoring output:
+
+1. **Add a Confidence Score** — Add a `confidence: int = Field(ge=1, le=5)` field to the schema. Include in the prompt:
+
+   ```
+   ## Confidence Score
+   Rate how confident you are in your assessment (1-5):
+   - 5: Clear issue, obvious classification
+   - 3: Some ambiguity, reasonable assessment
+   - 1: Very ambiguous, best guess
+   ```
+
+2. **Add Suggested Resources** — Add a `suggested_resources: list[str]` field and prompt the model to suggest relevant documentation, tutorials, or tools for the concepts required.
+
+3. **Test Boundary Cases** — Create test issues that fall between difficulty levels (e.g., a "simple" bug that touches 4 files). See how the model handles ambiguity.
+
+---
+
+## 📝 Assignment
+
+### Main Challenge: Build an Adaptive Mentor
+
+Extend your Issue Reviewer to provide conditional mentoring:
+
+1. Update the Pydantic schema with `concepts_required` and `mentoring_advice` fields
+
+2. Create a system prompt with:
+   - Clear difficulty rubric (1-5 scale)
+   - Concept extraction guidelines (specific, not vague)
+   - Conditional mentoring rules based on difficulty level
+
+3. Test with issues at both ends of the difficulty spectrum
+
+4. Compare the mentoring advice tone and depth
+
+**Success criteria**: A Score 1 issue gets step-by-step, encouraging guidance. A Score 5 issue gets strategic, peer-level discussion of trade-offs.
+
+See [assignment.md](./assignment.md) for full instructions.
+
+<details>
+<summary>💡 Hints</summary>
+
+**Schema additions:**
+```python
+concepts_required: list[str] = Field(
+    description="List of specific technologies and concepts needed"
+)
+mentoring_advice: str = Field(
+    description="Actionable advice tailored to the difficulty level"
+)
+```
+
+**Common issues:**
+- Vague concepts like "security" or "coding" — add ✅/❌ examples in prompt
+- Same mentoring tone for all levels — include explicit rules for each difficulty range
+- Missing `files_analyzed` field when using tools — add with `default_factory=list`
+
+</details>
+
+---
+
+<details>
+<summary>🔧 Common Mistakes & Troubleshooting</summary>
+
+| Mistake | What Happens | Fix |
+|---------|--------------|-----|
+| Vague concept extraction | Model returns "security" instead of "JWT validation" | Add specific ✅/❌ examples in system prompt |
+| Same mentoring tone | Junior and Senior issues get identical advice style | Include explicit rules for each difficulty range |
+| Missing `files_analyzed` | Pydantic validation fails when no tools used | Add `default_factory=list` to the field |
+| Literal type mismatch | Model returns "senior" instead of "Senior" | Use exact casing in prompt examples |
+
+### Troubleshooting
+
+**"ValidationError: Input should be 'Junior', 'Mid', 'Senior' or 'Senior+'"** — The model returned a different casing or spelling. Make the system prompt explicit about exact values.
+
+**Concepts are too vague** — Add more specific ✅/❌ examples in the system prompt. Show what good extraction looks like.
+
+**Mentoring advice doesn't adapt** — Check that your difficulty rubric includes clear rules for each score range with tone guidance.
+
+### Knowledge Check
+
+<details>
+<summary>Test your understanding</summary>
 
 1. **Why use `Literal["Junior", "Mid", "Senior", "Senior+"]` instead of a plain `str`?**
    - a) It makes the code faster
@@ -379,46 +458,70 @@ Create test issues that fall between difficulty levels (e.g., a "simple" bug tha
    - c) Score 1 gets more words; Score 5 gets fewer
    - d) Score 1 is formal; Score 5 is casual
 
-<details>
-<summary>Answers</summary>
-
+**Answers:**
 1. **b** — `Literal` constrains the model to only produce values from the specified set, ensuring validation catches unexpected values.
 2. **b** — Specific, precise skills give actionable information. Vague categories aren't helpful for deciding if you can tackle an issue.
 3. **b** — Junior issues get step-by-step, encouraging guidance. Senior+ issues get strategic, peer-level discussion of trade-offs.
 
 </details>
 
+</details>
+
 ---
 
-## Capstone Progress 🏗️
+# Summary
+
+## 🔑 Key Takeaways
+
+1. **Multi-field schemas capture richer data** — Beyond summary and difficulty, add concepts and mentoring advice for actionable output
+2. **Precise concept extraction requires examples** — Show the model ✅/❌ examples of specific vs. vague concepts
+3. **Conditional generation adapts to context** — Use the difficulty score to adjust mentoring tone and depth
+4. **Pydantic validates complex structures** — Lists, Literals, and nested fields all work seamlessly
+
+> 📚 **Glossary**: New to terms like "conditional generation" or "concept extraction"? See the [Glossary](../GLOSSARY.md) for definitions.
+
+---
+
+## 🏗️ Capstone Progress
 
 Your Issue Reviewer is becoming a development coach!
 
 | Chapter | Feature | Status |
 |---------|---------|--------|
-| 0 | Basic SDK setup & issue summarization | ✅ |
-| 1 | Structured JSON output with Pydantic validation | ✅ |
-| 2 | Reliable classification with prompt engineering | ✅ |
-| 3 | Tool calling for file access | ✅ |
-| 4 | Streaming UX & agent loop awareness | ✅ |
-| **5** | **Concept extraction & mentoring advice** | **✅ New!** |
-| 6 | RAG for large repositories | ⬜ |
-| 7 | Safety & guardrails | ⬜ |
-| 8 | Evaluation & testing | ⬜ |
-| 9 | Production hardening & GitHub integration | ⬜ |
+| 00 | Basic SDK setup & issue summarization | ✅ |
+| 01 | Structured JSON output with Pydantic validation | ✅ |
+| 02 | Reliable classification with prompt engineering | ✅ |
+| 03 | Tool calling for file access | ✅ |
+| 04 | Streaming UX & agent loop awareness | ✅ |
+| **05** | **Concept extraction & mentoring advice** | **🔲 ← You are here** |
+| 06 | RAG for large repositories | 🔲 |
+| 07 | Safety & guardrails | 🔲 |
+| 08 | Evaluation & testing | 🔲 |
+| 09 | Production hardening & GitHub integration | 🔲 |
 
-## Next Step
+---
 
-In [Chapter 6 — Scaling with Retrieval (RAG)](../06-scaling-rag/README.md), you'll learn how to handle large repositories by using retrieval-augmented generation to inject only the most relevant code context.
+## ➡️ What's Next
+
+Your reviewer now extracts concepts and provides mentoring — but what happens when an issue references 10 files, each with 5,000 lines?
+
+In **[Chapter 06: Scaling with Retrieval (RAG)](../06-scaling-rag/README.md)**, you'll learn:
+
+- Why context window limits matter for large repositories
+- How to chunk files and create embeddings for semantic search
+- Retrieving only the most relevant code for each query
+- Injecting retrieved context into the agent's prompt
+
+You'll handle enterprise-scale codebases without running out of context.
 
 ---
 
 ## Additional Resources
 
-- [Pydantic documentation — Models](https://docs.pydantic.dev/latest/concepts/models/)
-- [Prompt engineering — Few-shot examples](https://platform.openai.com/docs/guides/prompt-engineering)
+- 📚 [Pydantic Documentation — Models](https://docs.pydantic.dev/latest/concepts/models/)
+- 📚 [Prompt Engineering — Few-shot Examples](https://platform.openai.com/docs/guides/prompt-engineering)
 
-### 📖 Extra Reading: Agent Memory & Calibration
+### 📚 Extra Reading: Agent Memory & Calibration
 
 As your agent processes more issues, you might want it to learn from past decisions:
 
@@ -439,3 +542,7 @@ For an extra challenge:
 4. Compare the model's predictions with and without historical context
 
 This simulates how a production system would improve over time with feedback loops.
+
+---
+
+**[← Back to Chapter 04](../04-agent-loop-streaming/README.md)** | **[Continue to Chapter 06 →](../06-scaling-rag/README.md)**

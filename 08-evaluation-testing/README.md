@@ -1,30 +1,37 @@
-# Chapter 8 — Evaluation & Testing
+# Chapter 08 — Evaluation & Testing
 
 ![Chapter 8 banner illustration — a test harness measuring AI agent accuracy](./images/banner.png)
 
 <!-- TODO: Add banner image to ./08-evaluation-testing/images/banner.png — An illustration (1280×640) showing a laboratory/testing setup: test tubes labeled with issue descriptions on the left, an AI agent in the middle processing them, and a results dashboard on the right showing pass/fail metrics, accuracy %, and consistency scores. Same art style as course. -->
 
-> *"If you can't measure it, you can't improve it."*
+> **If you can't measure it, you can't improve it. Learn to build evaluation harnesses that catch regressions before they ship.**
 
-## What You'll Learn
+You've built a powerful Issue Reviewer with structured output, tool calling, mentoring, and safety guardrails. But how do you know it's **working correctly**? AI models are non-deterministic — the same input can produce different outputs on different runs. This chapter teaches you to build an **evaluation harness** — a systematic way to test your reviewer so you can confidently ship to production.
 
-After this lesson, you will be able to:
+> ⚠️ **Prerequisites**: Make sure you've completed **[Chapter 07: Safety & Guardrails](../07-safety-guardrails/README.md)** first. You'll need your Issue Reviewer with all previous features implemented.
 
-- ✅ Create golden test cases with expected outputs
-- ✅ Build a test harness that runs the reviewer against test data
-- ✅ Measure accuracy (does the model give the right answer?)
-- ✅ Measure consistency (does it give the same answer every time?)
-- ✅ Validate schemas automatically
-- ✅ Detect prompt drift when you change the system prompt
+## 🎯 Learning Objectives
 
-## Pre-requisites
+By the end of this chapter, you'll be able to:
 
-- Completed [Chapter 7 — Safety & Guardrails](../07-safety-guardrails/README.md)
-- All previous chapter concepts
+- Create golden test cases with expected outputs
+- Build a test harness that runs the reviewer against test data
+- Measure accuracy (does the model give the right answer?)
+- Measure consistency (does it give the same answer every time?)
+- Validate schemas automatically
+- Detect prompt drift when you change the system prompt
+
+> ⏱️ **Estimated Time**: ~45 minutes (10 min reading + 35 min hands-on)
 
 ---
 
+# Building Reliable AI Systems
+
 ## 🧩 Real-World Analogy: Quality Control on a Factory Line
+
+<img src="./images/analogy-quality-control.png" alt="Factory quality control line comparing products against a golden sample" width="800"/>
+
+<!-- TODO: Add analogy image to ./08-evaluation-testing/images/analogy-quality-control.png — An illustration showing a factory conveyor belt with products rolling past a QC station. A "golden sample" sits on a pedestal, and a QC inspector compares each product against it, marking some ✅ and some ❌. A dashboard shows accuracy % and consistency scores. Same art style as course. -->
 
 Imagine a factory that makes phone cases. Every case comes off the line looking slightly different — small variations are normal. But how does the factory know whether quality is **acceptable**?
 
@@ -39,29 +46,11 @@ They use a **reference sample** — a "golden" case that represents perfect qual
 
 You wouldn't ship phone cases without QC, and you shouldn't ship an AI agent without evaluation. The tricky part with AI is that *some* variation is expected (unlike factory widgets), so your tests need to allow for it — checking that scores are *close enough*, not pixel-perfect.
 
-![Real-world analogy illustration — a factory quality control line comparing products against a golden sample](./images/analogy-quality-control.png)
-
-<!-- TODO: Add analogy image to ./08-evaluation-testing/images/analogy-quality-control.png — An illustration showing a factory conveyor belt with products rolling past a QC station. A "golden sample" sits on a pedestal, and a QC inspector compares each product against it, marking some ✅ and some ❌. A dashboard shows accuracy % and consistency scores. Same art style as course. -->
-
 ---
 
-## Introduction
+# Key Concepts
 
-You've built a powerful Issue Reviewer with structured output, tool calling, mentoring, and safety guardrails. But how do you know it's **working correctly**?
-
-AI models are non-deterministic — the same input can produce different outputs on different runs. This makes testing challenging but also **critically important**. Without evaluation:
-
-- You don't know if a prompt change improved or degraded performance
-- You can't detect when the model's behavior drifts
-- You can't confidently ship to production
-
-This chapter teaches you to build an **evaluation harness** — a systematic way to test your reviewer.
-
----
-
-## Key Concepts
-
-### Golden Test Cases
+## Golden Test Cases
 
 A **golden test case** is an issue with a known expected output. You create these by hand based on your domain expertise:
 
@@ -102,7 +91,9 @@ GOLDEN_TESTS = [
 
 > 💡 **Tip**: Start with 5–10 golden test cases covering the extremes (easiest, hardest) and the boundaries between levels.
 
-### Accuracy Metrics
+---
+
+## Accuracy Metrics
 
 For each test case, compare the model's output with the expected output:
 
@@ -129,7 +120,9 @@ def score_result(actual: IssueReview, expected: dict) -> dict:
     return scores
 ```
 
-### Consistency Testing
+---
+
+## Consistency Testing
 
 Run the same input multiple times and check if the answer varies:
 
@@ -152,11 +145,13 @@ async def test_consistency(client, issue: str, runs: int = 3) -> dict:
     }
 ```
 
-![Chart showing consistency across runs — some prompts are stable, others fluctuate](./images/consistency-chart.png)
+<img src="./images/consistency-chart.png" alt="Chart showing consistency across runs — some prompts are stable, others fluctuate" width="800"/>
 
 <!-- TODO: Add diagram to ./08-evaluation-testing/images/consistency-chart.png — A bar chart (800×400) showing 3 runs for each of 5 test issues. Each run is a colored bar showing the difficulty score. Consistent tests show bars of equal height; inconsistent tests show bars at different heights. Add labels: "Consistent ✅" and "Inconsistent ⚠️" under the appropriate groups. -->
 
-### Schema Validation Testing
+---
+
+## Schema Validation Testing
 
 Ensure every response parses into your Pydantic model:
 
@@ -170,7 +165,9 @@ def test_schema_validity(raw_content: str) -> dict:
         return {"valid": False, "error": str(e)}
 ```
 
-### Drift Detection
+---
+
+## Drift Detection
 
 When you change the system prompt, compare results against a baseline:
 
@@ -191,7 +188,7 @@ def detect_drift(baseline: list[dict], current: list[dict]) -> list[dict]:
 
 ---
 
-## Demo Walkthrough
+# See It In Action
 
 Here's the complete test harness. Create `test_harness.py`:
 
@@ -380,7 +377,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### Expected Output
+## Expected Output
 
 ```
 📊 ACCURACY TESTS
@@ -411,13 +408,32 @@ asyncio.run(main())
 
 <!-- TODO: Add screenshot to ./08-evaluation-testing/images/test-harness-output.png — A terminal screenshot (dark theme) showing the full test harness output: accuracy section with checkmarks/warnings, percentage scores, then consistency section with repeated run results. Show a mix of passing and near-miss results to make it realistic. -->
 
+<details>
+<summary>🎬 See it in action!</summary>
+
+![Test Harness Demo](./images/test-harness-demo.gif)
+
+<!-- TODO: Add GIF to ./08-evaluation-testing/images/test-harness-demo.gif — A terminal recording showing: (1) python test_harness.py command, (2) accuracy test output with checkmarks, (3) consistency test output showing repeated runs. -->
+
+*Demo output varies. Your results will differ from what's shown here.*
+
+</details>
+
 ---
 
-## Practice: Improving Your Test Suite
+# Practice
 
-### 1. Add Boundary Test Cases
+<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
 
-Create test issues that fall between difficulty levels:
+Time to put what you've learned into action.
+
+---
+
+## ▶️ Try It Yourself
+
+After completing the demos above, try these experiments:
+
+1. **Add Boundary Test Cases** — Create test issues that fall between difficulty levels:
 
 ```python
 {
@@ -428,9 +444,7 @@ Create test issues that fall between difficulty levels:
 }
 ```
 
-### 2. Test Concept Extraction Quality
-
-Check that extracted concepts are meaningful:
+2. **Test Concept Extraction Quality** — Check that extracted concepts are meaningful:
 
 ```python
 def validate_concepts(review: IssueReview) -> bool:
@@ -439,9 +453,7 @@ def validate_concepts(review: IssueReview) -> bool:
     return not any(c.lower() in vague_terms for c in review.concepts_required)
 ```
 
-### 3. Build a Regression Suite
-
-Save baseline results to a JSON file and compare against them whenever you change the prompt:
+3. **Build a Regression Suite** — Save baseline results to a JSON file and compare against them whenever you change the prompt:
 
 ```python
 def save_baseline(results: list[dict], path: str = "baseline.json"):
@@ -455,38 +467,98 @@ def load_baseline(path: str = "baseline.json") -> list[dict]:
 
 ---
 
-## Knowledge Check ✅
+## 📝 Assignment
 
-1. **What is a golden test case?**
-   - a) A test that always passes
-   - b) An issue with a known expected output for comparison
-   - c) A test using the most expensive model
-   - d) A test that runs only once
+### Main Challenge: Build Your Complete Evaluation Suite
 
-2. **Why is consistency testing important for AI models?**
-   - a) To make the model faster
-   - b) Because models are deterministic and should always match
-   - c) Because models are non-deterministic and the same input may produce different outputs
-   - d) To reduce API costs
+Extend the test harness from this chapter to create a production-ready evaluation suite:
 
-3. **What does drift detection measure?**
-   - a) How fast the model responds
-   - b) Whether results change when the system prompt is modified
-   - c) How many tokens the model uses
-   - d) Whether the API is available
+1. Add at least 3 more golden test cases covering edge cases
+2. Implement concept validation that flags vague terms
+3. Create a baseline file and implement drift detection
+4. Run your full suite and document the accuracy percentages
+
+**Success criteria**: Your test suite runs end-to-end and produces a clear report showing accuracy, consistency, and any drift from baseline.
 
 <details>
-<summary>Answers</summary>
+<summary>💡 Hints</summary>
 
-1. **b** — A golden test case has a known expected output that you compare against the model's actual output.
-2. **c** — AI models are non-deterministic. Consistency testing reveals whether the model gives stable answers.
-3. **b** — Drift detection compares current results to a baseline to find regressions caused by prompt changes.
+**Good boundary test cases:**
+- An issue that's borderline Junior/Mid (simple feature addition)
+- An issue that's borderline Senior/Senior+ (complex but contained)
+- An issue with ambiguous scope
+
+**Common issues:**
+- Forgetting to handle `None` results from failed parsing
+- Not accounting for natural model variance (use ±1 tolerance)
+- Running too few consistency tests (3 is minimum, 5 is better)
 
 </details>
 
 ---
 
-## Capstone Progress 🏗️
+<details>
+<summary>🔧 Common Mistakes & Troubleshooting</summary>
+
+| Mistake | What Happens | Fix |
+|---------|--------------|-----|
+| Too few golden tests | Can't detect regressions | Start with 5-10 covering extremes |
+| Expecting exact matches | Too many false failures | Use ±1 tolerance for scores |
+| Not running consistency tests | Miss flaky behavior | Run each test 3+ times |
+| Manual baseline management | Baselines get stale | Automate baseline save/load |
+
+### Troubleshooting
+
+**"All my consistency tests fail"** — The model may be too variable. Try lowering temperature or making your rubric more explicit.
+
+**"Accuracy is great but consistency is poor"** — Your rubric may have ambiguous boundaries. Add clearer criteria for edge cases.
+
+**"Results changed after I modified the prompt"** — That's drift detection working! Compare against baseline to see if the change is an improvement or regression.
+
+---
+
+### 🧠 Knowledge Check
+
+<details>
+<summary>1. What is a golden test case?</summary>
+
+**b) An issue with a known expected output for comparison** — A golden test case has a known expected output that you compare against the model's actual output.
+
+</details>
+
+<details>
+<summary>2. Why is consistency testing important for AI models?</summary>
+
+**c) Because models are non-deterministic and the same input may produce different outputs** — AI models are non-deterministic. Consistency testing reveals whether the model gives stable answers.
+
+</details>
+
+<details>
+<summary>3. What does drift detection measure?</summary>
+
+**b) Whether results change when the system prompt is modified** — Drift detection compares current results to a baseline to find regressions caused by prompt changes.
+
+</details>
+
+</details>
+
+---
+
+# Summary
+
+## 🔑 Key Takeaways
+
+1. **Golden test cases are your ground truth** — create hand-labeled examples covering the extremes and boundaries of your classification
+2. **Accuracy measures correctness** — compare model output against expected values, allowing for reasonable tolerance
+3. **Consistency measures stability** — run the same input multiple times to detect flaky behavior
+4. **Drift detection catches regressions** — save baselines and compare after every prompt change
+5. **Schema validation is table stakes** — every response should parse into your Pydantic model
+
+> 📚 **Glossary**: New to terms like "golden test" or "drift detection"? See the [Glossary](../GLOSSARY.md) for definitions.
+
+---
+
+## 🏗️ Capstone Progress
 
 Your Issue Reviewer now has a test harness!
 
@@ -503,13 +575,22 @@ Your Issue Reviewer now has a test harness!
 | **8** | **Evaluation & testing** | **✅ New!** |
 | 9 | Production hardening & GitHub integration | ⬜ |
 
-## Next Step
+## ➡️ What's Next
 
-In [Chapter 9 — Production Hardening & GitHub Integration](../09-production-hardening/README.md), you'll connect your reviewer to the GitHub API, post comments automatically, and add logging, error handling, and retries.
+You've built a comprehensive evaluation harness. In **[Chapter 09: Production Hardening & GitHub Integration](../09-production-hardening/README.md)**, you'll learn:
+
+- How to connect your reviewer to the GitHub API
+- Post comments on issues automatically
+- Add logging, error handling, and retries
+- Deploy your Issue Reviewer to production
 
 ---
 
-## Additional Resources
+## 📚 Additional Resources
 
-- [Evaluating LLM outputs (OpenAI guide)](https://platform.openai.com/docs/guides/evals)
-- [pytest documentation](https://docs.pytest.org/)
+- 📚 [Evaluating LLM outputs (OpenAI guide)](https://platform.openai.com/docs/guides/evals)
+- 📚 [pytest documentation](https://docs.pytest.org/)
+
+---
+
+**[← Back to Chapter 07](../07-safety-guardrails/README.md)** | **[Continue to Chapter 09 →](../09-production-hardening/README.md)**
