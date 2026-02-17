@@ -22,6 +22,25 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: Forms vs. Letters
+
+Imagine you ask 10 people to describe a car accident. If you say *"Tell me what happened,"* you'll get 10 wildly different stories — different lengths, different details, different formats.
+
+But if you hand them **a form** — with fields for date, location, vehicles involved, injuries, and a description — you'll get 10 responses you can actually compare, file, and process.
+
+| Approach | AI Equivalent | Result |
+|---|---|---|
+| "Tell me what happened" | Free-form prompt | Unpredictable text you have to parse |
+| Hand them a form | Structured output with a schema | Consistent, machine-readable data |
+
+That's exactly what structured output does. Instead of hoping the model returns data in a useful format, you give it a **form** (a Pydantic schema) that defines exactly what fields to fill in. The model can still be creative in *what* it says, but the *shape* of the answer is guaranteed.
+
+![Real-world analogy illustration — a messy handwritten letter on the left vs. a clean structured form on the right](./images/analogy-forms-letters.png)
+
+<!-- TODO: Add analogy image to ./01-structured-output/images/analogy-forms-letters.png — A split illustration: left side shows a messy handwritten letter with text going in all directions; right side shows a clean, organized form with labeled fields being filled in neatly. An arrow labeled "Schema" connects them. Same art style as course. -->
+
+---
+
 ## Introduction
 
 In Chapter 0, you asked the model to summarize an issue and got back free-form text. That works great for humans reading the output — but what if you want to use the data programmatically?

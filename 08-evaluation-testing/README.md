@@ -24,6 +24,27 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: Quality Control on a Factory Line
+
+Imagine a factory that makes phone cases. Every case comes off the line looking slightly different — small variations are normal. But how does the factory know whether quality is **acceptable**?
+
+They use a **reference sample** — a "golden" case that represents perfect quality. Then they systematically test:
+
+| QC Check | Evaluation Equivalent | What It Measures |
+|---|---|---|
+| Compare to the golden sample | **Golden test cases** | Is the output close to the expected answer? |
+| Measure 10 cases from the same batch | **Consistency testing** | Does the same input produce similar outputs every time? |
+| Check that every case has a lid, buttons, ports | **Schema validation** | Does the output have all required fields? |
+| Compare this month's batch to last month | **Drift detection** | Has quality changed after a process update? |
+
+You wouldn't ship phone cases without QC, and you shouldn't ship an AI agent without evaluation. The tricky part with AI is that *some* variation is expected (unlike factory widgets), so your tests need to allow for it — checking that scores are *close enough*, not pixel-perfect.
+
+![Real-world analogy illustration — a factory quality control line comparing products against a golden sample](./images/analogy-quality-control.png)
+
+<!-- TODO: Add analogy image to ./08-evaluation-testing/images/analogy-quality-control.png — An illustration showing a factory conveyor belt with products rolling past a QC station. A "golden sample" sits on a pedestal, and a QC inspector compares each product against it, marking some ✅ and some ❌. A dashboard shows accuracy % and consistency scores. Same art style as course. -->
+
+---
+
 ## Introduction
 
 You've built a powerful Issue Reviewer with structured output, tool calling, mentoring, and safety guardrails. But how do you know it's **working correctly**?

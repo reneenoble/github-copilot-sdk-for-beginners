@@ -22,6 +22,26 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: Giving the New Hire Building Access
+
+Remember the employee you trained in Chapter 2? So far, they've been grading essays by reading only the cover sheet you hand them. If a student's essay says *"See appendix B for supporting data,"* your employee has to shrug — they can't go look at it.
+
+Now imagine you give them a **key card** to the building's file room. When they encounter a reference, they can walk over, pull the file, read it, and come back with a much better analysis.
+
+| Without Tools | With Tools |
+|---|---|
+| "The issue mentions `login.py` but I can't see it" | Agent reads `login.py` and includes the code in its analysis |
+| Guesses based on the issue description alone | Makes informed judgments based on actual source code |
+| Limited to what's in the prompt | Can go find what it needs |
+
+That's exactly what tools do. The `@define_tool` decorator is the key card — it gives the agent permission and ability to access specific resources. The agent decides *when* to use the tool (like the employee deciding when to visit the file room) and the SDK handles the back-and-forth.
+
+![Real-world analogy illustration — an employee with a key card walking to a file room to look something up](./images/analogy-building-access.png)
+
+<!-- TODO: Add analogy image to ./03-tool-calling/images/analogy-building-access.png — An illustration showing an employee at a desk, then using a key card to enter a file room, retrieving a folder, and returning to their desk with the information. An arrow labeled "@define_tool" points at the key card. Same art style as course. -->
+
+---
+
 ## Introduction
 
 So far, your Issue Reviewer can analyze issue text that you paste into the prompt. But in the real world, issues often reference files:

@@ -22,6 +22,29 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: Training a New Employee
+
+Imagine you've just hired someone to grade student essays. On day one, you say: *"Read each essay and give it a grade."*
+
+They come back with wildly inconsistent results — an A for a mediocre essay, a C for a great one. Not because they're incompetent, but because you never told them **what a good essay looks like**.
+
+Now imagine instead you give them:
+
+| What You Provide | Prompt Engineering Term | What It Does |
+|---|---|---|
+| A scoring rubric | **System prompt with rubric** | Defines what each grade means |
+| Three graded example essays | **Few-shot examples** | Shows the expected standard |
+| "Only use grades A through F" | **Constrained values** | Prevents invented grades like "A++++" |
+| "If unsure, grade conservatively" | **Tiebreaker rules** | Handles edge cases consistently |
+
+With clear instructions and examples, the new hire produces grades you can trust. That's exactly what prompt engineering does for an AI model — same capability, dramatically better results through better instructions.
+
+![Real-world analogy illustration — a manager handing a rubric and example essays to a new employee](./images/analogy-training-employee.png)
+
+<!-- TODO: Add analogy image to ./02-prompt-engineering/images/analogy-training-employee.png — An illustration showing a manager at a whiteboard with a rubric chart, handing a stack of example essays to a new employee at a desk. The employee's thought bubble shows organized criteria. Same art style as course. -->
+
+---
+
 ## Introduction
 
 In Chapter 1, you got the model to return structured JSON. But if you run the same issue through your analyzer multiple times, you might get different difficulty scores each time — a 3 on one run, a 4 on the next.

@@ -24,6 +24,28 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: Airport Security
+
+An airport doesn't rely on a single check to keep passengers safe. It uses **multiple layers of defense**, each catching different threats:
+
+| Airport Layer | Agent Guardrail | What It Catches |
+|---|---|---|
+| Ticket check at the door | **Hardened system prompt** | Rejects obviously bad instructions up front |
+| Baggage X-ray scanner | **`on_pre_tool_use` hook** | Inspects tool arguments before they're executed |
+| Metal detector | **Input validation** | Catches specific dangerous patterns (path traversal, sensitive files) |
+| Air marshal on the plane | **Output validation** | Monitors what comes out, strips suspicious content |
+| Flight time limits | **Iteration caps** | Prevents infinite loops that waste resources |
+
+No single layer is perfect, but **together** they make attacks extremely difficult. A prompt injection might slip past the system prompt, but the pre-tool hook catches the suspicious file path. An attacker might craft an allowed tool call, but output validation strips leaked secrets from the response.
+
+This is called **defense in depth**, and it's exactly what you'll build in this chapter — multiple independent guardrails, each backstopping the others.
+
+![Real-world analogy illustration — passengers going through multiple security checkpoints at an airport](./images/analogy-airport-security.png)
+
+<!-- TODO: Add analogy image to ./07-safety-guardrails/images/analogy-airport-security.png — An illustration showing passengers (labeled as "inputs") passing through successive airport checkpoints: ticket check, bag scanner, metal detector, with a guard at the end checking the boarding pass ("output validation"). Some suspicious items are caught at each stage. Same art style as course. -->
+
+---
+
 ## Introduction
 
 Everything you've built so far assumes the input is well-intentioned. But in the real world, your agent will process GitHub issues written by anyone — including attackers.

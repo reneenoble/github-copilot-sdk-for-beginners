@@ -25,6 +25,26 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: Opening a Restaurant vs. Cooking at Home
+
+You've been cooking great meals at home for months. Your friends love the food. Now you want to open a restaurant. Same recipes, same skills — but suddenly you need a whole new layer of concerns:
+
+| Cooking at Home | Opening a Restaurant | Production Hardening |
+|---|---|---|
+| Ingredients from your fridge | Supplier deliveries, inventory management | **GitHub API integration** — fetch real issues instead of hardcoded text |
+| Serve on any plate | Professional plating, consistent presentation | **Formatted Markdown comments** — structured, branded output |
+| Adjust seasoning by taste | Standardized recipes and portions | **Environment config** — settings from env vars, not hardcoded |
+| No receipts needed | Transaction records for every order | **Structured logging** — record every step for observability |
+| If something burns, start over | Can't close the kitchen for every mistake | **Retry logic** — handle transient failures gracefully |
+
+The food itself didn't change. What changed is everything *around* it — the infrastructure that makes it reliable, observable, and ready for real customers. That's exactly what production hardening is: taking something that works on your laptop and making it work in the real world.
+
+![Real-world analogy illustration — a cozy home kitchen on the left vs. a professional restaurant kitchen on the right](./images/analogy-restaurant.png)
+
+<!-- TODO: Add analogy image to ./09-production-hardening/images/analogy-restaurant.png — A split illustration: left side shows a developer happily cooking in a cozy home kitchen ("works on my machine"); right side shows a professional restaurant kitchen with order tickets, logging screens, fire suppression systems, and delivery trucks ("production"). Same art style as course. -->
+
+---
+
 ## Introduction
 
 Congratulations — you've built an AI-powered Issue Reviewer that can classify issues, extract concepts, provide mentoring, defend against attacks, and pass evaluation tests. Now it's time to **ship it**.

@@ -23,6 +23,28 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: The Research Librarian
+
+Imagine you walk into a library and ask: *"What does this 19th-century novel say about industrialization?"*
+
+A bad librarian hands you the **entire book** — all 800 pages. *"It's in there somewhere."*
+
+A good librarian checks the **index**, finds the three most relevant chapters, pulls those sections, and hands you just the pages you need. Same information, but delivered in a usable way.
+
+| Bad Librarian (Full File) | Good Librarian (RAG) |
+|---|---|
+| Hands you the whole book | Finds the relevant pages |
+| You run out of reading time | You get exactly what you need |
+| Ignores that you can only read so fast | Respects your limited attention (context window) |
+
+RAG works the same way. Your agent's context window is like a reader's limited attention span — there's a maximum amount it can process at once. Instead of stuffing the entire codebase into the prompt and hoping for the best, RAG acts as a **research librarian**: it indexes the codebase, searches for the most relevant pieces, and retrieves just those chunks for the agent to analyze.
+
+![Real-world analogy illustration — a librarian using an index to find relevant pages instead of handing over the whole book](./images/analogy-librarian.png)
+
+<!-- TODO: Add analogy image to ./06-scaling-rag/images/analogy-librarian.png — A split illustration: left side shows a person overwhelmed by a giant book (labeled "Full file → context overflow"); right side shows a librarian at a card catalog, pulling just a few pages and handing them to a happy reader (labeled "RAG → relevant chunks"). Same art style as course. -->
+
+---
+
 ## Introduction
 
 Your Issue Reviewer uses the `get_file_contents` tool to read files. That works great for small files — but what happens when a file is 5,000 lines long? Or when the issue references 10 files?

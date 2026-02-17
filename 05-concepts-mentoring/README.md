@@ -22,6 +22,30 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: The Adaptive Tutor
+
+Think about a great tutor — not one who gives every student the same lecture, but one who **adjusts to the learner**.
+
+A first-year student asking about recursion gets: *"Think of Russian nesting dolls — each doll opens to reveal a smaller one, just like each function call opens a smaller version of the same problem."*
+
+A graduate student asking about recursion gets: *"Consider the trade-offs between tail-recursive and continuation-passing styles in terms of stack frame allocation."*
+
+Same topic. Completely different depth, vocabulary, and approach.
+
+| Student Level | Tutor Behavior | Issue Reviewer Equivalent |
+|---|---|---|
+| First-year | Simple analogies, encouraging tone | Score 1-2: step-by-step guidance, beginner resources |
+| Mid-level | Technical detail, some assumptions | Score 3: specific approach suggestions, relevant patterns |
+| Graduate | Dense, precise, assumptions about background | Score 4-5: architecture considerations, trade-off analysis |
+
+That's what conditional mentoring does. Your reviewer already knows the difficulty score — now it uses that score to adjust its advice, just like a tutor who checks the student's level before choosing how to explain.
+
+![Real-world analogy illustration — a tutor adjusting their teaching style for different students](./images/analogy-adaptive-tutor.png)
+
+<!-- TODO: Add analogy image to ./05-concepts-mentoring/images/analogy-adaptive-tutor.png — An illustration showing one tutor at a whiteboard, with three students at different levels: a beginner getting simple diagrams, a mid-level student getting code examples, and an advanced student getting architecture diagrams. The tutor's speech bubbles adjust in complexity. Same art style as course. -->
+
+---
+
 ## Introduction
 
 Your Issue Reviewer can already classify issues by difficulty and read referenced files. But a number alone isn't very helpful to a developer wondering *"Can I tackle this?"*

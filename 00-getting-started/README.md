@@ -23,6 +23,25 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: Calling a Help Desk
+
+Using the Copilot SDK is like calling a company's help desk:
+
+| Help Desk | Copilot SDK | What It Does |
+|---|---|---|
+| Dial the phone number | `CopilotClient()` | Connects you to the service |
+| Get connected to an agent | `client.create_session(...)` | Opens a conversation with context and rules |
+| Ask your question | `session.send_and_wait(...)` | Sends a message and waits for a response |
+| Hang up when done | `await client.stop()` | Closes the connection cleanly |
+
+You wouldn't call a help desk and immediately start talking without being connected to someone first. Similarly, the SDK requires you to create a **client** (connect), start a **session** (get an agent), and then exchange **messages**. This "client → session → message" flow is the backbone of everything you'll build in this course.
+
+![Real-world analogy illustration — a developer on a phone being connected through a switchboard to an AI agent](./images/analogy-help-desk.png)
+
+<!-- TODO: Add analogy image to ./00-getting-started/images/analogy-help-desk.png — An illustration showing a developer on a phone (left), connected through a switchboard (middle, labeled "Client → Session"), to a friendly AI agent at a desk (right, labeled "Message exchange"). Clean, warm style matching course art. -->
+
+---
+
 ## Introduction
 
 Imagine you're a developer who reviews dozens of GitHub issues every day. Some are simple bug fixes, others require deep system knowledge. Wouldn't it be great if an AI assistant could read each issue, understand the codebase, and give you a structured analysis — automatically?

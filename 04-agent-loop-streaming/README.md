@@ -23,6 +23,26 @@ After this lesson, you will be able to:
 
 ---
 
+## 🧩 Real-World Analogy: The Open Kitchen
+
+Imagine two restaurants. At the first, you order and then stare at a blank wall for 20 minutes until a plate appears. At the second, there's an **open kitchen** — you can see the chef selecting ingredients, firing the grill, plating the dish. The food takes the same time, but the experience is completely different.
+
+| Closed Kitchen (send_and_wait) | Open Kitchen (Streaming) |
+|---|---|
+| You wait in silence | You see each step as it happens |
+| You wonder if something went wrong | You know exactly what's being prepared |
+| You get the final dish all at once | You see ingredients, cooking, plating — then the dish |
+
+Streaming turns your agent from a closed kitchen into an open one. The model is doing the same work either way — reasoning, calling tools, building a response — but with streaming, your user can watch each step unfold in real time.
+
+The **agent loop** is the chef's process: read the order (prompt), decide what's needed (reasoning), grab an ingredient (tool call), check the result, decide if more is needed, and finally plate the dish (final response). Streaming lets you narrate that entire process to the user.
+
+![Real-world analogy illustration — a split showing a closed kitchen with a waiting customer vs. an open kitchen where the customer watches the chef work](./images/analogy-open-kitchen.png)
+
+<!-- TODO: Add analogy image to ./04-agent-loop-streaming/images/analogy-open-kitchen.png — A split illustration: left side shows a frustrated diner staring at a blank wall (labeled "send_and_wait"); right side shows a happy diner watching a chef through an open kitchen window with live progress (labeled "Streaming"). Steps in the kitchen are labeled: "Read order → Select ingredients → Cook → Plate". Same art style as course. -->
+
+---
+
 ## Introduction
 
 In the previous chapter, you added tools to your agent. When you called `send_and_wait`, the SDK silently ran the entire reasoning loop — thinking, calling tools, processing results — and only gave you the final answer. That works, but from the user's perspective the app freezes while thinking.
