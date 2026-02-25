@@ -235,6 +235,33 @@ async def main():
 asyncio.run(main())
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a Python script using the GitHub Copilot SDK that compares classification
+consistency between a vague prompt and a rubric-based prompt. It should:
+1. Define an IssueAnalysis Pydantic model with summary, difficulty_score (1-5),
+   and recommended_level
+2. Create a VAGUE_PROMPT that just says "analyze issues and return JSON"
+3. Create a RUBRIC_PROMPT with:
+   - A detailed 5-level difficulty scoring rubric (Junior through Senior+)
+   - Required JSON output format
+   - Rules for mapping scores to levels
+   - Two few-shot examples (easy typo fix and hard rate limiting task)
+4. Define a TEST_ISSUE about adding pagination to a users API endpoint
+5. Run the same issue 3 times with the vague prompt, printing scores each time
+6. Run the same issue 3 times with the rubric prompt, printing scores each time
+7. Compare consistency between the two approaches
+
+Use CopilotClient with separate sessions for each run. Use "mode": "replace"
+for system messages.
+```
+
+</details>
+
 ![Terminal output showing inconsistent scores with vague prompt vs. consistent scores with rubric](./images/consistency-comparison.png)
 
 <!-- TODO: Add screenshot to ./02-prompt-engineering/images/consistency-comparison.png — Terminal output showing: "VAGUE PROMPT" with scores varying (3, 4, 3) and levels varying (Mid, Senior, Mid), then "RUBRIC PROMPT" with consistent scores (3, 3, 3) and levels (Mid, Mid, Mid). -->
@@ -360,6 +387,27 @@ Issue: "Fix typo in README"
 
 ---
 
+## 🧠 Knowledge Check
+
+Test your understanding:
+
+1. **What do few-shot examples accomplish in a system prompt?**
+   - a) They make the model run faster
+   - b) They show the model what correct output looks like so it calibrates its responses ✅
+   - c) They replace the need for a rubric
+
+2. **Where should the rubric appear in your system prompt for maximum effect?**
+   - a) At the very end
+   - b) In a separate user message
+   - c) Early in the prompt, where the model pays the most attention ✅
+
+3. **What problem does constraining output values (e.g., "ONLY use: Junior, Mid, Senior") prevent?**
+   - a) Token overflow
+   - b) The model inventing its own labels, causing inconsistent classifications ✅
+   - c) Pydantic validation errors
+
+---
+
 # Summary
 
 ## 🔑 Key Takeaways
@@ -402,6 +450,10 @@ You'll upgrade your Issue Reviewer to fetch and analyze referenced files automat
 ---
 
 ## Additional Resources
+
+> 📚 **Official Documentation**: [GitHub Copilot SDK](https://github.com/github/copilot-sdk) — full API reference and guides
+>
+> 📋 **Quick Reference**: [Python SDK README](https://github.com/github/copilot-sdk/blob/main/python/README.md) — setup, configuration, and examples
 
 - 📚 [Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering)
 - 📚 [Copilot SDK — System Message Customization](https://github.com/github/copilot-sdk/blob/main/python/README.md#system-message-customization)

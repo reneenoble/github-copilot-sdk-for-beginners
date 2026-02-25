@@ -36,11 +36,11 @@ Using the Copilot SDK is like calling a company's help desk:
 | Help Desk | Copilot SDK | What It Does |
 |---|---|---|
 | Dial the phone number | `CopilotClient()` | Connects you to the service |
-| Get connected to an agent | `client.create_session(...)` | Opens a conversation with context and rules |
+| Press call and wait for someone to answer | `client.create_session(...)` | Opens a conversation with context and rules |
 | Ask your question | `session.send_and_wait(...)` | Sends a message and waits for a response |
 | Hang up when done | `await client.stop()` | Closes the connection cleanly |
 
-You wouldn't call a help desk and immediately start talking without being connected to someone first. Similarly, the SDK requires you to create a **client** (connect), start a **session** (get an agent), and then exchange **messages**. This "client → session → message" flow is the backbone of everything you'll build in this course.
+You wouldn't call a help desk and immediately start talking without being connected to someone first. Similarly, the SDK requires you to create a **client** (connect), start a **session** (ring and have someone answers the phone), and then exchange **messages**. This "client → session → message" flow is the backbone of everything you'll build in this course.
 
 ![Real-world analogy illustration — a developer on a phone being connected through a switchboard to an AI agent](./images/analogy-help-desk.png)
 
@@ -58,7 +58,7 @@ Imagine you're a developer who reviews dozens of GitHub issues every day. Some a
 
 That's exactly what you'll build in this course, using the **GitHub Copilot SDK**.
 
-The GitHub Copilot SDK lets you embed Copilot's agentic workflows directly into your applications. Instead of just chatting with an AI, you can give it **tools**, **instructions**, and **structure** — turning it into a programmable agent that plans, reasons, and takes actions.
+The GitHub Copilot SDK lets you embed Copilot's agentic workflows directly into your own applications. Instead of just chatting with an AI, you can create custom workflows, apps, and APIs with specified **tools**, **instructions**, and **structure**. This allows you to bring the automation that you access through Copilot tools, but bring it in the form of a programmable agent that can leverage provided tools and complete actions in your own tools and systems.
 
 In this first chapter, you'll install the SDK, send your first prompt, and see a response come back. It's that simple to get started.
 
@@ -66,17 +66,15 @@ In this first chapter, you'll install the SDK, send your first prompt, and see a
 
 ## What Is the GitHub Copilot SDK?
 
-The **GitHub Copilot SDK** is a programmable interface to the same engine behind the Copilot CLI. It exposes a production-tested agent runtime you can invoke from Python (also available in TypeScript, Go, and .NET).
+The **GitHub Copilot SDK** is a Python library (also available in TypeScript, Go, and .NET) that lets you build AI agents in code. It connects to the same engine that powers the Copilot CLI, so you can send prompts, define tools, and get structured responses — all from a regular Python script. You could use it to build things like code review bots, issue triagers, documentation generators, or test writers.
+
+Key abilities: structured output, tool calling, an automatic agent loop (think → call tool → read result → respond), streaming, and session hooks for safety.
 
 ![Diagram showing the SDK architecture: Your Python App → SDK Client → JSON-RPC → Copilot CLI (server mode)](./images/sdk-architecture.png)
 
 <!-- TODO: Add diagram to ./00-getting-started/images/sdk-architecture.png — Architecture diagram showing: "Your Python App" → "CopilotClient (SDK)" → "JSON-RPC" → "Copilot CLI (server mode)" → "LLM". Use clean boxes and arrows. -->
 
-Key things to know:
-
-- The SDK communicates with the Copilot CLI via **JSON-RPC**.
-- The SDK manages the CLI process lifecycle automatically.
-- You authenticate through your GitHub account or a token.
+Under the hood, the SDK communicates with the Copilot CLI via **JSON-RPC** and manages the CLI process lifecycle automatically. You authenticate through your GitHub account or a token.
 
 ---
 
@@ -178,6 +176,28 @@ async def main():
 asyncio.run(main())
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a minimal Python script called hello_agent.py that uses the GitHub Copilot SDK.
+It should:
+1. Import asyncio and CopilotClient from copilot
+2. Create an async main function
+3. Create a CopilotClient and start it
+4. Create a session with the gpt-4.1 model
+5. Send "What is 2 + 2?" and wait for a response
+6. Print the response content
+7. Clean up by destroying the session and stopping the client
+8. Run with asyncio.run(main())
+
+Add comments explaining each step.
+```
+
+</details>
+
 Run it:
 
 ```bash
@@ -251,6 +271,26 @@ async def main():
 
 asyncio.run(main())
 ```
+
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a Python script using the GitHub Copilot SDK that summarizes a GitHub issue.
+It should:
+1. Define a SAMPLE_ISSUE string containing a multi-line GitHub issue about a
+   login page crash on mobile Safari (include title, description, and repro steps)
+2. Create a CopilotClient, start it, and create a session with gpt-4.1
+3. Send the issue to the model asking for a 2-3 sentence summary
+4. Print "Issue Summary:" followed by the response
+5. Clean up the session and client
+
+Use async/await with asyncio.run(main()).
+```
+
+</details>
 
 ![Screenshot of terminal output showing the issue summary response](./images/terminal-output.png)
 
@@ -368,6 +408,27 @@ asyncio.run(main())
 
 ---
 
+## 🧠 Knowledge Check
+
+Test your understanding:
+
+1. **What is the correct order of steps when using the SDK?**
+   - a) Create a session, then create a client, then send a message
+   - b) Create a client, create a session, then send a message ✅
+   - c) Send a message, then create a client and session
+
+2. **Why must you call `await client.stop()` at the end of your script?**
+   - a) To save the conversation history
+   - b) To shut down the background Copilot process cleanly ✅
+   - c) To submit the response to GitHub
+
+3. **What does `create_session()` do?**
+   - a) Authenticates with GitHub
+   - b) Opens a conversation context with a system prompt and model configuration ✅
+   - c) Installs the SDK dependencies
+
+---
+
 # Summary
 
 ## 🔑 Key Takeaways
@@ -411,8 +472,10 @@ You'll upgrade your Issue Reviewer to return structured data instead of prose �
 
 ## Additional Resources
 
-- 📚 [GitHub Copilot SDK Repository](https://github.com/github/copilot-sdk)
-- 📚 [Python SDK Reference](https://github.com/github/copilot-sdk/blob/main/python/README.md)
+> 📚 **Official Documentation**: [GitHub Copilot SDK](https://github.com/github/copilot-sdk) — full API reference and guides
+>
+> 📋 **Quick Reference**: [Python SDK README](https://github.com/github/copilot-sdk/blob/main/python/README.md) — setup, configuration, and examples
+
 - 📚 [Getting Started Guide](https://github.com/github/copilot-sdk/blob/main/docs/getting-started.md)
 - 📚 [Copilot CLI Installation](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)
 

@@ -261,6 +261,30 @@ Respond in plain text with clear sections:
 asyncio.run(main())
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a Python script called streaming_agent.py using the GitHub Copilot SDK
+that shows real-time streaming output. It should:
+1. Define a get_file_contents tool with @define_tool that reads files from a
+   local repo (with path traversal protection and 10K char limit)
+2. Create a session with streaming: True enabled
+3. Register four event listeners:
+   - on_delta: prints each text chunk as it arrives (use end="", flush=True)
+   - on_message: prints "Response complete" when done
+   - on_tool_start: prints which tool is being called with a wrench emoji
+   - on_tool_complete: prints when the tool finishes with a checkmark
+4. Send a test issue about token expiry validation that references specific files
+5. Print a header "Sending issue for review..." before sending
+
+Use async/await with CopilotClient.
+```
+
+</details>
+
 ## Running the Demo
 
 ```bash
@@ -307,6 +331,18 @@ def on_idle(event):
 
 session.on("session.idle", on_idle)
 ```
+
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a session.idle event handler for the GitHub Copilot SDK that prints
+a completion message when all processing is done. Register it with session.on().
+```
+
+</details>
 
 This is useful when you need to perform cleanup or trigger downstream actions after the agent finishes.
 
@@ -355,6 +391,29 @@ Usage:
 status = StatusReporter()
 status.register(session)
 ```
+
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a StatusReporter class for the GitHub Copilot SDK that tracks agent
+progress. It should have:
+1. __init__: record start time and initialize a tool call counter
+2. elapsed(): returns formatted elapsed time string like "1.5s"
+3. on_tool_start(event): increments counter, prints tool number and name with timestamp
+4. on_tool_complete(event): prints completion with timestamp
+5. on_delta(event): prints streaming text chunks (end="", flush=True)
+6. on_complete(event): prints total time and tool call count
+7. register(session): registers all handlers on the session using session.on()
+   for events: tool.execution_start, tool.execution_complete,
+   assistant.message_delta, assistant.message
+
+Use Python's time module for elapsed time tracking.
+```
+
+</details>
 
 ---
 
@@ -436,7 +495,19 @@ session = await client.create_session({
 | Forgetting `end=""` | Each chunk on new line | Use `print(chunk, end="", flush=True)` |
 | Not enabling streaming | No delta events fire | Add `"streaming": True` to session config |
 
-### Knowledge Check
+### Troubleshooting
+
+**"No streaming output appears"** — Make sure `"streaming": True` is in your session config and you've registered the `assistant.message_delta` handler.
+
+**"Text appears all at once"** — You're probably missing `flush=True` in your print statement. The output buffer needs to be flushed for real-time display.
+
+**"Tool events never fire"** — The agent might not need to call tools for simple issues. Try an issue that references specific files.
+
+</details>
+
+---
+
+## 🧠 Knowledge Check
 
 Test your understanding:
 
@@ -454,16 +525,6 @@ Test your understanding:
    - a) Set `streaming: False`
    - b) Don't register any event listeners
    - c) Include explicit limits in the system prompt ✅
-
-### Troubleshooting
-
-**"No streaming output appears"** — Make sure `"streaming": True` is in your session config and you've registered the `assistant.message_delta` handler.
-
-**"Text appears all at once"** — You're probably missing `flush=True` in your print statement. The output buffer needs to be flushed for real-time display.
-
-**"Tool events never fire"** — The agent might not need to call tools for simple issues. Try an issue that references specific files.
-
-</details>
 
 ---
 
@@ -510,6 +571,10 @@ You'll harden your Issue Reviewer to be production-safe.
 ---
 
 ## Additional Resources
+
+> 📚 **Official Documentation**: [GitHub Copilot SDK](https://github.com/github/copilot-sdk) — full API reference and guides
+>
+> 📋 **Quick Reference**: [Python SDK README](https://github.com/github/copilot-sdk/blob/main/python/README.md) — setup, configuration, and examples
 
 - 📚 [GitHub Copilot SDK — Python streaming documentation](https://github.com/nicolo-ribaudo/copilot-sdk/tree/main/packages/sdk-python)
 - 📚 [Event-driven patterns in asyncio](https://docs.python.org/3/library/asyncio.html)

@@ -145,6 +145,29 @@ async def get_file_contents(params: GetFileParams) -> str:
         return f"Error reading file: {e}"
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a file-reading tool for the GitHub Copilot SDK. It should:
+1. Define a GetFileParams Pydantic model with a file_path field (str)
+2. Use @define_tool decorator with a description about reading repository files
+3. The handler should:
+   - Read REPO_PATH from an environment variable (default ".")
+   - Join the repo root with the requested file path
+   - Add path traversal protection using os.path.realpath() to ensure the
+     resolved path stays within the repo root
+   - Return "Access denied" if the path escapes the repo
+   - Handle FileNotFoundError gracefully
+   - Return the file contents as a string
+
+Import os, and use copilot's define_tool and pydantic's BaseModel/Field.
+```
+
+</details>
+
 ---
 
 ## Using the Tool in a Session
@@ -199,6 +222,29 @@ async def main():
 asyncio.run(main())
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a Python script using the GitHub Copilot SDK that passes a file-reading
+tool to a session. It should:
+1. Create a SYSTEM_PROMPT telling the model it's a GitHub issue analyzer with
+   access to repository files, and to use get_file_contents when issues
+   reference specific files. Output should be JSON with summary, difficulty_score,
+   recommended_level, and files_analyzed fields.
+2. Define a test issue about an authentication bypass that references
+   src/auth/login.py and src/auth/tokens.py
+3. Create a session with the system prompt (mode: replace) and pass the
+   get_file_contents tool in the tools list
+4. Send the issue and print the response
+
+Use CopilotClient with async/await.
+```
+
+</details>
+
 ---
 
 ## Watching Tool Calls in Action
@@ -215,6 +261,22 @@ def on_event(event):
 
 session.on(on_event)
 ```
+
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create an event listener function for the GitHub Copilot SDK that logs tool calls.
+The function should:
+1. Check event.type.value for "tool.execution_start" and print the tool name
+   and arguments with a wrench emoji
+2. Check for "tool.execution_complete" and print a checkmark with the tool name
+3. Register it with session.on(on_event)
+```
+
+</details>
 
 ![GIF showing the terminal: model analyzes issue, calls get_file_contents for two files, then returns the analysis](./images/tool-calling-demo.gif)
 
@@ -330,6 +392,27 @@ if not full_path.startswith(os.path.realpath(repo_root)):
 
 ---
 
+## 🧠 Knowledge Check
+
+Test your understanding:
+
+1. **What are tools in the context of the Copilot SDK?**
+   - a) IDE plugins that help you write code
+   - b) Functions you define that the model can invoke to fetch data or perform actions ✅
+   - c) Built-in SDK commands for debugging
+
+2. **Who decides when to call a tool during a conversation?**
+   - a) You, the developer, by calling the tool explicitly
+   - b) The SDK framework, on a fixed schedule
+   - c) The model, based on whether the tool would help answer the query ✅
+
+3. **Why is path validation critical for a file-reading tool?**
+   - a) To make the tool run faster
+   - b) To prevent the model from reading sensitive files outside the allowed directory ✅
+   - c) To ensure the file exists before reading
+
+---
+
 # Summary
 
 ## 🔑 Key Takeaways
@@ -355,6 +438,8 @@ if not full_path.startswith(os.path.realpath(repo_root)):
 | 05 | Safety & guardrails | 🔲 |
 | 06 | Production & GitHub integration | 🔲 |
 
+> ✅ **Milestone: Working Prototype** — After completing this chapter, your Issue Reviewer can analyze issues, produce structured output, classify consistently, and read referenced files. You have a fully functional local prototype! The next three chapters focus on polish, safety, and production readiness.
+
 **Your task:** Add a `get_file_contents` tool so the Issue Reviewer can read referenced files.
 
 See [assignment.md](./assignment.md) for full instructions.
@@ -374,6 +459,10 @@ You'll upgrade your Issue Reviewer to provide real-time progress updates.
 ---
 
 ## 📚 Additional Resources
+
+> 📚 **Official Documentation**: [GitHub Copilot SDK](https://github.com/github/copilot-sdk) — full API reference and guides
+>
+> 📋 **Quick Reference**: [Python SDK README](https://github.com/github/copilot-sdk/blob/main/python/README.md) — setup, configuration, and examples
 
 - 📚 [Copilot SDK — Tools](https://github.com/github/copilot-sdk/blob/main/python/README.md#tools)
 - 📚 [Pydantic Models](https://docs.pydantic.dev/latest/concepts/models/)

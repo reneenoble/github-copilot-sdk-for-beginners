@@ -111,6 +111,25 @@ def chunk_by_lines(content: str, chunk_size: int = 50, overlap: int = 5) -> list
     return chunks
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a Python function called chunk_by_lines that splits text content into
+overlapping chunks for RAG. It should:
+1. Take content (str), chunk_size (int, default 50), and overlap (int, default 5)
+2. Split content by newlines
+3. Iterate with step size of (chunk_size - overlap) to create overlapping windows
+4. Return a list of dicts, each with: "content" (joined lines), "start_line"
+   (1-based), and "end_line"
+
+The overlap ensures functions split at boundaries appear in adjacent chunks.
+```
+
+</details>
+
 > 💡 **Tip**: Overlap between chunks ensures that a function split across chunk boundaries still appears (at least partially) in both chunks.
 
 ## Simple Embeddings with the SDK
@@ -143,6 +162,25 @@ def similarity(embed_a: Counter, embed_b: Counter) -> float:
     return dot_product / (mag_a * mag_b)
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create two Python functions for simple text similarity:
+1. simple_embed(text) — creates a bag-of-words embedding by extracting
+   lowercase identifier-style words (regex: \b[a-z_][a-z0-9_]*\b) and
+   returning a collections.Counter
+2. similarity(embed_a, embed_b) — computes cosine similarity between two
+   Counter objects: find common keys, compute dot product, divide by product
+   of magnitudes. Return 0.0 if no common words or zero magnitude.
+
+Import re and Counter from collections.
+```
+
+</details>
+
 For production systems, you'd use proper embedding models (e.g., via an embedding API), but this bag-of-words approach is enough to demonstrate the concept.
 
 ## Top-k Retrieval
@@ -164,6 +202,23 @@ def retrieve_top_k(query: str, chunks: list[dict], k: int = 3) -> list[dict]:
     return scored[:k]
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a function called retrieve_top_k that performs semantic search over
+code chunks. It should:
+1. Take a query string, list of chunk dicts, and k (default 3)
+2. Embed the query using simple_embed()
+3. Calculate similarity score for each chunk against the query
+4. Sort chunks by score in descending order
+5. Return the top k results (each dict extended with a "score" field)
+```
+
+</details>
+
 ## Building a RAG-Enhanced Tool
 
 Instead of returning the full file, your tool can now return only the relevant chunks:
@@ -183,6 +238,23 @@ class ChunkIndex:
     def search(self, query: str, k: int = 3) -> list[dict]:
         return retrieve_top_k(query, self.chunks, k)
 ```
+
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a ChunkIndex class for in-memory code search. It should have:
+1. __init__: initialize an empty chunks list
+2. add_file(file_path, content): split the content into chunks using
+   chunk_by_lines(), add "file_path" to each chunk dict, and append to
+   self.chunks
+3. search(query, k=3): call retrieve_top_k() with the query, all chunks,
+   and k to return the most relevant results
+```
+
+</details>
 
 ---
 
@@ -382,6 +454,41 @@ async def main():
 
 asyncio.run(main())
 ```
+
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a complete RAG-enhanced issue reviewer script called rag_reviewer.py
+using the GitHub Copilot SDK. It should include:
+
+1. Chunking functions: chunk_by_lines (50-line chunks, 5-line overlap)
+2. Embedding functions: simple_embed (bag-of-words with Counter) and
+   similarity (cosine similarity between Counters)
+3. A ChunkIndex class with add_file() and search() methods that prints
+   indexing progress
+4. A search_code tool using @define_tool that searches the index and
+   returns the top 3 relevant chunks formatted with file path, line numbers,
+   and relevance score
+5. An IssueReview Pydantic model with Literal type for recommended_level
+   and a chunks_used field
+6. A SYSTEM_PROMPT telling the model to use search_code instead of reading
+   full files
+7. A main function that:
+   - Walks REPO_PATH indexing .py/.js/.ts/.md files (skipping hidden dirs,
+     node_modules, __pycache__)
+   - Prints total chunks indexed
+   - Creates a streaming session with the search tool
+   - Registers tool start/complete event listeners
+   - Sends a test issue about token expiry validation
+   - Validates and displays the structured review
+
+Use async/await with CopilotClient and streaming: True.
+```
+
+</details>
 
 ---
 
@@ -617,6 +724,10 @@ In **[Chapter 07: Safety & Guardrails](../07-safety-guardrails/README.md)**, you
 ---
 
 ## Additional Resources
+
+> 📚 **Official Documentation**: [GitHub Copilot SDK](https://github.com/github/copilot-sdk) — full API reference and guides
+>
+> 📋 **Quick Reference**: [Python SDK README](https://github.com/github/copilot-sdk/blob/main/python/README.md) — setup, configuration, and examples
 
 - 📚 [RAG (Retrieval-Augmented Generation) explained](https://research.ibm.com/blog/retrieval-augmented-generation-RAG)
 - 📚 [Text embeddings guide](https://platform.openai.com/docs/guides/embeddings)

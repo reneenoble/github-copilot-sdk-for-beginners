@@ -93,6 +93,22 @@ class IssueAnalysis(BaseModel):
     recommended_level: str = Field(description="Junior, Mid, Senior, or Senior+")
 ```
 
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a Pydantic BaseModel called IssueAnalysis with these fields:
+- summary: str — one-sentence summary of the issue
+- difficulty_score: int — constrained between 1 and 5 (use ge/le)
+- recommended_level: str — one of Junior, Mid, Senior, or Senior+
+
+Use Field() with descriptions for each field.
+```
+
+</details>
+
 When the model returns JSON, you parse it with Pydantic:
 
 ```python
@@ -150,6 +166,24 @@ async def main():
 
 asyncio.run(main())
 ```
+
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a Python script using the GitHub Copilot SDK that demonstrates the problem
+with free-form AI responses. It should:
+1. Define a SAMPLE_ISSUE about database connection pool exhaustion
+2. Send it to gpt-4.1 asking for difficulty level analysis
+3. Print the free-form response
+4. Add a comment noting the output format varies each run
+
+Use CopilotClient with async/await.
+```
+
+</details>
 
 Every time you run this, the format changes. Not great for automation.
 
@@ -243,6 +277,29 @@ async def main():
 
 asyncio.run(main())
 ```
+
+<details>
+<summary>🤖 Generate this with a prompt</summary>
+
+Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
+
+```text
+Create a Python script using the GitHub Copilot SDK that returns structured JSON
+output for issue analysis. It should:
+1. Define a Pydantic IssueAnalysis model with: summary (str), difficulty_score
+   (int 1-5), and recommended_level (str: Junior/Mid/Senior/Senior+)
+2. Create a SYSTEM_PROMPT that tells the model to respond with ONLY a JSON object
+   matching the schema (no markdown, no extra text)
+3. Define a SAMPLE_ISSUE about database connection pool exhaustion
+4. Create a session with "mode": "replace" for the system message
+5. Parse the response with json.loads() and validate with the Pydantic model
+6. Print the summary, difficulty score, and level
+7. Handle JSONDecodeError and ValidationError with try/except
+
+Use CopilotClient with async/await.
+```
+
+</details>
 
 ![Screenshot showing the structured output in the terminal with labeled fields](./images/structured-output-terminal.png)
 
@@ -374,6 +431,27 @@ For concepts_required, be specific:
 
 ---
 
+## 🧠 Knowledge Check
+
+Test your understanding:
+
+1. **Why is structured output better than free-form text for automation?**
+   - a) It uses less tokens
+   - b) It produces a predictable format that code can parse reliably ✅
+   - c) It makes the model respond faster
+
+2. **What role does Pydantic play in structured output?**
+   - a) It sends requests to the Copilot API
+   - b) It validates that the model's JSON response matches your expected schema ✅
+   - c) It generates the system prompt automatically
+
+3. **What does `"mode": "replace"` do in the session configuration?**
+   - a) It replaces the default model with a custom model
+   - b) It replaces the SDK's default system prompt with your own ✅
+   - c) It replaces the previous session
+
+---
+
 # Summary
 
 ## 🔑 Key Takeaways
@@ -416,6 +494,10 @@ You'll make your Issue Reviewer produce the same answer every time — essential
 ---
 
 ## Additional Resources
+
+> 📚 **Official Documentation**: [GitHub Copilot SDK](https://github.com/github/copilot-sdk) — full API reference and guides
+>
+> 📋 **Quick Reference**: [Python SDK README](https://github.com/github/copilot-sdk/blob/main/python/README.md) — setup, configuration, and examples
 
 - 📚 [Pydantic Documentation](https://docs.pydantic.dev/)
 - 📚 [GitHub Copilot SDK — System Message Customization](https://github.com/github/copilot-sdk/blob/main/python/README.md#system-message-customization)

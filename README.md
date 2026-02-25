@@ -8,6 +8,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/microsoft/github-copilot-sdk-for-beginners)](https://github.com/microsoft/github-copilot-sdk-for-beginners/graphs/contributors)
 [![GitHub issues](https://img.shields.io/github/issues/microsoft/github-copilot-sdk-for-beginners)](https://github.com/microsoft/github-copilot-sdk-for-beginners/issues)
 [![GitHub stars](https://img.shields.io/github/stars/microsoft/github-copilot-sdk-for-beginners)](https://github.com/microsoft/github-copilot-sdk-for-beginners/stargazers)
+[![Open in GitHub Codespaces](https://img.shields.io/badge/Open%20in-GitHub%20Codespaces-blue?logo=github)](https://codespaces.new/microsoft/github-copilot-sdk-for-beginners)
 
 🎯 [What You'll Learn](#-what-youll-learn) &ensp; ✅ [Prerequisites](#-prerequisites) &ensp; 📚 [Course Structure](#-course-structure) &ensp; 📋 [Glossary](./GLOSSARY.md)
 
@@ -45,15 +46,15 @@ Across 7 chapters, you'll incrementally build an **AI-powered GitHub Issue Revie
 
 ## 📚 Course Structure
 
-| Chapter | Title | What You'll Build |
-|:-------:|-------|-------------------|
-| 00 | 🚀 [Getting Started](./00-getting-started/README.md) | SDK setup & first agent |
-| 01 | 📦 [Structured Output](./01-structured-output/README.md) | JSON schema validation with rich fields |
-| 02 | 🎯 [Prompt Engineering](./02-prompt-engineering/README.md) | Reliable classification |
-| 03 | 🔧 [Tool Calling](./03-tool-calling/README.md) | File access capabilities |
-| 04 | ⚡ [Agent Loop & Streaming](./04-agent-loop-streaming/README.md) | Responsive multi-step agent |
-| 05 | 🛡️ [Safety & Guardrails](./05-safety-guardrails/README.md) | Security hardening |
-| 06 | 🚢 [Shipping to Production](./06-shipping-to-production/README.md) | GitHub integration & deployment |
+| Chapter | Title | Concepts Taught | Learning Goals |
+|:-------:|-------|-----------------|----------------|
+| 00 | 🚀 [Getting Started](./00-getting-started/README.md) | Client, Session, Message | Install SDK, send first prompt, understand agent mental model |
+| 01 | 📦 [Structured Output](./01-structured-output/README.md) | JSON schema, Pydantic validation | Constrain model output to predictable, validated JSON |
+| 02 | 🎯 [Prompt Engineering](./02-prompt-engineering/README.md) | Rubrics, few-shot examples, constraints | Make classification reliable and repeatable |
+| 03 | 🔧 [Tool Calling](./03-tool-calling/README.md) | `@define_tool`, tool lifecycle | Give the agent the ability to read repository files |
+| 04 | ⚡ [Agent Loop & Streaming](./04-agent-loop-streaming/README.md) | Agent loop, streaming events | Show real-time progress and multi-step reasoning |
+| 05 | 🛡️ [Safety & Guardrails](./05-safety-guardrails/README.md) | Prompt injection, hooks, defense in depth | Harden the agent against attacks |
+| 06 | 🚢 [Shipping to Production](./06-shipping-to-production/README.md) | GitHub API, logging, retries | Connect to real GitHub repos and deploy |
 
 ### 📎 Appendices (Optional)
 
@@ -68,8 +69,9 @@ Each chapter follows the same pattern:
 1. **Real-World Analogy**: Understand the concept through familiar comparisons
 2. **Core Concepts**: Learn the essential knowledge
 3. **Hands-On Demos**: Run actual code and see results
-4. **Practice Assignment**: Build toward the capstone
-5. **What's Next**: Preview of the following chapter
+4. **Knowledge Check**: Test your understanding with quick comprehension questions
+5. **Practice Assignment**: Build toward the capstone
+6. **What's Next**: Preview of the following chapter
 
 **Code examples are runnable.** Every code block in this course can be copied and executed.
 
