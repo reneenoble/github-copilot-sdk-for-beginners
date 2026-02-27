@@ -1,8 +1,6 @@
 # Chapter 01 — Structured Output: Stop Parsing Strings
 
-![Chapter 1 banner illustration — structured data emerging from messy text](./images/banner.png)
-
-<!-- TODO: Add banner image to ./01-structured-output/images/banner.png — An illustration (1280×640) showing messy, unstructured text on the left transforming into clean, organized JSON blocks on the right, with a magical/AI glow in between. Same art style as repo banner. -->
+<img src="./images/banner.png" alt="Illustration of structured data emerging from messy text" style="max-width: 700px;">
 
 > **If you're parsing AI output with regex, you're doing it wrong. Learn to constrain model output to predictable, validated JSON.**
 
@@ -25,9 +23,7 @@ By the end of this chapter, you'll be able to:
 
 # Why Structured Output Matters
 
-<img src="./images/freetext-vs-structured.png" alt="Free text vs structured output comparison" width="800"/>
-
-<!-- TODO: Add diagram to ./01-structured-output/images/freetext-vs-structured.png — A side-by-side comparison: left side shows 3 different free-text responses (messy, inconsistent), right side shows 3 identical JSON objects (clean, consistent). Title: "Free Text vs. Structured Output". -->
+<img src="./images/freetext-vs-structured.png" alt="Comparison diagram: inconsistent free-text responses vs. consistent JSON structured output" style="max-width: 700px;">
 
 When you ask a model for free-form text, you get responses that vary in format every time:
 
@@ -51,9 +47,7 @@ All say roughly the same thing, but parsing any of these programmatically is fra
 
 ## 🧩 Real-World Analogy: Forms vs. Letters
 
-<img src="./images/analogy-forms-letters.png" alt="Forms vs Letters analogy" width="800"/>
-
-<!-- TODO: Add analogy image to ./01-structured-output/images/analogy-forms-letters.png — A split illustration: left side shows a messy handwritten letter with text going in all directions; right side shows a clean, organized form with labeled fields being filled in neatly. An arrow labeled "Schema" connects them. Same art style as course. -->
+<img src="./images/analogy-forms-letters.png" alt="Illustration comparing a messy handwritten letter with a clean organized form" style="max-width: 700px;">
 
 Imagine you ask 10 people to describe a car accident. If you say *"Tell me what happened,"* you'll get 10 wildly different stories — different lengths, different details, different formats.
 
@@ -301,10 +295,6 @@ Use CopilotClient with async/await.
 
 </details>
 
-![Screenshot showing the structured output in the terminal with labeled fields](./images/structured-output-terminal.png)
-
-<!-- TODO: Add screenshot to ./01-structured-output/images/structured-output-terminal.png — Terminal output showing clean, formatted results: "Summary: Database connection pool...", "Difficulty: 4/5", "Level: Senior". Should look professional and readable. -->
-
 <details>
 <summary>🎬 See it in action!</summary>
 
@@ -324,7 +314,7 @@ Now the output is **consistent, predictable, and validated**. Every run produces
 
 # Practice
 
-<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
+<img src="../images/practice.png" alt="Illustration of a desk setup ready for hands-on coding practice" style="max-width: 700px;">
 
 Time to put what you've learned into action.
 

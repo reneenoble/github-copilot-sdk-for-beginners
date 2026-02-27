@@ -1,8 +1,6 @@
 # GitHub Copilot SDK for Beginners: Build an AI GitHub Issue Reviewer
 
-![Course banner showing a friendly robot reviewing GitHub issues](./images/repo-banner.png)
-
-<!-- TODO: Add banner image to ./images/repo-banner.png — A wide (1280×640) branded illustration showing a friendly AI assistant robot reviewing GitHub issues on a screen, with the course title overlaid. Use a consistent illustration style (e.g., line art or watercolor) that will carry through all chapter images. -->
+<img src="./images/repo-banner.png" alt="Illustration of a friendly robot reviewing GitHub issues on a screen" style="max-width: 700px;">
 
 [![GitHub license](https://img.shields.io/github/license/microsoft/github-copilot-sdk-for-beginners)](LICENSE)
 [![GitHub contributors](https://img.shields.io/github/contributors/microsoft/github-copilot-sdk-for-beginners)](https://github.com/microsoft/github-copilot-sdk-for-beginners/graphs/contributors)
@@ -32,9 +30,7 @@ Across 7 chapters, you'll incrementally build an **AI-powered GitHub Issue Revie
 - Streams progress updates to the terminal
 - Posts structured results back to GitHub
 
-![Diagram showing the capstone project architecture: GitHub Issue → Copilot SDK Agent → Classification, Advice, Labels → GitHub Comment](./images/capstone-architecture.png)
-
-<!-- TODO: Add architecture diagram to ./images/capstone-architecture.png — A flow diagram showing: "GitHub Issue" → "Copilot SDK Agent" (with sub-steps: read issue, fetch files, classify, advise) → "Structured Output" → "GitHub Comment + Labels". Use clean boxes/arrows in brand colors. -->
+<img src="./images/capstone-architecture.png" alt="Architecture diagram: GitHub Issue flows through Copilot SDK Agent to Classification, Advice, Labels, and GitHub Comment" style="max-width: 700px;">
 
 ## ✅ Prerequisites
 

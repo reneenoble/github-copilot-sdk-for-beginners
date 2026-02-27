@@ -1,8 +1,6 @@
 # Chapter 04 — The Agent Loop & Streaming UX
 
-![Chapter 04 banner illustration — a spinning loop with real-time text streaming out to a terminal](./images/banner.png)
-
-<!-- TODO: Add banner image to ./04-agent-loop-streaming/images/banner.png — An illustration (1280×640) showing a circular agent reasoning loop with arrows connecting steps: "Read prompt" → "Think" → "Call tool" → "Get result" → "Think again" → "Respond". On the right side, a terminal shows lines of text appearing progressively (streaming effect). Same art style as course. -->
+<img src="./images/banner.png" alt="Illustration of a circular agent reasoning loop with text streaming to a terminal" style="max-width: 700px;">
 
 > **A great AI experience isn't just about the answer — it's about showing the thinking along the way.**
 
@@ -28,9 +26,7 @@ By the end of this chapter, you'll be able to:
 
 ## 🧩 Real-World Analogy: The Open Kitchen
 
-<img src="./images/analogy-open-kitchen.png" alt="Closed kitchen vs open kitchen comparison" width="800"/>
-
-<!-- TODO: Add analogy image to ./04-agent-loop-streaming/images/analogy-open-kitchen.png — A split illustration: left side shows a frustrated diner staring at a blank wall (labeled "send_and_wait"); right side shows a happy diner watching a chef through an open kitchen window with live progress (labeled "Streaming"). Steps in the kitchen are labeled: "Read order → Select ingredients → Cook → Plate". Same art style as course. -->
+<img src="./images/analogy-open-kitchen.png" alt="Illustration comparing a closed kitchen (send_and_wait) with an open kitchen (streaming)" style="max-width: 700px;">
 
 Imagine two restaurants. At the first, you order and then stare at a blank wall for 20 minutes until a plate appears. At the second, there's an **open kitchen** — you can see the chef selecting ingredients, firing the grill, plating the dish. The food takes the same time, but the experience is completely different.
 
@@ -56,9 +52,7 @@ Let's understand the building blocks before diving into code.
 
 When you call `send_and_wait`, the SDK doesn't just make a single API call. It runs a **loop**:
 
-![Agent loop diagram — a flowchart showing the multi-step reasoning cycle](./images/agent-loop-diagram.png)
-
-<!-- TODO: Add diagram to ./04-agent-loop-streaming/images/agent-loop-diagram.png — A flowchart (800×600) showing: (1) "User sends prompt" → (2) "Model thinks" → Decision diamond: "Need a tool?" → YES → (3) "Call tool" → (4) "Get result" → back to (2). NO → (5) "Generate response" → (6) "Return to user". Add a counter label showing "Iteration 1, 2, 3..." on the loop back arrow. Include a red "Max iterations" guard on the loop. -->
+<img src="./images/agent-loop-diagram.png" alt="Flowchart: User sends prompt, model thinks, calls tools in a loop, then generates final response" style="max-width: 700px;">
 
 Here's what happens in each iteration:
 
@@ -419,7 +413,7 @@ Use Python's time module for elapsed time tracking.
 
 # Practice
 
-<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
+<img src="../images/practice.png" alt="Illustration of a desk setup ready for hands-on coding practice" style="max-width: 700px;">
 
 Time to put what you've learned into action.
 

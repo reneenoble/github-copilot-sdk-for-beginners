@@ -1,8 +1,6 @@
 # Chapter 06 — Shipping to Production
 
-![Chapter 06 banner illustration — the Issue Reviewer shipping to production connected to GitHub](./images/banner.png)
-
-<!-- TODO: Add banner image to ./06-shipping-to-production/images/banner.png — An illustration (1280×640) showing a rocket launching (representing shipping to production). The rocket is labeled "Issue Reviewer" and trails connect to GitHub's octocat, a logging dashboard, and retry arrows. On the right, a GitHub issue shows an auto-posted comment with the structured review. Same art style as course. -->
+<img src="./images/banner.png" alt="Illustration of a rocket launching labeled Issue Reviewer, connected to GitHub and logging" style="max-width: 700px;">
 
 > **Building it is half the work. Shipping it is the other half.**
 
@@ -29,9 +27,7 @@ By the end of this chapter, you'll be able to:
 
 ## 🧩 Real-World Analogy: Opening a Restaurant vs. Cooking at Home
 
-<img src="./images/analogy-restaurant.png" alt="Home kitchen vs professional restaurant kitchen" width="800"/>
-
-<!-- TODO: Add analogy image to ./06-shipping-to-production/images/analogy-restaurant.png — A split illustration: left side shows a developer happily cooking in a cozy home kitchen ("works on my machine"); right side shows a professional restaurant kitchen with order tickets, logging screens, fire suppression systems, and delivery trucks ("production"). Same art style as course. -->
+<img src="./images/analogy-restaurant.png" alt="Illustration comparing a cozy home kitchen with a professional restaurant kitchen" style="max-width: 700px;">
 
 You've been cooking great meals at home. Your friends love the food. Now you want to open a restaurant. Same recipes, same skills — but suddenly you need a whole new layer of concerns:
 
@@ -577,7 +573,7 @@ python production_reviewer.py 42  # Review issue #42
 
 # Practice
 
-<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
+<img src="../images/practice.png" alt="Illustration of a desk setup ready for hands-on coding practice" style="max-width: 700px;">
 
 Time to ship your Issue Reviewer!
 

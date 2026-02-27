@@ -1,8 +1,6 @@
 # Chapter 02 — Prompt Engineering for Reliable Classification
 
-![Chapter 2 banner illustration — a tuning dial being adjusted for precision](./images/banner.png)
-
-<!-- TODO: Add banner image to ./02-prompt-engineering/images/banner.png — An illustration (1280×640) showing a precision tuning dial or mixing board with labels like "Temperature", "Rubric", "Few-shot" being carefully adjusted by a developer. Same art style as course. -->
+<img src="./images/banner.png" alt="Illustration of a precision tuning dial being adjusted for accurate classification" style="max-width: 700px;">
 
 > **A good prompt doesn't just ask the right question — it defines what a right answer looks like. Learn to make your classification reliable and repeatable.**
 
@@ -27,9 +25,7 @@ By the end of this chapter, you'll be able to:
 
 ## 🧩 Real-World Analogy: Training a New Employee
 
-<img src="./images/analogy-training-employee.png" alt="Training a new employee with rubric and examples" width="800"/>
-
-<!-- TODO: Add analogy image to ./02-prompt-engineering/images/analogy-training-employee.png — An illustration showing a manager at a whiteboard with a rubric chart, handing a stack of example essays to a new employee at a desk. The employee's thought bubble shows organized criteria. Same art style as course. -->
+<img src="./images/analogy-training-employee.png" alt="Illustration of a manager training a new employee with a rubric and example essays" style="max-width: 700px;">
 
 Imagine you've just hired someone to grade student essays. On day one, you say: *"Read each essay and give it a grade."*
 
@@ -262,10 +258,6 @@ for system messages.
 
 </details>
 
-![Terminal output showing inconsistent scores with vague prompt vs. consistent scores with rubric](./images/consistency-comparison.png)
-
-<!-- TODO: Add screenshot to ./02-prompt-engineering/images/consistency-comparison.png — Terminal output showing: "VAGUE PROMPT" with scores varying (3, 4, 3) and levels varying (Mid, Senior, Mid), then "RUBRIC PROMPT" with consistent scores (3, 3, 3) and levels (Mid, Mid, Mid). -->
-
 <details>
 <summary>🎬 See it in action!</summary>
 
@@ -302,7 +294,7 @@ Use `await client.list_models()` to see available models. For classification tas
 
 # Practice
 
-<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
+<img src="../images/practice.png" alt="Illustration of a desk setup ready for hands-on coding practice" style="max-width: 700px;">
 
 Time to put what you've learned into action.
 

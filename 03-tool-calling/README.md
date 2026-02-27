@@ -1,8 +1,6 @@
 # Chapter 03 — Tool Calling: Giving the Agent Capabilities
 
-![Chapter 3 banner illustration — a robot extending its arms with tools like a file reader and API connector](./images/banner.png)
-
-<!-- TODO: Add banner image to ./03-tool-calling/images/banner.png — An illustration (1280×640) showing an AI agent with extending tool arms: one holds a file/document, another connects to a GitHub icon, a third holds a magnifying glass. Shows the agent gaining capabilities. Same art style as course. -->
+<img src="./images/banner.png" alt="Illustration of an AI agent with extending tool arms holding files and connectors" style="max-width: 700px;">
 
 > **An agent without tools is just a chatbot. Tools give your agent the ability to interact with the real world — reading files, calling APIs, and taking action.**
 
@@ -27,9 +25,7 @@ By the end of this chapter, you'll be able to:
 
 ## 🧩 Real-World Analogy: Giving the New Hire Building Access
 
-<img src="./images/analogy-building-access.png" alt="An employee with a key card walking to a file room to look something up" width="800"/>
-
-<!-- TODO: Add analogy image to ./03-tool-calling/images/analogy-building-access.png — An illustration showing an employee at a desk, then using a key card to enter a file room, retrieving a folder, and returning to their desk with the information. An arrow labeled "@define_tool" points at the key card. Same art style as course. -->
+<img src="./images/analogy-building-access.png" alt="Illustration of an employee using a key card to access a file room and retrieve information" style="max-width: 700px;">
 
 Remember the employee you trained in Chapter 02? So far, they've been grading essays by reading only the cover sheet you hand them. If a student's essay says *"See appendix B for supporting data,"* your employee has to shrug — they can't go look at it.
 
@@ -66,9 +62,7 @@ Each tool has:
 3. **Parameters** — what arguments the tool accepts (defined as a schema)
 4. **A handler** — the actual Python function that runs
 
-![Diagram showing the tool lifecycle: Model sees tools → Decides to call → SDK runs handler → Result returned to model](./images/tool-lifecycle.png)
-
-<!-- TODO: Add diagram to ./03-tool-calling/images/tool-lifecycle.png — A circular flow diagram: (1) "Model sees available tools" → (2) "Model decides to call a tool" → (3) "SDK runs your handler function" → (4) "Result returned to model" → (5) "Model incorporates result into response" → back to (2) if more tools needed, or → (6) "Final response". -->
+<img src="./images/tool-lifecycle.png" alt="Flowchart: Model sees tools, decides to call, SDK runs handler, result returned to model" style="max-width: 700px;">
 
 ---
 
@@ -306,7 +300,7 @@ Things to consider:
 
 # Practice
 
-<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
+<img src="../images/practice.png" alt="Illustration of a desk setup ready for hands-on coding practice" style="max-width: 700px;">
 
 Time to put what you've learned into action.
 

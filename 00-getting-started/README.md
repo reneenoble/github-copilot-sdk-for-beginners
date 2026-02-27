@@ -1,8 +1,6 @@
 # Chapter 00 — Getting Started with the Copilot SDK
 
-![Chapter 00 banner illustration — a developer at a terminal seeing their first AI response](./images/banner.png)
-
-<!-- TODO: Add banner image to ./00-getting-started/images/banner.png — A warm, inviting illustration (1280×640) showing a developer at their terminal, with a speech bubble from an AI assistant displaying a friendly "Hello!" response. Use the same art style as the repo banner. -->
+<img src="./images/banner.png" alt="Illustration of a developer at a terminal seeing their first AI response" style="max-width: 700px;">
 
 > **Install the SDK, run your first prompt, and understand the client → session → message pattern that powers everything you'll build.**
 
@@ -42,15 +40,13 @@ Using the Copilot SDK is like calling a company's help desk:
 
 You wouldn't call a help desk and immediately start talking without being connected to someone first. Similarly, the SDK requires you to create a **client** (connect), start a **session** (ring and have someone answers the phone), and then exchange **messages**. This "client → session → message" flow is the backbone of everything you'll build in this course.
 
-![Real-world analogy illustration — a developer on a phone being connected through a switchboard to an AI agent](./images/analogy-help-desk.png)
-
-<!-- TODO: Add analogy image to ./00-getting-started/images/analogy-help-desk.png — An illustration showing a developer on a phone (left), connected through a switchboard (middle, labeled "Client → Session"), to a friendly AI agent at a desk (right, labeled "Message exchange"). Clean, warm style matching course art. -->
+<img src="./images/analogy-help-desk.png" alt="Illustration of a developer on a phone connected through a switchboard to an AI agent" style="max-width: 700px;">
 
 ---
 
 # Key Concepts
 
-<img src="./images/sdk-architecture.png" alt="SDK Architecture diagram" width="800"/>
+<img src="./images/sdk-architecture.png" alt="Architecture diagram: Your Python App connects to CopilotClient SDK via JSON-RPC to Copilot CLI" style="max-width: 700px;">
 
 Let's understand what you're working with before diving into code.
 
@@ -69,10 +65,6 @@ In this first chapter, you'll install the SDK, send your first prompt, and see a
 The **GitHub Copilot SDK** is a Python library (also available in TypeScript, Go, and .NET) that lets you build AI agents in code. It connects to the same engine that powers the Copilot CLI, so you can send prompts, define tools, and get structured responses — all from a regular Python script. You could use it to build things like code review bots, issue triagers, documentation generators, or test writers.
 
 Key abilities: structured output, tool calling, an automatic agent loop (think → call tool → read result → respond), streaming, and session hooks for safety.
-
-![Diagram showing the SDK architecture: Your Python App → SDK Client → JSON-RPC → Copilot CLI (server mode)](./images/sdk-architecture.png)
-
-<!-- TODO: Add diagram to ./00-getting-started/images/sdk-architecture.png — Architecture diagram showing: "Your Python App" → "CopilotClient (SDK)" → "JSON-RPC" → "Copilot CLI (server mode)" → "LLM". Use clean boxes and arrows. -->
 
 Under the hood, the SDK communicates with the Copilot CLI via **JSON-RPC** and manages the CLI process lifecycle automatically. You authenticate through your GitHub account or a token.
 
@@ -292,10 +284,6 @@ Use async/await with asyncio.run(main()).
 
 </details>
 
-![Screenshot of terminal output showing the issue summary response](./images/terminal-output.png)
-
-<!-- TODO: Add screenshot to ./00-getting-started/images/terminal-output.png — A terminal screenshot showing the output of the concept demo script: "Issue Summary:" followed by a 2-3 sentence AI-generated summary of the sample issue. Show a clean terminal with readable text. -->
-
 <details>
 <summary>🎬 See it in action!</summary>
 
@@ -313,9 +301,7 @@ Use async/await with asyncio.run(main()).
 
 # Practice
 
-<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
-
-<!-- TODO: Add shared practice image to ./images/practice.png — A warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice. Reuse across all chapters. -->
+<img src="../images/practice.png" alt="Illustration of a desk setup ready for hands-on coding practice" style="max-width: 700px;">
 
 Time to put what you've learned into action.
 

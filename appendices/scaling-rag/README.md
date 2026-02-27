@@ -1,8 +1,6 @@
 # Appendix: Scaling with Retrieval (RAG)
 
-![RAG banner illustration — a large codebase being filtered through a funnel into a small context window](./images/banner.png)
-
-<!-- TODO: Add banner image to ./appendices/scaling-rag/images/banner.png — An illustration (1280×640) showing a large repository (many folders/files) on the left, passing through a funnel labeled "Retrieval" that filters down to a small context window on the right containing only the relevant chunks. An AI agent sits at the right side, reading from the small context. Same art style as course. -->
+<img src="./images/banner.png" alt="Illustration of a large codebase filtered through a retrieval funnel into a small context window" style="max-width: 700px;">
 
 > **You can't send the entire codebase to the model — but you can send the right parts.**
 
@@ -30,7 +28,7 @@ By the end of this appendix, you'll be able to:
 
 ## 🧩 Real-World Analogy: The Research Librarian
 
-<img src="./images/analogy-librarian.png" alt="Research librarian analogy" width="800"/>
+<img src="./images/analogy-librarian.png" alt="Illustration comparing getting a whole book vs. a librarian pulling relevant pages" style="max-width: 700px;">
 
 Imagine you walk into a library and ask: *"What does this 19th-century novel say about industrialization?"*
 
@@ -45,8 +43,6 @@ A good librarian checks the **index**, finds the three most relevant chapters, p
 | Ignores that you can only read so fast | Respects your limited attention (context window) |
 
 RAG works the same way. Your agent's context window is like a reader's limited attention span — there's a maximum amount it can process at once. Instead of stuffing the entire codebase into the prompt and hoping for the best, RAG acts as a **research librarian**: it indexes the codebase, searches for the most relevant pieces, and retrieves just those chunks for the agent to analyze.
-
-<!-- TODO: Add analogy image to ./06-scaling-rag/images/analogy-librarian.png — A split illustration: left side shows a person overwhelmed by a giant book (labeled "Full file → context overflow"); right side shows a librarian at a card catalog, pulling just a few pages and handing them to a happy reader (labeled "RAG → relevant chunks"). Same art style as course. -->
 
 ---
 
@@ -65,9 +61,7 @@ You'll hit the model's **context window limit**. Every model has a maximum numbe
 3. When the agent needs context, **searching** for the most relevant chunks
 4. Injecting only the **top results** into the prompt
 
-<img src="./images/rag-pipeline.png" alt="RAG pipeline diagram" width="800"/>
-
-<!-- TODO: Add diagram to ./06-scaling-rag/images/rag-pipeline.png — A horizontal pipeline diagram (1000×300): (1) "Large file" → (2) "Split into chunks" (showing file split into colored blocks) → (3) "Create embeddings" (blocks become vectors) → (4) "Store in index" (vectors in a grid) → (5) "Query: issue text" → (6) "Retrieve top-k" (nearest vectors highlighted) → (7) "Inject into prompt" (chunks go into the agent). -->
+<img src="./images/rag-pipeline.png" alt="Diagram: Large file split into chunks, embedded, indexed, queried, and injected into prompt" style="max-width: 700px;">
 
 ---
 
@@ -547,7 +541,7 @@ The RAG approach uses roughly **7× fewer tokens** while often finding the most 
 
 # Practice
 
-<img src="../images/practice.png" alt="Warm desk setup ready for hands-on practice" width="800"/>
+<img src="../images/practice.png" alt="Illustration of a desk setup ready for hands-on coding practice" style="max-width: 700px;">
 
 Time to put what you've learned into action.
 
