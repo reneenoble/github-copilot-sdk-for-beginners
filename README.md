@@ -1,4 +1,4 @@
-# GitHub Copilot SDK for Beginners: Build an AI GitHub Issue Reviewer
+# GitHub Copilot SDK for Beginners
 
 <img src="./images/repo-banner.png" alt="Illustration of a friendly robot reviewing GitHub issues on a screen" style="max-width: 700px;">
 
@@ -10,13 +10,13 @@
 
 🎯 [What You'll Learn](#-what-youll-learn) &ensp; ✅ [Prerequisites](#-prerequisites) &ensp; 📚 [Course Structure](#-course-structure) &ensp; 📋 [Glossary](./GLOSSARY.md)
 
-> **✨ Learn to build intelligent, tool-using AI agents with the GitHub Copilot SDK by creating a production-ready GitHub Issue Reviewer.**
+> **✨ Learn to build intelligent, tool-using AI agents with the GitHub Copilot SDK. See it in action as you build up a production-ready GitHub Issue Reviewer.**
 
-This hands-on course teaches you to build AI agents that can reason, plan, and take action. You'll work through 7 lessons, each adding a new capability to the capstone project — a GitHub Issue Reviewer that classifies issues, extracts concepts, and provides mentoring advice.
+This hands-on course teaches you to build developer tools, apps, and AI agents that can reason, plan, and take action. You'll work through 7 lessons, each adding a new capability to the capstone project: a GitHub Issue Reviewer that classifies issues, extracts concepts, and provides mentoring advice.
 
-**No AI agent experience required.** If you know basic Python, you can learn this.
+**No AI agent experience required.** If you know basic Python, you can learn this!
 
-**Perfect for:** Developers who want to build AI-powered automation tools, not just use them.
+**Perfect for:** Developers who want to build AI-powered automation tools or apps, not just use them.
 
 ## 🎯 What You'll Learn
 
@@ -24,9 +24,9 @@ Across 7 chapters, you'll incrementally build an **AI-powered GitHub Issue Revie
 
 - Reads GitHub issues via the API
 - Analyzes referenced files from the repository
-- Classifies difficulty (Junior → Senior+)
+- Classifies issue difficulty and the level of development experience needed to tackle it
 - Extracts required concepts and skills
-- Provides mentoring advice tailored to skill level
+- Provides mentoring advice tailored to skill up developers
 - Streams progress updates to the terminal
 - Posts structured results back to GitHub
 
@@ -36,7 +36,7 @@ Across 7 chapters, you'll incrementally build an **AI-powered GitHub Issue Revie
 
 - **Python 3.9+** installed
 - **GitHub Copilot CLI** installed and authenticated ([Installation guide](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli))
-- A **GitHub Copilot subscription** (free tier available)
+- **GitHub Copilot access**: [Free offering](https://github.com/features/copilot/plans), [Monthly subscription](https://github.com/features/copilot/plans), or [Free for students/teachers](https://education.github.com/pack)*
 - Basic familiarity with **Python** and **the command line**
 - A **GitHub account**
 
@@ -73,9 +73,9 @@ Each chapter follows the same pattern:
 
 ## 🚀 Get Started
 
-**[Start with Chapter 00 →](./00-getting-started/README.md)**
+**Fork this repo** and complete each chapter at your own pace.
 
-Fork this repo and complete each chapter at your own pace.
+**[Start with Chapter 00 →](./00-getting-started/README.md)**
 
 ## 🏗️ How to Use This Repo
 
@@ -85,7 +85,7 @@ Fork this repo and complete each chapter at your own pace.
    git clone https://github.com/YOUR-USERNAME/github-copilot-sdk-for-beginners.git
    cd github-copilot-sdk-for-beginners
    ```
-3. Work through each lesson **in order** — they build on each other.
+3. Work through each lesson **in order**, they build on each other.
 4. Each chapter has a `code/` folder (starter code with TODOs) and a `solution/` folder (complete reference).
 5. Complete the **assignment** at the end of each chapter to advance the capstone project.
 
@@ -110,19 +110,12 @@ copilot --version
 - 📚 **Need definitions?** Check the [Glossary](./GLOSSARY.md)
 - 📖 **Official Docs:** [GitHub Copilot SDK Documentation](https://github.com/github/copilot-sdk)
 
-## 👥 Meet the Team
+<!-- ## 👥 Meet the Team -->
 
 <!-- TODO: Add team headshots to ./images/team/ — One image per team member (200×200 square, friendly professional headshot). Name files as firstname-lastname.png -->
 
-*Coming soon*
+<!-- *Coming soon* -->
 
-## 🤝 Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
-- Reporting bugs and issues in lessons
-- Suggesting new content
-- Contributing translations
-- Submitting pull requests
 
 ## 📚 Other Courses in the "For Beginners" Series
 

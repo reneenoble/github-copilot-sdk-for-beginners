@@ -33,7 +33,6 @@ We'd love to have this course available in more languages!
 
 ## Style Guide
 
-- Follow the conventions in [for_beginners_style.md](./for_beginners_style.md).
 - Use **warm, encouraging, inclusive** language.
 - Keep paragraphs short (2–4 sentences).
 - Use callout boxes with emoji for tips (💡), warnings (⚠️), and notes (📝).
