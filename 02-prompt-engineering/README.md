@@ -48,6 +48,27 @@ With clear instructions and examples, the new hire produces grades you can trust
 
 Let's understand the prompt engineering techniques that make classification reliable.
 
+<details>
+<summary>🧭 Framework You Can Reuse Later: Reliability Through Explicit Decision Policy (optional on first read)</summary>
+
+If this is your first pass, you can skip this and come back after trying the chapter exercise.
+
+Prompt engineering for classification is a reusable framework:
+
+1. Define the decision rubric
+2. Provide representative examples
+3. Constrain valid output values
+4. Add tie-breaker rules for ambiguous cases
+
+| Use Case | Decision Policy Example |
+|---|---|
+| Issue triage | Difficulty rubric + level mapping |
+| Support routing | Severity rubric + owner mapping |
+| Security review | Risk rubric + escalation policy |
+| Content moderation | Violation rubric + action policy |
+
+</details>
+
 ---
 
 ## System Instructions: The Rules of Engagement
@@ -400,9 +421,9 @@ Test your understanding:
 
 ---
 
-# Summary
+# Wrap-Up
 
-## 🔑 Key Takeaways
+## ✅ What You Can Do Now
 
 1. **Vague prompts produce vague results** — a rubric with clear criteria is essential
 2. **Few-shot examples calibrate the model** — show it what good output looks like
@@ -412,6 +433,9 @@ Test your understanding:
 > 📚 **Glossary**: New to terms like "few-shot" or "temperature"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
+
+<details>
+<summary>📦 Optional: Progress and reference</summary>
 
 ## 🏗️ Capstone Progress
 
@@ -427,7 +451,7 @@ Test your understanding:
 
 ---
 
-## ➡️ What's Next
+## ▶️ Next Step
 
 Your agent now classifies issues consistently — but it can only read what you paste into the prompt. Real issues often reference files: "The bug is in `src/auth/login.py`..."
 
@@ -449,6 +473,16 @@ You'll upgrade your Issue Reviewer to fetch and analyze referenced files automat
 
 - 📚 [Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering)
 - 📚 [Copilot SDK — System Message Customization](https://github.com/github/copilot-sdk/blob/main/python/README.md#system-message-customization)
+
+## Ship-Readiness Checklist
+
+- [ ] Rubric language is specific and testable
+- [ ] Few-shot examples cover easy, medium, and hard cases
+- [ ] Allowed values are explicit and enforced
+- [ ] Prompt includes tie-breaker behavior for edge cases
+- [ ] Repeat runs show stable classification behavior
+
+</details>
 
 ---
 

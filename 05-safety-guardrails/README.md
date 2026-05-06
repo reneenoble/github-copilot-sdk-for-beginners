@@ -47,6 +47,27 @@ This is called **defense in depth**, and it's exactly what you'll build in this 
 
 # Key Concepts
 
+<details>
+<summary>🧭 Framework You Can Reuse Later: Prevent -> Validate -> Contain -> Verify (optional on first read)</summary>
+
+If this is your first pass, you can skip this and come back after the attack demos.
+
+Guardrails are most reliable when applied as layered controls:
+
+1. Prevent obvious attacks with strict system policy
+2. Validate every tool input at execution boundaries
+3. Contain blast radius with scope limits and allowlists
+4. Verify outputs before returning them to users or systems
+
+| Layer | Typical Control | Failure If Missing |
+|---|---|---|
+| Prompt policy | hardened system instructions | model follows malicious user directives |
+| Tool boundary | pre-tool validation hooks | unsafe tool arguments execute |
+| Access scope | path/extension restrictions | sensitive resources can be read |
+| Output checks | schema + leak detection | unsafe content reaches users |
+
+</details>
+
 ## Introduction
 
 Everything you've built so far assumes the input is well-intentioned. But in the real world, your agent will process GitHub issues written by anyone — including attackers.
@@ -721,9 +742,9 @@ Test your understanding:
 
 ---
 
-# Summary
+# Wrap-Up
 
-## 🔑 Key Takeaways
+## ✅ What You Can Do Now
 
 1. **Prompt injection is a real threat** — attackers can manipulate your agent through carefully crafted input
 2. **Defense in depth is essential** — no single layer is foolproof, so stack multiple protections
@@ -734,6 +755,9 @@ Test your understanding:
 > 📚 **Glossary**: New to terms like "prompt injection" or "guardrails"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
+
+<details>
+<summary>📦 Optional: Progress and reference</summary>
 
 ## 🏗️ Capstone Progress
 
@@ -753,7 +777,7 @@ Your Issue Reviewer is now hardened against attacks!
 
 ---
 
-## ➡️ What's Next
+## ▶️ Next Step
 
 Your agent is now protected against common attacks. In **[Chapter 06: Shipping to Production](../06-shipping-to-production/README.md)**, you'll learn:
 
@@ -774,6 +798,16 @@ You'll take your Issue Reviewer from a local prototype to a production-ready Git
 
 - 📚 [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
 - 📚 [Prompt injection — Simon Willison's analysis](https://simonwillison.net/series/prompt-injection/)
+
+## Ship-Readiness Checklist
+
+- [ ] Security rules are placed at the top of the system prompt
+- [ ] `on_pre_tool_use` rejects unsafe arguments by default
+- [ ] Sensitive paths/patterns are blocked case-insensitively
+- [ ] Output schema validation runs on every model response
+- [ ] Adversarial tests are included in regular regression checks
+
+</details>
 
 ---
 

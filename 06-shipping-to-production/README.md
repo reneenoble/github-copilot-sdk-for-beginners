@@ -46,6 +46,27 @@ The food itself didn't change. What changed is everything *around* it — the in
 
 # Key Concepts
 
+<details>
+<summary>🧭 Framework You Can Reuse Later: Configure -> Integrate -> Observe -> Recover (optional on first read)</summary>
+
+If this is your first pass, you can skip this and come back after you run the production script once.
+
+Productionizing agent systems follows a repeatable operating model:
+
+1. Configure environment and credentials safely
+2. Integrate with external read/write systems
+3. Observe behavior with structured logs and metrics
+4. Recover from transient failures with retries and validation
+
+| Production Concern | Core Practice |
+|---|---|
+| Secrets and settings | environment-based config validation |
+| External APIs | authenticated clients + explicit error handling |
+| Operator visibility | structured logging per major step |
+| Reliability | retry and backoff for transient failures |
+
+</details>
+
 ## Connecting to External Systems
 
 So far, your agent has worked with hardcoded data pasted into the prompt. A production agent needs to **fetch real data from external systems** and **write results back**. This is a universal pattern — regardless of what your agent does:
@@ -688,9 +709,9 @@ Test your understanding:
 
 ---
 
-# Summary
+# Wrap-Up
 
-## 🔑 Key Takeaways
+## ✅ What You Can Do Now
 
 1. **Environment configuration** — never hardcode tokens or settings; use environment variables
 2. **Structured logging** — record what's happening for debugging and observability
@@ -701,6 +722,9 @@ Test your understanding:
 > 📚 **Glossary**: New to terms like "retry" or "environment variable"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
+
+<details>
+<summary>📦 Optional: Progress and reference</summary>
 
 ## 🏗️ Capstone Complete! 🎉
 
@@ -749,6 +773,16 @@ You've built a production-ready AI GitHub Issue Reviewer!
 - 📚 [GitHub REST API documentation](https://docs.github.com/en/rest)
 - 📚 [httpx documentation](https://www.python-httpx.org/)
 - 📚 [Python logging best practices](https://docs.python.org/3/howto/logging.html)
+
+## Ship-Readiness Checklist
+
+- [ ] Required environment variables are validated at startup
+- [ ] API reads and writes include explicit status/error handling
+- [ ] Structured logs cover fetch, analyze, and post-comment steps
+- [ ] Retry/backoff logic handles transient API failures
+- [ ] Golden tests are run before enabling automation in production
+
+</details>
 
 ---
 

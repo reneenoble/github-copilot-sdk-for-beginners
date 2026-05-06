@@ -46,6 +46,26 @@ The **agent loop** is the chef's process: read the order (prompt), decide what's
 
 Let's understand the building blocks before diving into code.
 
+<details>
+<summary>🧭 Framework You Can Reuse Later: Observe -> Inform -> Complete (optional on first read)</summary>
+
+If this is your first pass, you can skip this and come back after the streaming demo.
+
+Streaming UX is a portable design pattern for agent applications:
+
+1. Observe internal progress events
+2. Inform users in real time with meaningful status updates
+3. Complete with a clear final state and output
+
+| Workflow Stage | Event Signal | User-Facing Message |
+|---|---|---|
+| Reasoning and generation | `assistant.message_delta` | incremental response text |
+| Tool execution begins | `tool.execution_start` | "Fetching context..." |
+| Tool execution ends | `tool.execution_complete` | "Context loaded" |
+| Agent finished | `assistant.message` / idle state | "Review complete" |
+
+</details>
+
 ---
 
 ## The Agent Reasoning Loop
@@ -522,9 +542,9 @@ Test your understanding:
 
 ---
 
-# Summary
+# Wrap-Up
 
-## 🔑 Key Takeaways
+## ✅ What You Can Do Now
 
 1. **The agent loop is multi-step** — the SDK orchestrates multiple iterations of reasoning, tool calling, and response generation automatically
 2. **Streaming improves UX** — users see progress in real time instead of staring at a blank screen
@@ -534,6 +554,9 @@ Test your understanding:
 > 📚 **Glossary**: New to terms like "agent loop" or "streaming"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
+
+<details>
+<summary>📦 Optional: Progress and reference</summary>
 
 ## 🏗️ Capstone Progress
 
@@ -549,7 +572,7 @@ Test your understanding:
 
 ---
 
-## ➡️ What's Next
+## ▶️ Next Step
 
 Your agent now analyzes issues, reads files, and streams progress in real time. But what happens when someone submits a malicious issue designed to trick your agent?
 
@@ -573,6 +596,16 @@ You'll harden your Issue Reviewer to be production-safe.
 - 📚 [GitHub Copilot SDK — Python streaming documentation](https://github.com/nicolo-ribaudo/copilot-sdk/tree/main/packages/sdk-python)
 - 📚 [Event-driven patterns in asyncio](https://docs.python.org/3/library/asyncio.html)
 - 📚 [Real-time UX best practices](https://www.nngroup.com/articles/response-times-3-important-limits/)
+
+## Ship-Readiness Checklist
+
+- [ ] Streaming is enabled for long-running interactions
+- [ ] Tool start/complete events are surfaced to users
+- [ ] Final completion state is explicit and unambiguous
+- [ ] UX text remains informative, not noisy
+- [ ] Iteration/tool usage limits are defined in system behavior
+
+</details>
 
 ---
 

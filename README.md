@@ -30,6 +30,72 @@ Across 7 chapters, you'll incrementally build an **AI-powered GitHub Issue Revie
 - Streams progress updates to the terminal
 - Posts structured results back to GitHub
 
+## 🧭 Choose Your Starting Path (Optional)
+
+Use this if you want a scenario-led route through the same core chapters.
+
+<details>
+<summary>I'm a dev: help me plan a project and generate code step by step</summary>
+
+Start with [00](./00-getting-started/README.md), [01](./01-structured-output/README.md), [02](./02-prompt-engineering/README.md), then [03](./03-tool-calling/README.md).
+
+Focus on:
+- turning rough goals into structured outputs
+- building a repeatable "plan -> implement -> validate" workflow
+- codifying prompts into tools and scripts
+
+</details>
+
+<details>
+<summary>I'm a repo maintainer: help me get a quick overview and do maintenance</summary>
+
+Start with [00](./00-getting-started/README.md), then prioritize [03](./03-tool-calling/README.md), [04](./04-agent-loop-streaming/README.md), and [06](./06-shipping-to-production/README.md).
+
+Focus on:
+- issue triage and repository context gathering
+- streaming status for faster maintenance loops
+- posting structured review outcomes back to GitHub
+
+</details>
+
+<details>
+<summary>I'm a sysadmin: help me with everyday operational tasks</summary>
+
+Start with [00](./00-getting-started/README.md), [03](./03-tool-calling/README.md), [05](./05-safety-guardrails/README.md), [06](./06-shipping-to-production/README.md).
+
+Focus on:
+- safe tool execution boundaries
+- operational logging and retries
+- structured outputs for runbooks and handoffs
+
+</details>
+
+<details>
+<summary>I have an app and want to integrate AI: help identify and implement use cases</summary>
+
+Start with [01](./01-structured-output/README.md), [02](./02-prompt-engineering/README.md), then [06](./06-shipping-to-production/README.md).
+
+Focus on:
+- schema-first contracts between AI and your app
+- reliability through rubric-based prompting
+- external system integration patterns
+
+</details>
+
+<details>
+<summary>I'm working in legacy code with a backlog: what should I do vs an agent vs a teammate?</summary>
+
+Start with [02](./02-prompt-engineering/README.md), [03](./03-tool-calling/README.md), [05](./05-safety-guardrails/README.md).
+
+Focus on:
+- decision policies for triage
+- using tools for context-heavy tasks
+- guardrails for safe delegation to agents
+
+</details>
+
+> 📝 This course teaches the shared foundations first. Scenario-specific deep dives (for roles, workflows, and videos) can be added on top of this base.
+
 <img src="./images/capstone-architecture.png" alt="Architecture diagram: GitHub Issue flows through Copilot SDK Agent to Classification, Advice, Labels, and GitHub Comment" style="max-width: 700px;">
 
 ## ✅ Prerequisites
@@ -70,6 +136,18 @@ Each chapter follows the same pattern:
 6. **What's Next**: Preview of the following chapter
 
 **Code examples are runnable.** Every code block in this course can be copied and executed.
+
+<details>
+<summary>Choose Your Adventure: code-first or prompt-first</summary>
+
+Each chapter supports two learning modes:
+
+1. **Code-first**: run the ready-made example, then inspect the prompt.
+2. **Prompt-first**: generate the code from the prompt box, then compare to the example.
+
+Use the mode that matches your pace. You can switch between them at any chapter.
+
+</details>
 
 ## 🚀 Get Started
 

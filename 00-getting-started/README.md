@@ -34,7 +34,7 @@ Using the Copilot SDK is like calling a company's help desk:
 | Ask your question | `session.send_and_wait(...)` | Sends a message and waits for a response |
 | Hang up when done | `await client.stop()` | Closes the connection cleanly |
 
-When seeking help from a help desk phone line you start by placing the call and waiting for it to be answered. Connecting to a the **Copilot client** and starting a **session** is like the start of your call and your called getting picked up. Once you're connected you're ready to ask your questions to the help desk operator (or sending **messages** to the SDK!).
+When seeking help from a help desk phone line, you start by placing the call and waiting for it to be answered. Connecting to the **Copilot client** and starting a **session** is like placing that call and having someone pick up. Once you're connected, you're ready to ask your questions to the help desk operator (or send **messages** to the SDK).
 
 ---
 
@@ -43,6 +43,23 @@ When seeking help from a help desk phone line you start by placing the call and 
 <img src="./images/sdk-architecture.png" alt="Architecture diagram: Your Python App connects to CopilotClient SDK via JSON-RPC to Copilot CLI" style="max-width: 700px;">
 
 Let's understand what you're working with before diving into code.
+
+<details>
+<summary>🧭 Framework You Can Reuse Later: Client -> Session -> Message (optional on first read)</summary>
+
+If this is your first pass, you can skip this and come back after the hands-on section.
+
+This chapter's core model applies to almost every SDK app you'll build:
+
+| Step | What It Means | Example Use Cases |
+|---|---|---|
+| Connect (`CopilotClient`) | Establish an authenticated runtime | CLI helper, web backend, CI bot |
+| Start session (`create_session`) | Define model + behavior for one conversation | issue triage, docs assistant, review bot |
+| Exchange messages (`send_and_wait`) | Run one unit of agent work and get output | summarize issue, classify PR, generate plan |
+
+You'll reuse this same flow in every chapter. Only the session configuration changes as you add tools, safety hooks, streaming, and production integrations.
+
+</details>
 
 The GitHub Copilot SDK lets you embed Copilot's agentic capabilities directly into your own applications. Instead of just chatting with an AI, you can create custom workflows, apps, and APIs with specified **tools**, **instructions**, and **structure**. This allows you to bring the automation that you access through Copilot tools, but bring it in the form of a programmable agent that can leverage provided tools and complete actions in your own tools and systems.
 
@@ -407,9 +424,9 @@ Test your understanding:
 
 ---
 
-# Summary
+# Wrap-Up
 
-## 🔑 Key Takeaways
+## ✅ What You Can Do Now
 
 1. **The SDK is batteries-included** — it handles tool orchestration, retries, and the agent loop for you
 2. **Client → Session → Message** — this three-step pattern is the foundation of everything you'll build
@@ -419,6 +436,9 @@ Test your understanding:
 > 📚 **Glossary**: New to terms like "agent", "session", or "token"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
+
+<details>
+<summary>📦 Optional: Progress and reference</summary>
 
 ## 🏗️ Capstone Progress
 
@@ -434,7 +454,7 @@ Test your understanding:
 
 ---
 
-## ➡️ What's Next
+## ▶️ Next Step
 
 Now that you can send prompts and receive responses, let's make those responses **structured and predictable**. 
 
@@ -456,6 +476,8 @@ You'll upgrade your Issue Reviewer to return structured data instead of prose �
 
 - 📚 [Getting Started Guide](https://github.com/github/copilot-sdk/blob/main/docs/getting-started.md)
 - 📚 [Copilot CLI Installation](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)
+
+</details>
 
 ---
 

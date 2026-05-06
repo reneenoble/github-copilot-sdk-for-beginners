@@ -48,6 +48,26 @@ RAG works the same way. Your agent's context window is like a reader's limited a
 
 # Key Concepts
 
+<details>
+<summary>🧭 Framework You Can Reuse Later: Index -> Retrieve -> Inject (optional on first read)</summary>
+
+If this is your first pass, you can skip this and come back after trying the RAG demo.
+
+RAG is a reusable context-management pipeline:
+
+1. Index source material into retrievable chunks
+2. Retrieve only the top-k relevant chunks per query
+3. Inject selected context into the model prompt
+
+| Scenario | Retrieval Target |
+|---|---|
+| Code issue analysis | functions, modules, and error paths tied to the issue |
+| Documentation agent | sections matching user intent and terminology |
+| Incident assistant | runbooks and historical incidents with similar symptoms |
+| Compliance review | policy excerpts mapped to reported behavior |
+
+</details>
+
 ## The Context Window Problem
 
 Your Issue Reviewer uses the `get_file_contents` tool to read files. That works great for small files — but what happens when a file is 5,000 lines long? Or when the issue references 10 files?
@@ -669,9 +689,9 @@ def chunk_by_lines(content: str, chunk_size: int = 50, overlap: int = 5):
 
 ---
 
-# Summary
+# Wrap-Up
 
-## 🔑 Key Takeaways
+## ✅ What You Can Do Now
 
 1. **Context windows have limits** — large repositories can't be sent to the model in full; you need selective retrieval
 2. **Chunking splits files into manageable pieces** — use overlap to avoid losing code at boundaries
@@ -682,6 +702,9 @@ def chunk_by_lines(content: str, chunk_size: int = 50, overlap: int = 5):
 > 📚 **Glossary**: New to terms like "RAG" or "embeddings"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
+
+<details>
+<summary>📦 Optional: Progress and reference</summary>
 
 ## 🏗️ Capstone Progress
 
@@ -704,7 +727,7 @@ Your Issue Reviewer can now handle large repositories!
 
 ---
 
-## ➡️ What's Next
+## ▶️ Next Step
 
 Your agent can now handle large repositories — but what happens when users try to trick it? Prompt injection, unsafe file access, and other adversarial inputs can compromise your system.
 
@@ -726,6 +749,14 @@ In **[Chapter 07: Safety & Guardrails](../07-safety-guardrails/README.md)**, you
 - 📚 [RAG (Retrieval-Augmented Generation) explained](https://research.ibm.com/blog/retrieval-augmented-generation-RAG)
 - 📚 [Text embeddings guide](https://platform.openai.com/docs/guides/embeddings)
 
+## Ship-Readiness Checklist
+
+- [ ] Chunk strategy preserves semantic boundaries (with overlap)
+- [ ] Retrieval is measured for relevance and latency
+- [ ] Injected context stays within model context budget
+- [ ] Index refresh strategy is defined for changed files
+- [ ] Fallback behavior is defined when retrieval confidence is low
+
 ### 📚 Extra Reading: RAG Architecture Patterns
 
 For production RAG systems, consider these patterns:
@@ -735,6 +766,8 @@ For production RAG systems, consider these patterns:
 - **Embedding refresh**: Re-index when files change (git hooks, CI pipeline)
 - **Hybrid search**: Combine keyword matching with semantic embeddings for better results
 - **Chunking by AST**: Use the Abstract Syntax Tree to split at function/class boundaries instead of line counts
+
+</details>
 
 ---
 

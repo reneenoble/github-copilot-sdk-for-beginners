@@ -45,6 +45,27 @@ That's exactly what tools do. The `@define_tool` decorator is the key card — i
 
 Let's understand the core concepts behind tool calling.
 
+<details>
+<summary>🧭 Framework You Can Reuse Later: Plan -> Fetch -> Reason -> Respond (optional on first read)</summary>
+
+If this is your first pass, you can skip this and come back after building the tool.
+
+Tool calling generalizes into a reusable workflow:
+
+1. Plan what information is needed
+2. Fetch it through the minimum required tools
+3. Reason over fetched results
+4. Respond in a structured, constrained format
+
+| Agent Type | Tool Workflow |
+|---|---|
+| Issue reviewer | read referenced files before scoring difficulty |
+| Support bot | look up account context before replying |
+| Ops assistant | query health metrics before recommending fixes |
+| Release assistant | fetch changelog and test status before approval |
+
+</details>
+
 ---
 
 ## What Are Tools?
@@ -422,9 +443,9 @@ Test your understanding:
 
 ---
 
-# Summary
+# Wrap-Up
 
-## 🔑 Key Takeaways
+## ✅ What You Can Do Now
 
 1. **Tools extend agent capabilities** — they let the agent fetch information and take actions beyond text generation
 2. **The model decides when to call tools** — you define them, the model chooses when they're needed
@@ -434,6 +455,9 @@ Test your understanding:
 > 📚 **Glossary**: New to terms like "tool" or "hook"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
+
+<details>
+<summary>📦 Optional: Progress and reference</summary>
 
 ## 🏗️ Capstone Progress
 
@@ -455,7 +479,7 @@ See [assignment.md](./assignment.md) for full instructions.
 
 ---
 
-## ➡️ What's Next
+## ▶️ Next Step
 
 Your agent can now fetch files — but what if it needs multiple steps of reasoning? In **[Chapter 04: Agent Loop & Streaming](../04-agent-loop-streaming/README.md)**, you'll learn:
 
@@ -475,6 +499,16 @@ You'll upgrade your Issue Reviewer to provide real-time progress updates.
 
 - 📚 [Copilot SDK — Tools](https://github.com/github/copilot-sdk/blob/main/python/README.md#tools)
 - 📚 [Pydantic Models](https://docs.pydantic.dev/latest/concepts/models/)
+
+## Ship-Readiness Checklist
+
+- [ ] Tool descriptions are clear and action-specific
+- [ ] Tool inputs are validated before execution
+- [ ] File and path access are scoped to allowed directories
+- [ ] Tool failures return safe, explicit error messages
+- [ ] Final response remains structured and deterministic
+
+</details>
 
 ---
 

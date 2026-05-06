@@ -66,6 +66,27 @@ That's exactly what structured output does. Instead of hoping the model returns 
 
 Let's understand the building blocks before diving into code.
 
+<details>
+<summary>🧭 Framework You Can Reuse Later: Schema-First Agent Design (optional on first read)</summary>
+
+If this is your first pass, you can skip this and come back after the demos.
+
+Structured output is useful far beyond issue review. The reusable framework is:
+
+1. Define the response schema first
+2. Instruct the model to return only that schema
+3. Validate every response before using it
+4. Reject or retry on invalid output
+
+| Agent Type | Schema Example |
+|---|---|
+| Issue reviewer | summary, difficulty, recommended_level |
+| Support triage bot | category, priority, suggested_reply |
+| Security reviewer | risk_level, impacted_components, remediation |
+| Release assistant | change_type, rollout_risk, required_checks |
+
+</details>
+
 ---
 
 ## How to Get Structured Output
@@ -187,6 +208,13 @@ Every time you run this, the format changes. Not great for automation.
 
 Now, let's constrain the output with a system message and Pydantic validation:
 
+Choose your adventure:
+1. **Code-first**: use the ready-made script.
+2. **Prompt-first**: generate it yourself, then compare.
+
+<details>
+<summary>💻 Option A (Code-first): Use the complete example</summary>
+
 ```python
 import asyncio
 import json
@@ -272,8 +300,10 @@ async def main():
 asyncio.run(main())
 ```
 
+</details>
+
 <details>
-<summary>🤖 Generate this with a prompt</summary>
+<summary>🤖 Option B (Prompt-first): Generate this with a prompt</summary>
 
 Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
 
@@ -442,9 +472,9 @@ Test your understanding:
 
 ---
 
-# Summary
+# Wrap-Up
 
-## 🔑 Key Takeaways
+## ✅ What You Can Do Now
 
 1. **Free-form text is unreliable** — different runs produce different formats that break parsers
 2. **System prompts define the contract** — tell the model exactly what JSON shape to return
@@ -454,6 +484,9 @@ Test your understanding:
 > 📚 **Glossary**: New to terms like "schema" or "validation"? See the [Glossary](../GLOSSARY.md) for definitions.
 
 ---
+
+<details>
+<summary>📦 Optional: Progress and reference</summary>
 
 ## 🏗️ Capstone Progress
 
@@ -469,7 +502,7 @@ Test your understanding:
 
 ---
 
-## ➡️ What's Next
+## ▶️ Next Step
 
 Your output is now structured — but is it *consistent*? Run the same issue through your analyzer multiple times. You might get a difficulty score of 3 one time and 4 the next.
 
@@ -492,6 +525,16 @@ You'll make your Issue Reviewer produce the same answer every time — essential
 - 📚 [Pydantic Documentation](https://docs.pydantic.dev/)
 - 📚 [GitHub Copilot SDK — System Message Customization](https://github.com/github/copilot-sdk/blob/main/python/README.md#system-message-customization)
 - 📚 [JSON Schema Specification](https://json-schema.org/)
+
+## Ship-Readiness Checklist
+
+- [ ] System prompt explicitly demands JSON-only output
+- [ ] Pydantic model validates all required fields and ranges
+- [ ] JSON parsing is wrapped in try/except with clear error handling
+- [ ] Invalid responses are retried or safely rejected
+- [ ] Output schema aligns with downstream automation needs
+
+</details>
 
 ---
 
