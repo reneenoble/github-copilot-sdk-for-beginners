@@ -46,6 +46,25 @@ The food itself didn't change. What changed is everything *around* it — the in
 
 # Key Concepts
 
+## Connecting to External Systems
+
+So far, your agent has worked with hardcoded data pasted into the prompt. A production agent needs to **fetch real data from external systems** and **write results back**. This is a universal pattern — regardless of what your agent does:
+
+| Agent Type | Reads From | Writes To |
+|---|---|---|
+| Issue reviewer | GitHub Issues API | GitHub Comments API |
+| Support bot | Ticket system (Zendesk, Jira) | Chat response / ticket update |
+| Data analyst | Database / data warehouse | Dashboard or email report |
+| DevOps assistant | Monitoring APIs (Datadog, PagerDuty) | Slack notification / runbook |
+
+The pattern is always:
+1. **Authenticate** — securely provide credentials (API tokens, OAuth)
+2. **Fetch input data** — read from the source system
+3. **Run the agent** — process with Copilot SDK
+4. **Write results back** — post to the destination system
+
+For the Issue Reviewer, this means connecting to the GitHub API.
+
 ## GitHub API Integration
 
 Use `httpx` for async HTTP calls to the GitHub API:

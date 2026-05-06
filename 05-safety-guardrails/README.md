@@ -25,9 +25,9 @@ By the end of this chapter, you'll be able to:
 
 # Protecting Your Agent
 
-<img src="./images/analogy-airport-security.png" alt="Illustration of airport security layers: ticket check, bag scanner, metal detector, output validation" style="max-width: 700px;">
-
 ## 🧩 Real-World Analogy: Airport Security
+
+<img src="./images/analogy-airport-security.png" alt="Illustration of airport security layers: ticket check, bag scanner, metal detector, output validation" style="max-width: 700px;">
 
 An airport doesn't rely on a single check to keep passengers safe. It uses **multiple layers of defense**, each catching different threats:
 
@@ -136,7 +136,18 @@ Store as a Python string variable called HARDENED_SYSTEM_PROMPT.
 
 ## Defense 2: Tool Argument Validation with Hooks
 
-The SDK provides **session hooks** that let you inspect and modify tool calls before they execute. Use `on_pre_tool_use` to validate arguments:
+The SDK provides **session hooks** that let you inspect and modify tool calls before they execute. This is a general pattern that applies to **any** tool — not just file access. The principle is: **validate at the boundary between user input and tool execution.**
+
+For example, consider what could go wrong without validation:
+
+| Tool | Unvalidated Risk | What to Check |
+|---|---|---|
+| `get_file_contents(path)` | Reads `/etc/passwd` or `.env` | Path stays within allowed directory |
+| `run_query(sql)` | SQL injection (`DROP TABLE users`) | Query uses only allowed operations |
+| `send_email(to, body)` | Spam or phishing via your service | Recipient is on allowed list |
+| `make_purchase(item, qty)` | Orders 10,000 items | Quantity within reasonable limits |
+
+The `on_pre_tool_use` hook lets you inspect arguments and reject dangerous calls before they execute. Here's how we apply it to the Issue Reviewer's file-reading tool:
 
 ```python
 async def validate_tool_args(event):

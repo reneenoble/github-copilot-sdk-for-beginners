@@ -49,39 +49,54 @@ Let's understand the core concepts behind tool calling.
 
 ## What Are Tools?
 
-A **tool** is a function you expose to the model that extends its capabilities. In the real world, issues often reference specific files:
-
-> "The bug is in `src/auth/login.py` — the `validate_credentials()` function doesn't handle expired tokens."
-
-Wouldn't it be great if the agent could **read that file itself** and include the code in its analysis? That's what tools enable — the model can choose to call them when it needs additional information or actions.
+A **tool** is a function you expose to the model that extends its capabilities beyond just generating text. Without tools, the model can only work with information you put directly in the prompt. With tools, the model can **reach out to the world** — call APIs, query databases, read files, send notifications, or anything else you can write a Python function for.
 
 Each tool has:
 
-1. **A name** — how the model refers to it (e.g., `get_file_contents`)
+1. **A name** — how the model refers to it (e.g., `get_weather`)
 2. **A description** — helps the model decide when to use it
 3. **Parameters** — what arguments the tool accepts (defined as a schema)
 4. **A handler** — the actual Python function that runs
 
 <img src="./images/tool-lifecycle.png" alt="Flowchart: Model sees tools, decides to call, SDK runs handler, result returned to model" style="max-width: 700px;">
 
+Tools unlock a huge range of applications:
+
+| Use Case | Tool Example |
+|---|---|
+| Customer support bot | `lookup_order(order_id)` — fetch order status from a database |
+| DevOps assistant | `get_service_health(service_name)` — query a monitoring API |
+| Research agent | `search_papers(query)` — search an academic database |
+| Code reviewer | `get_file_contents(path)` — read source files from a repository |
+| Travel planner | `check_flights(origin, dest, date)` — query a flights API |
+
+The pattern is always the same: you define a function, describe what it does, and the model decides when to call it.
+
 ---
 
 ## The Tool Schema
 
-Tools are defined using Pydantic models (for type-safe schemas) and the `@define_tool` decorator:
+Tools are defined using Pydantic models (for type-safe schemas) and the `@define_tool` decorator. Here's a simple example — a tool that fetches weather data:
 
 ```python
 from pydantic import BaseModel, Field
 from copilot import define_tool
 
-class GetFileParams(BaseModel):
-    file_path: str = Field(description="Path to the file in the repository")
+class WeatherParams(BaseModel):
+    city: str = Field(description="Name of the city to check weather for")
 
-@define_tool(description="Read the contents of a file from the repository")
-async def get_file_contents(params: GetFileParams) -> str:
-    with open(params.file_path, "r") as f:
-        return f.read()
+@define_tool(description="Get the current weather for a city")
+async def get_weather(params: WeatherParams) -> str:
+    # In a real tool, this would call a weather API
+    return f"Weather in {params.city}: 72°F, sunny"
 ```
+
+The structure is straightforward:
+1. **Define a Pydantic model** with the parameters the tool needs
+2. **Decorate the function** with `@define_tool` and a clear description
+3. **Return a string** — the model will incorporate the result into its reasoning
+
+This same pattern works for any tool. For the Issue Reviewer capstone, we'll create a file-reading tool — but the structure is identical whether you're reading files, calling APIs, or querying databases.
 
 ---
 

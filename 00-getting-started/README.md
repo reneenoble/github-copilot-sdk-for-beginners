@@ -4,7 +4,7 @@
 
 > **Install the SDK, run your first prompt, and understand the client → session → message pattern that powers everything you'll build.**
 
-This chapter is where your journey begins! You'll set up the GitHub Copilot SDK, send your first prompt, and understand the mental model that makes it all work. By the end, you'll have a working "hello world" agent and the foundation for the Issue Reviewer capstone project.
+This chapter is where your journey begins! You'll set up the GitHub Copilot SDK, send your first prompt, and understand the mental model that makes it all work. By the end of the chapter, you'll have a working "hello world" agent and the foundation for the Issue Reviewer capstone project.
 
 > ⚠️ **Prerequisites**: Make sure you have **Python 3.9+** installed, a **GitHub account with Copilot access**, and the **[GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)** installed and authenticated.
 
@@ -21,13 +21,9 @@ By the end of this chapter, you'll be able to:
 
 ---
 
-# Your First Copilot SDK Experience
+# 🧩 Real-World Analogy: Calling a Help Desk
 
-Jump right in and see what the Copilot SDK can do.
-
----
-
-## 🧩 Real-World Analogy: Calling a Help Desk
+<img src="./images/analogy-help-desk.png" alt="Illustration of a developer on a phone connected through a switchboard to an AI agent" style="max-width: 700px;">
 
 Using the Copilot SDK is like calling a company's help desk:
 
@@ -38,9 +34,7 @@ Using the Copilot SDK is like calling a company's help desk:
 | Ask your question | `session.send_and_wait(...)` | Sends a message and waits for a response |
 | Hang up when done | `await client.stop()` | Closes the connection cleanly |
 
-You wouldn't call a help desk and immediately start talking without being connected to someone first. Similarly, the SDK requires you to create a **client** (connect), start a **session** (ring and have someone answers the phone), and then exchange **messages**. This "client → session → message" flow is the backbone of everything you'll build in this course.
-
-<img src="./images/analogy-help-desk.png" alt="Illustration of a developer on a phone connected through a switchboard to an AI agent" style="max-width: 700px;">
+When seeking help from a help desk phone line you start by placing the call and waiting for it to be answered. Connecting to a the **Copilot client** and starting a **session** is like the start of your call and your called getting picked up. Once you're connected you're ready to ask your questions to the help desk operator (or sending **messages** to the SDK!).
 
 ---
 
@@ -50,11 +44,9 @@ You wouldn't call a help desk and immediately start talking without being connec
 
 Let's understand what you're working with before diving into code.
 
-Imagine you're a developer who reviews dozens of GitHub issues every day. Some are simple bug fixes, others require deep system knowledge. Wouldn't it be great if an AI assistant could read each issue, understand the codebase, and give you a structured analysis — automatically?
+The GitHub Copilot SDK lets you embed Copilot's agentic capabilities directly into your own applications. Instead of just chatting with an AI, you can create custom workflows, apps, and APIs with specified **tools**, **instructions**, and **structure**. This allows you to bring the automation that you access through Copilot tools, but bring it in the form of a programmable agent that can leverage provided tools and complete actions in your own tools and systems.
 
-That's exactly what you'll build in this course, using the **GitHub Copilot SDK**.
-
-The GitHub Copilot SDK lets you embed Copilot's agentic workflows directly into your own applications. Instead of just chatting with an AI, you can create custom workflows, apps, and APIs with specified **tools**, **instructions**, and **structure**. This allows you to bring the automation that you access through Copilot tools, but bring it in the form of a programmable agent that can leverage provided tools and complete actions in your own tools and systems.
+The applications are broad — you could build code review bots, customer support agents, documentation generators, data pipeline monitors, or CI/CD assistants. Throughout this course, we'll apply these concepts to building a **GitHub Issue Reviewer** — an agent that reads issues, examines referenced code, and produces structured analysis. But the skills you learn will transfer to any agent you want to build.
 
 In this first chapter, you'll install the SDK, send your first prompt, and see a response come back. It's that simple to get started.
 
