@@ -8,6 +8,8 @@ TODO: Complete this script to return structured JSON output from the model.
 import asyncio
 import json
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 from pydantic import BaseModel, Field
 
 
@@ -39,21 +41,23 @@ async def main():
     await client.start()
 
     # TODO 3: Create a session with the system message
-    session = await client.create_session({
-        "model": "gpt-4.1",
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
         # Add system_message here
-    })
+    )
 
-    response = await session.send_and_wait({
-        "prompt": f"Analyze this GitHub issue:\n\n{SAMPLE_ISSUE}"
-    })
+    response = await session.send_and_wait(
+        f"Analyze this GitHub issue:\n\n{SAMPLE_ISSUE}"
+    )
 
     # TODO 4: Parse the JSON response and validate with your Pydantic model
     # Handle errors with try/except
+    # Hint: check isinstance(response.data, AssistantMessageData) first
 
     # TODO 5: Print each field on its own line
 
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 

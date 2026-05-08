@@ -26,8 +26,8 @@ Each chapter folder contains:
 
 ## Conventions
 
-- **Language**: All code is Python 3.9+, using `asyncio` and `await`
-- **Dependencies**: `github-copilot-sdk`, `pydantic`, `httpx`, `numpy` (appendix only)
+- **Language**: All code is Python 3.11+, using `asyncio` and `await`
+- **Dependencies**: `github-copilot-sdk>=0.3.0`, `pydantic`, `httpx`, `numpy` (appendix only)
 - **Style guide**: See `for_beginners_style.md` for the required chapter structure
 - **Tone**: Friendly, encouraging, jargon-explained. Target audience is developers who know Python basics but are new to AI agents.
 

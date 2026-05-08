@@ -10,6 +10,14 @@ import json
 import os
 import time
 from copilot import CopilotClient, define_tool
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import (
+    AssistantMessageData,
+    AssistantMessageDeltaData,
+    SessionIdleData,
+    ToolExecutionStartData,
+    ToolExecutionCompleteData,
+)
 from pydantic import BaseModel, Field
 
 
@@ -76,21 +84,22 @@ async def main():
 
     # TODO 2: Create a session with streaming enabled.
     # Include the system prompt, tools, and set streaming to True.
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={
             "mode": "replace",
             "content": SYSTEM_PROMPT
         },
-        "tools": [get_file_contents],
-        # Add streaming configuration here
-    })
+        tools=[get_file_contents],
+        # TODO: Add streaming=True here
+    )
 
     # TODO 3: Create a StatusReporter instance and register it with the session.
 
     # TODO 4: Send the issue and observe the streaming output.
     print("📋 Sending issue for review...\n")
-    response = await session.send_and_wait({"prompt": SAMPLE_ISSUE})
+    await session.send_and_wait(SAMPLE_ISSUE)
 
     await client.stop()
 

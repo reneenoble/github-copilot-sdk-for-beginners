@@ -9,6 +9,8 @@ import asyncio
 import json
 import os
 from copilot import CopilotClient, define_tool
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData, ToolExecutionStartData
 from pydantic import BaseModel, Field
 
 
@@ -81,27 +83,28 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {"mode": "replace", "content": SYSTEM_PROMPT},
-        "tools": [get_file_contents],
-    })
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={"mode": "replace", "content": SYSTEM_PROMPT},
+        tools=[get_file_contents],
+    )
 
     # Log tool calls
     def on_event(event):
-        if event.type.value == "tool.execution_start":
-            print(f"🔧 Tool called: {event.data.tool_name}")
-        elif event.type.value == "tool.execution_complete":
-            print(f"✅ Tool complete: {event.data.tool_name}")
+        match event.data:
+            case ToolExecutionStartData() as data:
+                print(f"🔧 Tool called: {data.tool_name}")
 
     session.on(on_event)
 
-    response = await session.send_and_wait({
-        "prompt": f"Analyze this issue:\n\n{SAMPLE_ISSUE}"
-    })
+    response = await session.send_and_wait(f"Analyze this issue:\n\n{SAMPLE_ISSUE}")
 
     print("\n--- Analysis Result ---")
     try:
+        if not response or not isinstance(response.data, AssistantMessageData):
+            print("No response received")
+            return
         data = json.loads(response.data.content)
         analysis = IssueAnalysis(**data)
         print(f"Summary:    {analysis.summary}")
@@ -110,9 +113,10 @@ async def main():
         print(f"Files:      {', '.join(analysis.files_analyzed)}")
     except Exception as e:
         print(f"Error: {e}")
-        print(f"Raw: {response.data.content}")
+        if response and isinstance(response.data, AssistantMessageData):
+            print(f"Raw: {response.data.content}")
 
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 

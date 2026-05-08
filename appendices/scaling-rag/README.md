@@ -289,6 +289,10 @@ import os
 import re
 from collections import Counter
 from copilot import CopilotClient, define_tool
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import (
+    AssistantMessageData, ToolExecutionStartData, ToolExecutionCompleteData,
+)
 from pydantic import BaseModel, Field
 from typing import Literal
 
@@ -426,20 +430,25 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={
             "mode": "replace",
             "content": SYSTEM_PROMPT
         },
-        "tools": [search_code],
-        "streaming": True
-    })
+        tools=[search_code],
+        streaming=True,
+    )
 
-    session.on("tool.execution_start",
-               lambda e: print(f"  🔍 Searching: {e.data.tool_name}"))
-    session.on("tool.execution_complete",
-               lambda e: print(f"  ✅ Search complete\n"))
+    def on_event(event):
+        match event.data:
+            case ToolExecutionStartData():
+                print(f"  🔍 Searching: {event.data.tool_name}")
+            case ToolExecutionCompleteData():
+                print("  ✅ Search complete\n")
+
+    session.on(on_event)
 
     issue = """
     Title: Fix token expiry validation in auth system
@@ -450,18 +459,22 @@ async def main():
     """
 
     print("📋 Sending issue for review...\n")
-    response = await session.send_and_wait({"prompt": issue})
+    response = await session.send_and_wait(issue)
 
     try:
-        review = IssueReview.model_validate_json(response.data.content)
-        print(f"\n  📝 {review.summary}")
-        print(f"  📊 Difficulty: {review.difficulty_score}/5")
-        print(f"  🧠 Concepts: {', '.join(review.concepts_required)}")
-        print(f"  📦 Chunks used: {review.chunks_used}")
-        print(f"  💡 Advice: {review.mentoring_advice}")
+        if not response or not isinstance(response.data, AssistantMessageData):
+            print("  ⚠️ No text response received")
+        else:
+            review = IssueReview.model_validate_json(response.data.content)
+            print(f"\n  📝 {review.summary}")
+            print(f"  📊 Difficulty: {review.difficulty_score}/5")
+            print(f"  🧠 Concepts: {', '.join(review.concepts_required)}")
+            print(f"  📦 Chunks used: {review.chunks_used}")
+            print(f"  💡 Advice: {review.mentoring_advice}")
     except Exception as e:
         print(f"  ⚠️ Parse error: {e}")
-        print(f"  Raw: {response.data.content[:300]}")
+        if response and isinstance(response.data, AssistantMessageData):
+            print(f"  Raw: {response.data.content[:300]}")
 
     await client.stop()
 
@@ -534,17 +547,6 @@ You'll see output like:
   📦 Chunks used: 3
   💡 Advice: Review the validate_token() function...
 ```
-
-<details>
-<summary>🎬 See it in action!</summary>
-
-![RAG Reviewer Demo](./images/rag-demo.gif)
-
-<!-- TODO: Add GIF to ./06-scaling-rag/images/rag-demo.gif — A terminal recording showing: (1) REPO_PATH=./my-repo python rag_reviewer.py command, (2) indexing output showing chunks being created, (3) search execution, (4) final structured review output. -->
-
-*Demo output varies. Your results will differ from what's shown here.*
-
-</details>
 
 ---
 
@@ -699,7 +701,7 @@ def chunk_by_lines(content: str, chunk_size: int = 50, overlap: int = 5):
 4. **Top-k retrieval finds the best matches** — only the most relevant chunks go into the prompt
 5. **RAG dramatically reduces token usage** — ~7× fewer tokens while maintaining quality
 
-> 📚 **Glossary**: New to terms like "RAG" or "embeddings"? See the [Glossary](../GLOSSARY.md) for definitions.
+> 📚 **Glossary**: New to terms like "RAG" or "embeddings"? See the [Glossary](../../GLOSSARY.md) for definitions.
 
 ---
 

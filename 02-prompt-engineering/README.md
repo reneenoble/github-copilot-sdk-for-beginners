@@ -4,7 +4,7 @@
 
 > **A good prompt doesn't just ask the right question — it defines what a right answer looks like. Learn to make your classification reliable and repeatable.**
 
-In Chapter 01, you got structured JSON output. But run the same issue through your analyzer multiple times — you might get a score of 3 one time and 4 the next. For an automated system, that inconsistency is a deal-breaker. This chapter teaches you how to make classification **reliable** through prompt engineering.
+In Chapter 01, you got structured JSON output. But run the same issue through your analyzer multiple times — you might get a score of 3 one time and 4 the next. For an automated system, that inconsistency is a deal-breaker: flaky scoring breaks automation pipelines, frustrates stakeholders, and erodes trust in your agent. This chapter teaches you how to make classification **reliable and repeatable** through prompt engineering.
 
 > ⚠️ **Prerequisites**: Make sure you've completed **[Chapter 01: Structured Output](../01-structured-output/README.md)** first. You'll need your `IssueAnalysis` Pydantic model.
 
@@ -48,6 +48,8 @@ With clear instructions and examples, the new hire produces grades you can trust
 
 Let's understand the prompt engineering techniques that make classification reliable.
 
+**The pattern here — Rubric → Examples → Validation — applies to any classification or triage task you automate with AI.**
+
 <details>
 <summary>🧭 Framework You Can Reuse Later: Reliability Through Explicit Decision Policy (optional on first read)</summary>
 
@@ -90,6 +92,8 @@ Score 3 (Mid): Feature work requiring understanding of one subsystem. 2-5 files.
 Score 4 (Senior): Cross-cutting concerns, performance, security. Multiple subsystems.
 Score 5 (Senior+): Architecture changes, data migrations, backward compatibility.
 ```
+
+> 📝 **Note on labels**: "Junior", "Mid", "Senior" here describe the *complexity of the issue*, not any judgment about who should work on it. Any developer can take on any issue — these labels help teams estimate effort and plan mentoring support.
 
 ---
 
@@ -148,6 +152,8 @@ Let's see the difference between a vague prompt and a rubric-based prompt by run
 import asyncio
 import json
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 from pydantic import BaseModel, Field
 
 
@@ -213,38 +219,38 @@ async def main():
     # Run 3 times with the vague prompt
     print("=== VAGUE PROMPT (3 runs) ===")
     for i in range(3):
-        session = await client.create_session({
-            "model": "gpt-4.1",
-            "system_message": {"mode": "replace", "content": VAGUE_PROMPT},
-        })
-        response = await session.send_and_wait({
-            "prompt": f"Analyze:\n\n{TEST_ISSUE}"
-        })
+        session = await client.create_session(
+            on_permission_request=PermissionHandler.approve_all,
+            model="gpt-4.1",
+            system_message={"mode": "replace", "content": VAGUE_PROMPT},
+        )
+        response = await session.send_and_wait(f"Analyze:\n\n{TEST_ISSUE}")
         try:
-            data = json.loads(response.data.content)
-            analysis = IssueAnalysis(**data)
-            print(f"  Run {i+1}: score={analysis.difficulty_score}, level={analysis.recommended_level}")
+            if response and isinstance(response.data, AssistantMessageData):
+                data = json.loads(response.data.content)
+                analysis = IssueAnalysis(**data)
+                print(f"  Run {i+1}: score={analysis.difficulty_score}, level={analysis.recommended_level}")
         except Exception as e:
             print(f"  Run {i+1}: Parse error — {e}")
-        await session.destroy()
+        await session.disconnect()
 
     # Run 3 times with the rubric prompt
     print("\n=== RUBRIC PROMPT (3 runs) ===")
     for i in range(3):
-        session = await client.create_session({
-            "model": "gpt-4.1",
-            "system_message": {"mode": "replace", "content": RUBRIC_PROMPT},
-        })
-        response = await session.send_and_wait({
-            "prompt": f"Analyze:\n\n{TEST_ISSUE}"
-        })
+        session = await client.create_session(
+            on_permission_request=PermissionHandler.approve_all,
+            model="gpt-4.1",
+            system_message={"mode": "replace", "content": RUBRIC_PROMPT},
+        )
+        response = await session.send_and_wait(f"Analyze:\n\n{TEST_ISSUE}")
         try:
-            data = json.loads(response.data.content)
-            analysis = IssueAnalysis(**data)
-            print(f"  Run {i+1}: score={analysis.difficulty_score}, level={analysis.recommended_level}")
+            if response and isinstance(response.data, AssistantMessageData):
+                data = json.loads(response.data.content)
+                analysis = IssueAnalysis(**data)
+                print(f"  Run {i+1}: score={analysis.difficulty_score}, level={analysis.recommended_level}")
         except Exception as e:
             print(f"  Run {i+1}: Parse error — {e}")
-        await session.destroy()
+        await session.disconnect()
 
     await client.stop()
 
@@ -279,17 +285,6 @@ for system messages.
 
 </details>
 
-<details>
-<summary>🎬 See it in action!</summary>
-
-![Consistency Comparison Demo](./images/consistency-demo.gif)
-
-<!-- TODO: Add GIF to ./02-prompt-engineering/images/consistency-demo.gif — A terminal recording showing the vague prompt runs with varying scores, then rubric prompt runs with consistent scores. -->
-
-*Demo output varies. Your results will differ from what's shown here.*
-
-</details>
-
 **The takeaway**: A clear rubric + few-shot examples dramatically improves consistency.
 
 ---
@@ -310,6 +305,10 @@ Different models offer different tradeoffs:
 Use `await client.list_models()` to see available models. For classification tasks where consistency matters more than creativity, faster models with clear rubrics often outperform slower models with vague prompts.
 
 </details>
+
+---
+
+> ✅ **Milestone: Reliable Classification** — Your reviewer now produces consistent scores run after run. The rubric does the work — you've encoded your judgment into the system prompt so the model applies it reliably every time.
 
 ---
 

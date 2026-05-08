@@ -30,77 +30,24 @@ Across 7 chapters, you'll incrementally build an **AI-powered GitHub Issue Revie
 - Streams progress updates to the terminal
 - Posts structured results back to GitHub
 
-## 🧭 Choose Your Starting Path (Optional)
+## 🔭 Where Does the Copilot SDK Fit?
 
-Use this if you want a scenario-led route through the same core chapters.
+GitHub Copilot has several surfaces. Here's how they differ:
 
-<details>
-<summary>I'm a dev: help me plan a project and generate code step by step</summary>
+| Surface | What It Does | Best For |
+|---------|-------------|---------|
+| **GitHub Copilot in your IDE** | Code completions and chat while you type | Everyday coding assistance |
+| **GitHub Copilot Chat** | Conversational AI in your IDE or browser | Explaining code, drafting PRs, answering questions |
+| **GitHub Copilot CLI** | AI commands in the terminal | Shell commands, git operations, quick lookups |
+| **GitHub Copilot SDK** ← _this course_ | Build your own AI-powered tools and agents | Automation, developer tools, custom workflows |
 
-Start with [00](./00-getting-started/README.md), [01](./01-structured-output/README.md), [02](./02-prompt-engineering/README.md), then [03](./03-tool-calling/README.md).
-
-Focus on:
-- turning rough goals into structured outputs
-- building a repeatable "plan -> implement -> validate" workflow
-- codifying prompts into tools and scripts
-
-</details>
-
-<details>
-<summary>I'm a repo maintainer: help me get a quick overview and do maintenance</summary>
-
-Start with [00](./00-getting-started/README.md), then prioritize [03](./03-tool-calling/README.md), [04](./04-agent-loop-streaming/README.md), and [06](./06-shipping-to-production/README.md).
-
-Focus on:
-- issue triage and repository context gathering
-- streaming status for faster maintenance loops
-- posting structured review outcomes back to GitHub
-
-</details>
-
-<details>
-<summary>I'm a sysadmin: help me with everyday operational tasks</summary>
-
-Start with [00](./00-getting-started/README.md), [03](./03-tool-calling/README.md), [05](./05-safety-guardrails/README.md), [06](./06-shipping-to-production/README.md).
-
-Focus on:
-- safe tool execution boundaries
-- operational logging and retries
-- structured outputs for runbooks and handoffs
-
-</details>
-
-<details>
-<summary>I have an app and want to integrate AI: help identify and implement use cases</summary>
-
-Start with [01](./01-structured-output/README.md), [02](./02-prompt-engineering/README.md), then [06](./06-shipping-to-production/README.md).
-
-Focus on:
-- schema-first contracts between AI and your app
-- reliability through rubric-based prompting
-- external system integration patterns
-
-</details>
-
-<details>
-<summary>I'm working in legacy code with a backlog: what should I do vs an agent vs a teammate?</summary>
-
-Start with [02](./02-prompt-engineering/README.md), [03](./03-tool-calling/README.md), [05](./05-safety-guardrails/README.md).
-
-Focus on:
-- decision policies for triage
-- using tools for context-heavy tasks
-- guardrails for safe delegation to agents
-
-</details>
-
-> 📝 This course teaches the shared foundations first. Scenario-specific deep dives (for roles, workflows, and videos) can be added on top of this base.
+If you want to **use** Copilot, the IDE extension and chat interfaces are great. If you want to **build with** Copilot — creating agents, automations, and tools that run in your own code — that's what the SDK is for.
 
 <img src="./images/capstone-architecture.png" alt="Architecture diagram: GitHub Issue flows through Copilot SDK Agent to Classification, Advice, Labels, and GitHub Comment" style="max-width: 700px;">
 
 ## ✅ Prerequisites
 
-- **Python 3.9+** installed
+- **Python 3.11+** installed
 - **GitHub Copilot CLI** installed and authenticated ([Installation guide](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli))
 - **GitHub Copilot access**: [Free offering](https://github.com/features/copilot/plans), [Monthly subscription](https://github.com/features/copilot/plans), or [Free for students/teachers](https://education.github.com/pack)*
 - Basic familiarity with **Python** and **the command line**
@@ -123,6 +70,57 @@ Focus on:
 | Appendix | Title | When to Use |
 |:--------:|-------|-------------|
 | A | 📚 [Scaling with RAG](./appendices/scaling-rag/README.md) | Large repositories with 1000s of files |
+
+> 🏗️ **Curious how the whole project fits together?** See the [Capstone Project Overview](./project_outline.md) for an architecture diagram, chapter-by-chapter breakdown, and a quick-reference cheat sheet of SDK patterns.
+
+## 🧭 Choose Your Starting Path (Optional)
+
+All paths cover the same core chapters — these routes emphasize what's most relevant to your daily work.
+
+<details>
+<summary>I'm a developer: I want to build and automate</summary>
+
+Start with [00](./00-getting-started/README.md), [01](./01-structured-output/README.md), [02](./02-prompt-engineering/README.md), then [03](./03-tool-calling/README.md).
+
+Focus on: structured outputs, repeatable "plan → implement → validate" workflows, and codifying prompts into tools.
+
+</details>
+
+<details>
+<summary>I'm a repo maintainer: I want issue triage and review automation</summary>
+
+Start with [00](./00-getting-started/README.md), then prioritize [03](./03-tool-calling/README.md), [04](./04-agent-loop-streaming/README.md), and [06](./06-shipping-to-production/README.md).
+
+Focus on: gathering repository context, streaming status updates, and posting structured results back to GitHub.
+
+</details>
+
+<details>
+<summary>I'm a sysadmin or DevOps engineer: I want operational tooling</summary>
+
+Start with [00](./00-getting-started/README.md), [03](./03-tool-calling/README.md), [05](./05-safety-guardrails/README.md), [06](./06-shipping-to-production/README.md).
+
+Focus on: safe tool execution boundaries, structured logging, retry logic, and runbook-ready outputs.
+
+</details>
+
+<details>
+<summary>I'm integrating AI into an existing app</summary>
+
+Start with [01](./01-structured-output/README.md), [02](./02-prompt-engineering/README.md), then [06](./06-shipping-to-production/README.md).
+
+Focus on: schema-first contracts between AI and your app, reliability through rubric-based prompting, and external system integration.
+
+</details>
+
+<details>
+<summary>I'm working in a legacy codebase: I want smarter triage</summary>
+
+Start with [02](./02-prompt-engineering/README.md), [03](./03-tool-calling/README.md), [05](./05-safety-guardrails/README.md).
+
+Focus on: decision policies for triage, using tools for context-heavy tasks, and guardrails for safe delegation.
+
+</details>
 
 ## 📖 How This Course Works
 

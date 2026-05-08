@@ -1,572 +1,138 @@
-# 📘 Course Title
+# 🏗️ Capstone Project Overview
 
-# **GitHub Copilot SDK for Beginners: Build an AI GitHub Issue Reviewer**
+## What You're Building
 
-> Learn to build intelligent, tool-using AI agents with the GitHub Copilot SDK by creating a production-ready GitHub Issue Reviewer.
+Across this course, you build a single project from scratch: an **AI-powered GitHub Issue Reviewer**.
 
----
+By the final chapter, your agent will:
 
-# 🧱 Capstone Project (Built Across All Chapters)
-
-By the end of this course, students will have built:
-
-An AI-powered GitHub Issue Reviewer that:
-
-* Reads GitHub issues
-* Analyzes referenced files
-* Classifies difficulty (Junior → Senior+)
-* Extracts required concepts
-* Provides mentoring advice
-* Streams progress updates to the UI/CLI
-* Posts structured results back to GitHub
-* Includes evaluation, guardrails, and production hardening
+- **Read real GitHub issues** via the GitHub REST API
+- **Analyze referenced source files** using tool calling
+- **Classify difficulty** from Junior to Senior+ using a consistent rubric
+- **Extract required concepts** and technologies
+- **Provide mentoring advice** tailored to difficulty level
+- **Stream progress** to the terminal in real-time
+- **Post review comments** back to the issue as formatted Markdown
+- **Defend against prompt injection** and path traversal attacks
+- **Retry gracefully** on transient API failures
 
 ---
 
-# 🗂️ Course Structure (10 Chapters)
+## How Each Chapter Builds the Reviewer
+
+| Chapter | What You Add | Cumulative State |
+|:-------:|-------------|-----------------|
+| **00 — Getting Started** | Client, session, first prompt | Agent sends text; prints a plain-text summary |
+| **01 — Structured Output** | Pydantic schema, JSON parsing | Agent returns validated `IssueReview` object |
+| **02 — Prompt Engineering** | Rubric system prompt, few-shot examples | Classification is consistent and repeatable |
+| **03 — Tool Calling** | `@define_tool`, file reader | Agent reads referenced source files |
+| **04 — Agent Loop & Streaming** | Streaming events, `StatusReporter` | Terminal shows real-time tool calls and delta text |
+| **05 — Safety & Guardrails** | Prompt hardening, pre-tool hook | Blocked path traversal and injection attempts |
+| **06 — Shipping to Production** | GitHub API, logging, retry, test harness | Reads real issues; posts comments; handles failures |
 
 ---
 
-# Chapter 0 — Getting Started with the Copilot SDK
+## Project Architecture
 
-### 🎯 Goal
-
-Install the SDK, run the smallest possible example, understand what it does.
-
----
-
-### Concepts
-
-* What the GitHub Copilot SDK is
-* SDK vs chat completion
-* The agent mental model
-* Basic message structure
-* Running a single prompt
-
----
-
-### Demo Code
-
-Minimal agent example:
-
-* Initialize SDK
-* Send a message
-* Print response
-
-Example concept demo:
-
-* Ask the model to summarize a short issue description
-
----
-
-### Practice Activities
-
-* Modify the prompt
-* Change system instructions
-* Try a different question
-* Inspect the raw response object
-
----
-
-### Capstone Assignment Step
-
-Create a simple CLI tool:
-
-* Accept a GitHub issue URL (hardcoded content is fine)
-* Ask the SDK to summarize the issue
-* Print the result
-
-Deliverable:
-`issue-summary.ts`
-
-Students now see the SDK working quickly.
-
----
-
-# Chapter 1 — Structured Output: Stop Parsing Strings
-
-### 🎯 Goal
-
-Learn to constrain model output using schemas.
-
----
-
-### Concepts
-
-* Why structured output matters
-* JSON schema responses
-* Deterministic output design
-* Validating model output
-
----
-
-### Demo Code
-
-Show:
-
-* A loose text response
-* A structured JSON schema response
-
-Schema example:
-
-```json
-{
-  "summary": "",
-  "difficulty_score": "",
-  "recommended_level": ""
-}
+```
+GitHub Issue (title + body)
+        │
+        ▼
+┌───────────────────────────────┐
+│     GitHub Copilot SDK        │
+│                               │
+│  CopilotClient                │
+│    └─ CopilotSession          │
+│         ├─ System Prompt      │  ← Chapters 02, 05
+│         ├─ Tools              │  ← Chapter 03
+│         ├─ Streaming Events   │  ← Chapter 04
+│         └─ Hooks              │  ← Chapter 05
+└───────────────────────────────┘
+        │
+        ▼
+   IssueReview (Pydantic)        ← Chapter 01
+   { summary, difficulty_score,
+     recommended_level,
+     concepts_required,
+     mentoring_advice,
+     files_analyzed }
+        │
+        ▼
+  Format as Markdown             ← Chapter 06
+        │
+        ▼
+  Post to GitHub Issue           ← Chapter 06
 ```
 
 ---
 
-### Practice Activities
+## File Structure
 
-* Add a new required field
-* Break the schema intentionally
-* Observe model corrections
+Each chapter contributes a Python file that you build incrementally:
 
----
+```
+00-getting-started/
+  code/issue_summary.py          ← starter template
+  solution/issue_summary.py      ← completed reference
 
-### Capstone Assignment Step
+01-structured-output/
+  code/issue_analysis.py
+  solution/issue_analysis.py
 
-Extend reviewer to return:
+02-prompt-engineering/
+  code/reliable_classifier.py
+  solution/reliable_classifier.py
 
-* Summary
-* Difficulty score (1–5)
-* Recommended level (Junior, Mid, Senior, Senior+)
+03-tool-calling/
+  code/tool_calling.py
+  solution/tool_calling.py
 
-Now the reviewer produces structured, machine-readable output.
+04-agent-loop-streaming/
+  code/streaming_reviewer.py
+  solution/streaming_reviewer.py
 
----
+05-safety-guardrails/
+  code/safe_reviewer.py
+  solution/safe_reviewer.py
 
-# Chapter 2 — Prompt Engineering for Reliable Classification
+06-shipping-to-production/
+  code/production_reviewer.py    ← integrates everything
+  solution/production_reviewer.py
+```
 
-### 🎯 Goal
-
-Make outputs consistent and predictable.
-
----
-
-### Concepts
-
-* System instructions
-* Clear rubrics
-* Few-shot examples
-* Constraining allowed values
-* Temperature and determinism
-
----
-
-### Demo Code
-
-* Compare high vs low temperature
-* Show unstable vs stable classification
-* Introduce a strict difficulty rubric
+Each `solution/` file is a complete, working implementation you can run immediately. Each `code/` file is a starter template with `# TODO` comments for you to fill in.
 
 ---
 
-### Practice Activities
+## Running the Final Reviewer
 
-* Adjust temperature and observe differences
-* Improve a vague system prompt
-* Add reasoning requirements before classification
+After completing Chapter 06, you can run the full reviewer against a real GitHub issue:
 
----
+```bash
+# Set required environment variables
+export GITHUB_TOKEN=your_token
+export GITHUB_OWNER=microsoft
+export GITHUB_REPO=vscode
+export ISSUE_NUMBER=1234
 
-### Capstone Assignment Step
+# Run the reviewer (prints the review, doesn't post)
+python 06-shipping-to-production/solution/production_reviewer.py
 
-Refine classification logic:
-
-* Add a clear scoring rubric
-* Ensure only valid levels are returned
-* Improve consistency across multiple runs
-
----
-
-### 📖 Extra Reading: Model Selection & Configuration
-
-* Speed vs reasoning depth
-* Cost tradeoffs
-* Temperature best practices
-* When to use faster vs reasoning-optimized models
+# Post the review as a GitHub comment
+export POST_COMMENT=true
+python 06-shipping-to-production/solution/production_reviewer.py
+```
 
 ---
 
-# Chapter 3 — Tool Calling: Giving the Agent Capabilities
-
-### 🎯 Goal
-
-Enable the agent to fetch repository files.
-
----
-
-### Concepts
-
-* What tools are
-* Tool schema definitions
-* Tool invocation lifecycle
-* Model choosing tools
-
----
-
-### Demo Code
-
-Define:
-
-`get_file_contents(file_path)`
-
-Show:
-
-* Model decides to call tool
-* Tool executes
-* Tool result returned to model
-
----
-
-### Practice Activities
-
-* Add logging for tool calls
-* Intentionally restrict file access
-* Inspect tool call arguments
-
----
-
-### Capstone Assignment Step
-
-Upgrade reviewer to:
-
-* Detect referenced files
-* Fetch file contents
-* Include them in reasoning
-
-The reviewer becomes context-aware.
-
----
-
-### 📖 Extra Reading: Parallel Tool Calls
-
-* When multiple tools are useful
-* Ordering vs parallelism
-* Merging tool results
-* Determinism concerns
-
-Optional challenge:
-Add a second tool (commit history or test coverage).
-
----
-
-# Chapter 4 — The Agent Loop & Streaming UX
-
-### 🎯 Goal
-
-Understand multi-step reasoning and streaming updates.
-
----
-
-### Concepts
-
-* The agent reasoning loop
-* Iteration limits
-* Preventing infinite loops
-* Streaming responses
-* Streaming tool activity to UI
-
----
-
-### Demo Code
-
-Stream:
-
-* “Analyzing issue…”
-* “Fetching files…”
-* “Evaluating complexity…”
-* “Generating mentoring advice…”
-
-Show progressive updates in terminal.
-
----
-
-### Practice Activities
-
-* Add custom streaming status updates
-* Display tool invocation progress
-* Experiment with iteration limits
-
----
-
-### Capstone Assignment Step
-
-Add streaming to the Issue Reviewer so it:
-
-* Shows live reasoning progress
-* Updates UI/terminal progressively
-
-Now the app feels responsive and professional.
-
----
-
-# Chapter 5 — Extracting Concepts & Mentoring Advice
-
-### 🎯 Goal
-
-Generate deeper, contextual outputs.
-
----
-
-### Concepts
-
-* Multi-field structured output
-* Skill extraction
-* Context-aware mentoring
-* Conditional generation
-
----
-
-### Demo Code
-
-Schema expanded to include:
-
-* `concepts_required`
-* `mentoring_advice`
-
-Show tone differences for Junior vs Senior.
-
----
-
-### Practice Activities
-
-* Add confidence score
-* Improve mentoring quality
-* Tailor advice based on difficulty
-
----
-
-### Capstone Assignment Step
-
-Enhance reviewer to:
-
-* List required technologies/concepts
-* Provide mentoring advice appropriate to level
-
-Now the reviewer becomes a development coach.
-
----
-
-### 🎁 Bonus Activity: Historical Difficulty Calibration
-
-Extend system to:
-
-* Retrieve past issue assignments
-* Compare prediction vs actual assignee
-* Adjust recommendations based on history
-
----
-
-### 📖 Extra Reading: Agent Memory & Calibration
-
-* Short-term vs long-term memory
-* Storing past decisions
-* Feedback loops
-* Confidence scoring
-
----
-
-# Chapter 6 — Scaling with Retrieval (RAG)
-
-### 🎯 Goal
-
-Handle large repositories intelligently.
-
----
-
-### Concepts
-
-* Context window limits
-* Chunking large files
-* Embeddings
-* Semantic search
-* Top-k retrieval
-
----
-
-### Demo Code
-
-* Split file into chunks
-* Embed chunks
-* Retrieve most relevant sections
-* Inject into prompt
-
----
-
-### Practice Activities
-
-* Compare full-file vs retrieved-chunk performance
-* Experiment with chunk sizes
-* Measure token usage
-
----
-
-### Capstone Assignment Step (Optional Advanced Track)
-
-Replace full-file injection with retrieval-based context.
-
----
-
-### 📖 Extra Reading: RAG Architecture Patterns
-
-* When RAG is necessary
-* Latency tradeoffs
-* Embedding refresh strategies
-
----
-
-# Chapter 7 — Safety & Guardrails
-
-### 🎯 Goal
-
-Protect your agent.
-
----
-
-### Concepts
-
-* Prompt injection
-* Tool argument validation
-* Output validation
-* Limiting file access
-* Iteration caps
-
----
-
-### Demo Code
-
-Show malicious issue attempting:
-
-“Ignore previous instructions…”
-
-Demonstrate hardened system prompt.
-
----
-
-### Practice Activities
-
-* Add file path restrictions
-* Validate schema strictly
-* Simulate adversarial input
-
----
-
-### Capstone Assignment Step
-
-Harden the Issue Reviewer against:
-
-* Injection attacks
-* Unsafe file access
-* Tool misuse
-
----
-
-# Chapter 8 — Evaluation & Testing
-
-### 🎯 Goal
-
-Make the system measurable and stable.
-
----
-
-### Concepts
-
-* Golden test cases
-* Regression testing
-* Schema validation
-* Drift detection
-* Stability across runs
-
----
-
-### Demo Code
-
-* Define fixed test issues
-* Compare expected vs actual classification
-* Assert structured outputs
-
----
-
-### Practice Activities
-
-* Create 5 test issues
-* Adjust prompt and observe drift
-* Add automated checks
-
----
-
-### Capstone Assignment Step
-
-Build a test harness for the Issue Reviewer.
-
-Students now have production-grade evaluation.
-
----
-
-# Chapter 9 — Production Hardening & GitHub Integration
-
-### 🎯 Goal
-
-Ship it.
-
----
-
-### Concepts
-
-* Posting GitHub comments
-* Labeling issues automatically
-* Environment configuration
-* Token budgeting
-* Cost awareness
-* Logging & observability
-* Failure handling & retries
-
----
-
-### Demo Code
-
-* GitHub API integration
-* Structured logging
-* Error handling
-
----
-
-### Practice Activities
-
-* Add logging middleware
-* Add fallback handling
-* Track token usage
-
----
-
-### Capstone Assignment Step
-
-Connect reviewer to:
-
-* Issue opened event
-* Auto-comment structured analysis
-* Apply recommended labels
-
-Final Deliverable:
-A production-ready GitHub Issue Reviewer bot.
-
----
-
-# 🏁 End Result
-
-Students complete the course with:
-
-* A fully working AI GitHub automation tool
-* Knowledge of core SDK architecture
-* Streaming UX experience
-* Tool calling mastery
-* Retrieval fundamentals
-* Evaluation & testing discipline
-* Production best practices
-
-This is a complete, modern, beginner-friendly but professionally credible curriculum.
+## Quick Reference: SDK Patterns
+
+| Pattern | Chapter | Code |
+|---------|---------|------|
+| Create a session | 00 | `await client.create_session(on_permission_request=PermissionHandler.approve_all, model="gpt-4.1")` |
+| Send a prompt | 00 | `response = await session.send_and_wait("your prompt")` |
+| Read the response | 00 | `if isinstance(response.data, AssistantMessageData): print(response.data.content)` |
+| Define a tool | 03 | `@define_tool(description="...") async def my_tool(params: MyParams) -> str:` |
+| Listen to events | 04 | `session.on(lambda event: ...)` |
+| Pre-tool hook | 05 | `create_session(hooks={"on_pre_tool_use": validate_tool_args})` |
+| Clean up | All | `await session.disconnect(); await client.stop()` |

@@ -66,6 +66,8 @@ That's exactly what structured output does. Instead of hoping the model returns 
 
 Let's understand the building blocks before diving into code.
 
+**The pattern in this chapter — Schema → Validate → Enforce — is how you make any AI output reliable and type-safe.**
+
 <details>
 <summary>🧭 Framework You Can Reuse Later: Schema-First Agent Design (optional on first read)</summary>
 
@@ -128,11 +130,13 @@ When the model returns JSON, you parse it with Pydantic:
 
 ```python
 import json
+from copilot.generated.session_events import AssistantMessageData
 
-# Parse the model's response as JSON, then validate with Pydantic
-data = json.loads(response.data.content)
-analysis = IssueAnalysis(**data)
-print(analysis.difficulty_score)  # Guaranteed to be an int between 1-5
+# Check the response type, then parse with Pydantic
+if response and isinstance(response.data, AssistantMessageData):
+    data = json.loads(response.data.content)
+    analysis = IssueAnalysis(**data)
+    print(analysis.difficulty_score)  # Guaranteed to be an int between 1-5
 ```
 
 > ⚠️ **Warning:** The model might occasionally return invalid JSON or miss fields. Always wrap parsing in a try/except block.
@@ -152,6 +156,8 @@ First, let's see what happens with a free-form response:
 ```python
 import asyncio
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 
 SAMPLE_ISSUE = """
 Title: Database connection pool exhaustion under load
@@ -166,17 +172,21 @@ or increase pool size with proper timeout handling.
 async def main():
     client = CopilotClient()
     await client.start()
-    session = await client.create_session({"model": "gpt-4.1"})
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+    )
 
-    response = await session.send_and_wait({
-        "prompt": f"Analyze this GitHub issue and tell me the difficulty level:\n\n{SAMPLE_ISSUE}"
-    })
+    response = await session.send_and_wait(
+        f"Analyze this GitHub issue and tell me the difficulty level:\n\n{SAMPLE_ISSUE}"
+    )
 
     print("Free-form response:")
-    print(response.data.content)
+    if response and isinstance(response.data, AssistantMessageData):
+        print(response.data.content)
     # Output varies! Could be a paragraph, a list, a number... unpredictable.
 
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 asyncio.run(main())
@@ -219,6 +229,8 @@ Choose your adventure:
 import asyncio
 import json
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 from pydantic import BaseModel, Field
 
 
@@ -266,20 +278,24 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={
             "mode": "replace",
             "content": SYSTEM_PROMPT,
         }
-    })
+    )
 
-    response = await session.send_and_wait({
-        "prompt": f"Analyze this GitHub issue:\n\n{SAMPLE_ISSUE}"
-    })
+    response = await session.send_and_wait(
+        f"Analyze this GitHub issue:\n\n{SAMPLE_ISSUE}"
+    )
 
     # Parse and validate the response
     try:
+        if not response or not isinstance(response.data, AssistantMessageData):
+            print("Error: No text response received")
+            return
         raw = response.data.content
         data = json.loads(raw)
         analysis = IssueAnalysis(**data)
@@ -289,11 +305,12 @@ async def main():
         print(f"Level:       {analysis.recommended_level}")
     except json.JSONDecodeError:
         print("Error: Model did not return valid JSON")
-        print(f"Raw response: {response.data.content}")
+        if response and isinstance(response.data, AssistantMessageData):
+            print(f"Raw response: {response.data.content}")
     except Exception as e:
         print(f"Validation error: {e}")
 
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 
@@ -325,20 +342,11 @@ Use CopilotClient with async/await.
 
 </details>
 
-<details>
-<summary>🎬 See it in action!</summary>
-
-![Structured Output Demo](./images/structured-output-demo.gif)
-
-<!-- TODO: Add GIF to ./01-structured-output/images/structured-output-demo.gif — A terminal recording showing: (1) python structured_demo.py command, (2) clean formatted output with Summary, Difficulty, and Level fields. -->
-
-*Demo output varies. Your results will differ from what's shown here.*
-
-</details>
-
 Now the output is **consistent, predictable, and validated**. Every run produces the same shape of data.
 
 **The takeaway**: A system prompt + Pydantic schema transforms unpredictable AI output into reliable, structured data.
+
+> ✅ **Milestone: Machine-Readable Output** — Your Issue Reviewer now returns validated, structured data instead of free text. Every field is typed and constrained. You've crossed the line from "AI toy" to "AI component you can build on."
 
 ---
 

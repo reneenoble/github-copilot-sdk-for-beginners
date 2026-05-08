@@ -8,6 +8,8 @@ TODO: Add a rubric and few-shot examples for reliable classification.
 import asyncio
 import json
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 from pydantic import BaseModel, Field
 
 
@@ -43,25 +45,27 @@ async def main():
     # TODO 2: Run the same issue 3 times and compare results
     # Are the scores consistent?
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {"mode": "replace", "content": SYSTEM_PROMPT},
-    })
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={"mode": "replace", "content": SYSTEM_PROMPT},
+    )
 
-    response = await session.send_and_wait({
-        "prompt": f"Analyze:\n\n{SAMPLE_ISSUE}"
-    })
+    response = await session.send_and_wait(f"Analyze:\n\n{SAMPLE_ISSUE}")
 
     try:
-        data = json.loads(response.data.content)
-        analysis = IssueAnalysis(**data)
-        print(f"Summary:    {analysis.summary}")
-        print(f"Difficulty: {analysis.difficulty_score}/5")
-        print(f"Level:      {analysis.recommended_level}")
+        if not response or not isinstance(response.data, AssistantMessageData):
+            print("No response received")
+        else:
+            data = json.loads(response.data.content)
+            analysis = IssueAnalysis(**data)
+            print(f"Summary:    {analysis.summary}")
+            print(f"Difficulty: {analysis.difficulty_score}/5")
+            print(f"Level:      {analysis.recommended_level}")
     except Exception as e:
         print(f"Error: {e}")
 
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 

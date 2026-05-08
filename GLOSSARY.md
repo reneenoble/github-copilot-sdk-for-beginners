@@ -46,6 +46,14 @@ The command-line interface for GitHub Copilot that runs as a background server. 
 
 A Python decorator (`@dataclass`) that automatically generates `__init__`, `__repr__`, and other methods for classes that primarily store data. Used throughout this course for defining schemas.
 
+### `@define_tool`
+
+The Copilot SDK decorator that turns a regular Python function into a tool the agent can call. You provide a description and a Pydantic parameter model; the SDK handles the JSON schema and invocation lifecycle for you.
+
+### Defense in Depth
+
+A security strategy where you stack multiple independent protections — hardened prompt, input validation, scope limits, output validation — so an attacker has to defeat all of them, not just one.
+
 ### Determinism
 
 The property of producing the same output for the same input. Lower temperature settings make model outputs more deterministic.
@@ -61,6 +69,10 @@ Numerical vector representations of text that capture semantic meaning. Similar 
 ### Event
 
 A notification from the SDK about something that happened during processing — like a tool being called, text being streamed, or an error occurring. You register handlers to respond to events.
+
+### Exponential Backoff
+
+A retry strategy where the wait time between attempts doubles after each failure (e.g., 1s, 2s, 4s, 8s). Lets transient errors resolve while avoiding hammering an overloaded service.
 
 ---
 
@@ -122,6 +134,10 @@ A single prompt sent to the model within a session. Messages can include text, f
 
 ## P
 
+### Path Traversal
+
+A class of attack where input like `../../etc/passwd` is used to escape an intended directory and reach files the application should not expose. Validate paths with `os.path.realpath()` and reject inputs containing `..` before opening files.
+
 ### Prompt Engineering
 
 The practice of crafting effective prompts to get reliable, consistent outputs from AI models. Includes techniques like rubrics, few-shot examples, and explicit constraints.
@@ -133,6 +149,10 @@ An attack where malicious input attempts to override the system prompt and make 
 ### Pydantic
 
 A Python library for data validation using type annotations. Used throughout this course to define schemas and validate model outputs.
+
+### Pydantic Field
+
+The `Field()` helper from Pydantic that adds metadata to a model attribute — descriptions, defaults, range constraints (`ge`, `le`), and more. Used in this course to document tool parameters and constrain output schemas.
 
 ---
 
@@ -149,6 +169,10 @@ A scoring guide included in the system prompt that defines criteria for classifi
 ---
 
 ## S
+
+### `send_and_wait`
+
+A `CopilotSession` method that sends a prompt and runs the full agent loop — including any tool calls — before returning the final response event. Use it when you want one round-trip per prompt and don't need to stream interim updates yourself.
 
 ### Schema
 

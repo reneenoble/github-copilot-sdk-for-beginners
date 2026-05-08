@@ -6,7 +6,7 @@
 
 This chapter is where your journey begins! You'll set up the GitHub Copilot SDK, send your first prompt, and understand the mental model that makes it all work. By the end of the chapter, you'll have a working "hello world" agent and the foundation for the Issue Reviewer capstone project.
 
-> ⚠️ **Prerequisites**: Make sure you have **Python 3.9+** installed, a **GitHub account with Copilot access**, and the **[GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)** installed and authenticated.
+> ⚠️ **Prerequisites**: Make sure you have **Python 3.11+** installed, a **GitHub account with Copilot access**, and the **[GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)** installed and authenticated.
 
 ## 🎯 Learning Objectives
 
@@ -43,6 +43,8 @@ When seeking help from a help desk phone line, you start by placing the call and
 <img src="./images/sdk-architecture.png" alt="Architecture diagram: Your Python App connects to CopilotClient SDK via JSON-RPC to Copilot CLI" style="max-width: 700px;">
 
 Let's understand what you're working with before diving into code.
+
+**The pattern in this chapter — Client → Session → Message — applies to every SDK app you'll ever build.**
 
 <details>
 <summary>🧭 Framework You Can Reuse Later: Client -> Session -> Message (optional on first read)</summary>
@@ -110,6 +112,8 @@ CopilotClient (manages connection)
               └── Events (responses, tool calls, streaming)
 ```
 
+> 💡 **Don't worry if this seems abstract right now** — it'll click once you run the first code example below. Come back to this diagram after the demo and it'll make much more sense.
+
 ---
 
 ## Basic Message Structure
@@ -138,6 +142,10 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install github-copilot-sdk
 ```
 
+> 📝 **Note:** The package is installed as `github-copilot-sdk` but imported as `copilot`. This is normal — `pip install github-copilot-sdk` registers the package under the `copilot` namespace, so all your code will use `from copilot import CopilotClient`.
+
+> 💡 **Tip:** A root [`requirements.txt`](../requirements.txt) in this repo lists all dependencies added across the full course. You can install everything at once with `pip install -r requirements.txt`, or install just what you need for each chapter as you go.
+
 ## Step 2: Verify the Copilot CLI
 
 ```bash
@@ -153,6 +161,8 @@ Create a file called `hello_agent.py`:
 ```python
 import asyncio
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 
 
 async def main():
@@ -161,16 +171,20 @@ async def main():
     await client.start()
 
     # Step 2: Create a session (a conversation with a model)
-    session = await client.create_session({"model": "gpt-4.1"})
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+    )
 
     # Step 3: Send a message and wait for the response
-    response = await session.send_and_wait({"prompt": "What is 2 + 2?"})
+    response = await session.send_and_wait("What is 2 + 2?")
 
-    # Print the response
-    print(response.data.content)
+    # Print the response (check type before accessing .content)
+    if response and isinstance(response.data, AssistantMessageData):
+        print(response.data.content)  # The model's reply text
 
     # Clean up
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 
@@ -185,13 +199,14 @@ Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
 ```text
 Create a minimal Python script called hello_agent.py that uses the GitHub Copilot SDK.
 It should:
-1. Import asyncio and CopilotClient from copilot
+1. Import asyncio and CopilotClient from copilot; PermissionHandler from copilot.session;
+   AssistantMessageData from copilot.generated.session_events
 2. Create an async main function
 3. Create a CopilotClient and start it
-4. Create a session with the gpt-4.1 model
-5. Send "What is 2 + 2?" and wait for a response
-6. Print the response content
-7. Clean up by destroying the session and stopping the client
+4. Create a session using keyword args: on_permission_request=PermissionHandler.approve_all, model="gpt-4.1"
+5. Call session.send_and_wait("What is 2 + 2?") — pass a plain string, not a dict
+6. Check isinstance(response.data, AssistantMessageData) before printing response.data.content
+7. Clean up by calling session.disconnect() and client.stop()
 8. Run with asyncio.run(main())
 
 Add comments explaining each step.
@@ -213,17 +228,6 @@ You should see:
 
 🎉 **Congratulations!** You've just run your first Copilot SDK agent.
 
-<details>
-<summary>🎬 See it in action!</summary>
-
-![Hello Agent Demo](./images/hello-agent-demo.gif)
-
-<!-- TODO: Add GIF to ./00-getting-started/images/hello-agent-demo.gif — A terminal recording showing: (1) python hello_agent.py command, (2) brief pause, (3) "4" output. Keep it short and clean. -->
-
-*Demo output varies. Your results will differ from what's shown here.*
-
-</details>
-
 ---
 
 ## Step 4: Try a Concept Demo
@@ -233,6 +237,8 @@ Now let's try something more relevant to our capstone — asking the model to su
 ```python
 import asyncio
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 
 
 SAMPLE_ISSUE = """
@@ -257,16 +263,20 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({"model": "gpt-4.1"})
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+    )
 
-    response = await session.send_and_wait({
-        "prompt": f"Summarize this GitHub issue in 2-3 sentences:\n\n{SAMPLE_ISSUE}"
-    })
+    response = await session.send_and_wait(
+        f"Summarize this GitHub issue in 2-3 sentences:\n\n{SAMPLE_ISSUE}"
+    )
 
     print("Issue Summary:")
-    print(response.data.content)
+    if response and isinstance(response.data, AssistantMessageData):
+        print(response.data.content)
 
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 
@@ -293,18 +303,9 @@ Use async/await with asyncio.run(main()).
 
 </details>
 
-<details>
-<summary>🎬 See it in action!</summary>
-
-![Issue Summary Demo](./images/issue-summary-demo.gif)
-
-<!-- TODO: Add GIF to ./00-getting-started/images/issue-summary-demo.gif — A terminal recording showing: (1) python issue_summary.py command, (2) "Issue Summary:" header appears, (3) AI-generated summary text streams in. -->
-
-*Demo output varies. Your results will differ from what's shown here.*
-
-</details>
-
 > 💡 **Try it yourself:** Modify the `SAMPLE_ISSUE` text with a real issue from one of your GitHub repositories and see how the summary changes.
+
+> ✅ **Milestone: First Working Agent** — You've installed the SDK, connected to Copilot, and run your first prompt. You understand the Client → Session → Message pattern that everything else in this course builds on.
 
 ---
 
@@ -324,18 +325,21 @@ After completing the demos above, try these variations:
 
 2. **Add system instructions** — Add a `system_message` to give the model a persona:
    ```python
-   session = await client.create_session({
-       "model": "gpt-4.1",
-       "system_message": {
+   session = await client.create_session(
+       on_permission_request=PermissionHandler.approve_all,
+       model="gpt-4.1",
+       system_message={
            "mode": "replace",
            "content": "You are a senior software engineer reviewing GitHub issues."
        }
-   })
+   )
    ```
 
 3. **Try a different question** — Ask the model to suggest a fix for the issue
 
 4. **Inspect the response** — Print `response.type` and `response.data` to explore the response object structure
+
+> 📝 **Response object shape**: `send_and_wait()` returns an event object. Check `isinstance(response.data, AssistantMessageData)` before accessing `response.data.content` — this confirms the response is a text message (not a tool call or other event type). `response.data` also contains metadata like token counts. You can `print(response.data)` to inspect the full structure.
 
 ---
 
@@ -430,7 +434,7 @@ Test your understanding:
 
 1. **The SDK is batteries-included** — it handles tool orchestration, retries, and the agent loop for you
 2. **Client → Session → Message** — this three-step pattern is the foundation of everything you'll build
-3. **Always clean up** — call `session.destroy()` and `client.stop()` to avoid orphaned processes
+3. **Always clean up** — call `session.disconnect()` and `client.stop()` to avoid orphaned processes
 4. **Async all the way** — the SDK uses Python's async/await, so all calls need `await`
 
 > 📚 **Glossary**: New to terms like "agent", "session", or "token"? See the [Glossary](../GLOSSARY.md) for definitions.

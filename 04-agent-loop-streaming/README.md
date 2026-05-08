@@ -46,6 +46,8 @@ The **agent loop** is the chef's process: read the order (prompt), decide what's
 
 Let's understand the building blocks before diving into code.
 
+**The pattern here — Observe → Inform → Complete — is how you make any long-running async agent feel responsive and transparent.**
+
 <details>
 <summary>🧭 Framework You Can Reuse Later: Observe -> Inform -> Complete (optional on first read)</summary>
 
@@ -77,9 +79,11 @@ When you call `send_and_wait`, the SDK doesn't just make a single API call. It r
 Here's what happens in each iteration:
 
 1. **The model receives** the conversation so far (system prompt + messages + tool results)
-2. **The model decides** whether to call a tool or generate a response
-3. **If it calls a tool**, the SDK runs your handler and feeds the result back
-4. **If it generates a response**, the loop ends and the result is returned
+2. **The model reasons** about what to do next — call a tool for more information, or generate a response
+3. **If a tool call is warranted**, the SDK runs your handler and feeds the result back into the loop
+4. **If a response is ready**, the loop ends and the result is returned to you
+
+> 💡 **Your Loop**: Every step of this reasoning happens according to rules you set — your system prompt, your tools, your iteration limits. The SDK executes the workflow you designed.
 
 This loop can run multiple iterations. For example, your Issue Reviewer might:
 
@@ -91,25 +95,27 @@ This loop can run multiple iterations. For example, your Issue Reviewer might:
 
 ## Preventing Infinite Loops
 
-What if the model keeps calling tools forever? The SDK includes a default iteration limit, but you should also be aware of it in your design:
+What if the model keeps calling tools forever? The SDK includes a default iteration limit, but **you should design your prompts and tool set to stay within bounds**:
 
 ```python
-# The agent will stop after a reasonable number of iterations
-# If you need to adjust behavior, design your prompts carefully
-session = await client.create_session({
-    "model": "gpt-4.1",
-    "system_message": {
+# Design your system prompt to constrain tool usage
+session = await client.create_session(
+    on_permission_request=PermissionHandler.approve_all,
+    model="gpt-4.1",
+    system_message={
         "mode": "replace",
         "content": """Analyze the issue and respond with your assessment.
         
 IMPORTANT: Read at most 3 files. If an issue references more than 3 files,
 analyze the first 3 and note the others in your response."""
     },
-    "tools": [get_file_contents]
-})
+    tools=[get_file_contents]
+)
 ```
 
-> 💡 **Tip**: Limiting tool usage in the system prompt is a practical way to keep the agent focused and prevent excessive iteration.
+> 💡 **Your Responsibility**: Limiting tool usage in the system prompt is part of your system design. Think through: How many tool calls make sense for this task? What's a reasonable bound? Write that directly into your instructions.
+
+> 🛡️ **Defense in Depth**: The SDK's iteration limit is a safety net, but don't rely on it. Instead, design with constraints from the start — fewer tools, clearer instructions, smaller scopes. A well-designed system should naturally stay within bounds.
 
 ---
 
@@ -118,61 +124,57 @@ analyze the first 3 and note the others in your response."""
 Instead of waiting for the complete response, you can **stream** it — receiving text as the model generates it, word by word. Enable streaming in your session configuration:
 
 ```python
-session = await client.create_session({
-    "model": "gpt-4.1",
-    "system_message": {
+session = await client.create_session(
+    on_permission_request=PermissionHandler.approve_all,
+    model="gpt-4.1",
+    system_message={
         "mode": "replace",
         "content": "You are a GitHub issue reviewer."
     },
-    "tools": [get_file_contents],
-    "streaming": True  # ← Enable streaming
-})
+    tools=[get_file_contents],
+    streaming=True,  # ← Enable streaming
+)
 ```
 
 ---
 
 ## Listening for Streaming Events
 
-With streaming enabled, you can hook into events as they happen:
+With streaming enabled, you can hook into events as they happen. The SDK calls a **single event handler** you register with `session.on()`. Use Python's `match/case` to dispatch by event type:
 
 ```python
-# Stream text as it arrives
-def on_delta(event):
-    print(event.data.delta_content, end="", flush=True)
+from copilot.generated.session_events import (
+    AssistantMessageDeltaData, AssistantMessageData,
+    ToolExecutionStartData, ToolExecutionCompleteData,
+)
 
-session.on("assistant.message_delta", on_delta)
+def on_event(event):
+    match event.data:
+        case AssistantMessageDeltaData():
+            # Stream text as it arrives
+            print(event.data.delta_content, end="", flush=True)
+        case AssistantMessageData():
+            # Full message assembled — response complete
+            print("\n\n--- Response complete ---")
+        case ToolExecutionStartData():
+            # Model is calling a tool
+            print(f"\n🔧 Calling: {event.data.tool_name}...")
+        case ToolExecutionCompleteData():
+            # Tool finished
+            print("✅ Done\n")
 
-# Know when the final message is complete
-def on_complete(event):
-    print("\n\n--- Response complete ---")
-
-session.on("assistant.message", on_complete)
+session.on(on_event)
 ```
 
----
+> 📚 **Glossary**: New to `match/case`? This is Python 3.10+ **structural pattern matching** — it matches the *type* of `event.data`, which is why `AssistantMessageDeltaData()` works without arguments. See Python docs for details.
 
-## Tool Activity Events
-
-You can also listen for tool-related events to show progress:
-
-```python
-def on_tool_start(event):
-    print(f"\n🔧 Calling tool: {event.data.tool_name}...")
-
-def on_tool_complete(event):
-    print(f"✅ Tool complete: {event.data.tool_name}")
-
-session.on("tool.execution_start", on_tool_start)
-session.on("tool.execution_complete", on_tool_complete)
-```
-
-Combining these events, you can build an experience like:
+Combining these events, you get an experience like:
 
 ```
-🔧 Calling tool: get_file_contents...
-✅ Tool complete: get_file_contents
-🔧 Calling tool: get_file_contents...
-✅ Tool complete: get_file_contents
+🔧 Calling: get_file_contents...
+✅ Done
+🔧 Calling: get_file_contents...
+✅ Done
 
 Based on my analysis of the issue and the referenced files...
 The authentication bypass in login.py occurs because...
@@ -193,6 +195,11 @@ Create a file called `streaming_agent.py`:
 ```python
 import asyncio
 from copilot import CopilotClient, define_tool
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import (
+    AssistantMessageDeltaData, AssistantMessageData,
+    ToolExecutionStartData, ToolExecutionCompleteData,
+)
 from pydantic import BaseModel, Field
 import os
 
@@ -219,9 +226,10 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={
             "mode": "replace",
             "content": """You are a GitHub issue reviewer. Analyze the issue,
 fetch any referenced files, and provide a detailed assessment.
@@ -231,31 +239,23 @@ Respond in plain text with clear sections:
 - Files analyzed
 - Assessment"""
         },
-        "tools": [get_file_contents],
-        "streaming": True
-    })
+        tools=[get_file_contents],
+        streaming=True,
+    )
 
-    # --- Register event listeners ---
-    def on_delta(event):
-        """Print each chunk of text as it arrives."""
-        print(event.data.delta_content, end="", flush=True)
+    # --- Single event handler dispatching with match/case ---
+    def on_event(event):
+        match event.data:
+            case AssistantMessageDeltaData():
+                print(event.data.delta_content, end="", flush=True)
+            case AssistantMessageData():
+                print("\n\n✅ Response complete.")
+            case ToolExecutionStartData():
+                print(f"\n🔧 Calling: {event.data.tool_name}...")
+            case ToolExecutionCompleteData():
+                print("✅ Done\n")
 
-    def on_message(event):
-        """Called when the full message is assembled."""
-        print("\n\n✅ Response complete.")
-
-    def on_tool_start(event):
-        """Show which tool is being called."""
-        print(f"\n🔧 Calling: {event.data.tool_name}...")
-
-    def on_tool_complete(event):
-        """Confirm tool execution finished."""
-        print(f"✅ Done: {event.data.tool_name}\n")
-
-    session.on("assistant.message_delta", on_delta)
-    session.on("assistant.message", on_message)
-    session.on("tool.execution_start", on_tool_start)
-    session.on("tool.execution_complete", on_tool_complete)
+    session.on(on_event)
 
     # --- Send the issue ---
     issue = """
@@ -267,7 +267,7 @@ Respond in plain text with clear sections:
     """
 
     print("📋 Sending issue for review...\n")
-    response = await session.send_and_wait({"prompt": issue})
+    await session.send_and_wait(issue)
 
     await client.stop()
 
@@ -283,16 +283,20 @@ Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
 ```text
 Create a Python script called streaming_agent.py using the GitHub Copilot SDK
 that shows real-time streaming output. It should:
-1. Define a get_file_contents tool with @define_tool that reads files from a
+1. Import CopilotClient, define_tool from copilot; PermissionHandler from
+   copilot.session; AssistantMessageDeltaData, AssistantMessageData,
+   ToolExecutionStartData, ToolExecutionCompleteData from copilot.generated.session_events
+2. Define a get_file_contents tool with @define_tool that reads files from a
    local repo (with path traversal protection and 10K char limit)
-2. Create a session with streaming: True enabled
-3. Register four event listeners:
-   - on_delta: prints each text chunk as it arrives (use end="", flush=True)
-   - on_message: prints "Response complete" when done
-   - on_tool_start: prints which tool is being called with a wrench emoji
-   - on_tool_complete: prints when the tool finishes with a checkmark
-4. Send a test issue about token expiry validation that references specific files
-5. Print a header "Sending issue for review..." before sending
+3. Create a session with streaming=True and on_permission_request=PermissionHandler.approve_all
+4. Register a single on_event(event) handler using match/case on event.data:
+   - AssistantMessageDeltaData: print delta_content with end="", flush=True
+   - AssistantMessageData: print "Response complete"
+   - ToolExecutionStartData: print tool_name with wrench emoji
+   - ToolExecutionCompleteData: print done confirmation
+5. Register with session.on(on_event)
+6. Send a test issue about token expiry validation that references specific files
+7. Print "Sending issue for review..." before sending
 
 Use async/await with CopilotClient.
 ```
@@ -307,43 +311,35 @@ python streaming_agent.py
 
 You should see output appearing progressively:
 
-![Animated GIF showing streaming terminal output with tool calls and progressive text](./images/streaming-demo.gif)
-
-<!-- TODO: Add animated GIF to ./04-agent-loop-streaming/images/streaming-demo.gif — Record a terminal session (80×24, ~15 seconds) running streaming_agent.py. Show: (1) "📋 Sending issue for review..." appears, (2) "🔧 Calling: get_file_contents..." appears, (3) "✅ Done: get_file_contents" appears, (4) A second tool call, (5) Response text streams in word by word, (6) "✅ Response complete." appears. Use a dark terminal theme. -->
-
-<details>
-<summary>🎬 See it in action!</summary>
-
-![Streaming Demo](./images/streaming-demo.gif)
-
-*Demo output varies. Your results will differ from what's shown here.*
-
-</details>
-
 ## What's Happening Under the Hood
 
 When you run this:
 
 1. `send_and_wait` starts the agent loop
 2. The model reads the issue and decides to call `get_file_contents` for `src/auth/tokens.py`
-3. The `tool.execution_start` event fires — you see "🔧 Calling..."
+3. The `ToolExecutionStartData` event fires — you see "🔧 Calling..."
 4. Your tool handler runs and returns the file content
-5. The `tool.execution_complete` event fires — you see "✅ Done"
+5. The `ToolExecutionCompleteData` event fires — you see "✅ Done"
 6. The model may call another tool (loop continues)
-7. When the model generates its response, `assistant.message_delta` fires for each chunk
-8. When complete, `assistant.message` fires once
+7. When the model generates its response, `AssistantMessageDeltaData` fires for each chunk
+8. When complete, `AssistantMessageData` fires once
 
 ---
 
 ## Session Idle — Knowing When Everything Is Done
 
-The `session.idle` event fires when the session has fully finished processing — all tool calls are done, all messages streamed, and no more work is pending:
+The `SessionIdleData` event fires when the session has fully finished processing — all tool calls are done, all messages streamed, and no more work is pending:
 
 ```python
-def on_idle(event):
-    print("\n🏁 Session is idle — all processing complete.")
+from copilot.generated.session_events import SessionIdleData
 
-session.on("session.idle", on_idle)
+def on_event(event):
+    match event.data:
+        case SessionIdleData():
+            print("\n🏁 Session is idle — all processing complete.")
+        # ... other cases
+
+session.on(on_event)
 ```
 
 <details>
@@ -352,8 +348,9 @@ session.on("session.idle", on_idle)
 Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
 
 ```text
-Create a session.idle event handler for the GitHub Copilot SDK that prints
-a completion message when all processing is done. Register it with session.on().
+Add a SessionIdleData case to an existing on_event handler for the GitHub Copilot SDK
+that prints a completion message. Import SessionIdleData from copilot.generated.session_events.
+Register the handler with session.on(on_event).
 ```
 
 </details>
@@ -368,6 +365,10 @@ Here's a practical pattern — a status reporter that tracks the agent's progres
 
 ```python
 import time
+from copilot.generated.session_events import (
+    AssistantMessageDeltaData, AssistantMessageData,
+    ToolExecutionStartData, ToolExecutionCompleteData,
+)
 
 class StatusReporter:
     def __init__(self):
@@ -377,26 +378,21 @@ class StatusReporter:
     def elapsed(self):
         return f"{time.time() - self.start_time:.1f}s"
 
-    def on_tool_start(self, event):
-        self.tools_called += 1
-        print(f"  [{self.elapsed()}] 🔧 Tool #{self.tools_called}: "
-              f"{event.data.tool_name}")
-
-    def on_tool_complete(self, event):
-        print(f"  [{self.elapsed()}] ✅ Complete")
-
-    def on_delta(self, event):
-        print(event.data.delta_content, end="", flush=True)
-
-    def on_complete(self, event):
-        print(f"\n\n📊 Finished in {self.elapsed()} "
-              f"with {self.tools_called} tool call(s)")
-
     def register(self, session):
-        session.on("tool.execution_start", self.on_tool_start)
-        session.on("tool.execution_complete", self.on_tool_complete)
-        session.on("assistant.message_delta", self.on_delta)
-        session.on("assistant.message", self.on_complete)
+        def on_event(event):
+            match event.data:
+                case ToolExecutionStartData():
+                    self.tools_called += 1
+                    print(f"  [{self.elapsed()}] 🔧 Tool #{self.tools_called}: "
+                          f"{event.data.tool_name}")
+                case ToolExecutionCompleteData():
+                    print(f"  [{self.elapsed()}] ✅ Complete")
+                case AssistantMessageDeltaData():
+                    print(event.data.delta_content, end="", flush=True)
+                case AssistantMessageData():
+                    print(f"\n\n📊 Finished in {self.elapsed()} "
+                          f"with {self.tools_called} tool call(s)")
+        session.on(on_event)
 ```
 
 Usage:
@@ -413,16 +409,18 @@ Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
 
 ```text
 Create a StatusReporter class for the GitHub Copilot SDK that tracks agent
-progress. It should have:
-1. __init__: record start time and initialize a tool call counter
-2. elapsed(): returns formatted elapsed time string like "1.5s"
-3. on_tool_start(event): increments counter, prints tool number and name with timestamp
-4. on_tool_complete(event): prints completion with timestamp
-5. on_delta(event): prints streaming text chunks (end="", flush=True)
-6. on_complete(event): prints total time and tool call count
-7. register(session): registers all handlers on the session using session.on()
-   for events: tool.execution_start, tool.execution_complete,
-   assistant.message_delta, assistant.message
+progress. It should:
+1. Import AssistantMessageDeltaData, AssistantMessageData, ToolExecutionStartData,
+   ToolExecutionCompleteData from copilot.generated.session_events
+2. __init__: record start time and initialize a tool call counter
+3. elapsed(): returns formatted elapsed time string like "1.5s"
+4. register(session): defines and registers a single on_event(event) handler
+   using match/case on event.data:
+   - ToolExecutionStartData: increments counter, prints tool number and name with timestamp
+   - ToolExecutionCompleteData: prints completion with timestamp
+   - AssistantMessageDeltaData: prints streaming text chunks (end="", flush=True)
+   - AssistantMessageData: prints total time and tool call count
+   calls session.on(on_event) to register
 
 Use Python's time module for elapsed time tracking.
 ```
@@ -431,17 +429,11 @@ Use Python's time module for elapsed time tracking.
 
 ---
 
-# Practice
-
-<img src="../images/practice.png" alt="Illustration of a desk setup ready for hands-on coding practice" style="max-width: 700px;">
-
-Time to put what you've learned into action.
+> ✅ **Milestone: Live Visibility** — Your reviewer now streams progress in real-time. You can see every tool call and every token as it arrives. The agent loop that was previously a black box is now fully observable.
 
 ---
 
-## ▶️ Try It Yourself
-
-After completing the demos above, try these experiments:
+# Practice
 
 1. **Add timing information** — Modify the `on_delta` handler to print timestamps before each chunk
 
@@ -482,18 +474,19 @@ See [assignment.md](./assignment.md) for full instructions.
 
 **Enable streaming:**
 ```python
-session = await client.create_session({
-    "model": "gpt-4.1",
-    "system_message": {"mode": "replace", "content": SYSTEM_PROMPT},
-    "tools": [get_file_contents],
-    "streaming": True  # ← Add this
-})
+session = await client.create_session(
+    on_permission_request=PermissionHandler.approve_all,
+    model="gpt-4.1",
+    system_message={"mode": "replace", "content": SYSTEM_PROMPT},
+    tools=[get_file_contents],
+    streaming=True,  # ← Add this
+)
 ```
 
 **Common issues:**
 - Forgetting `flush=True` in print statements — output appears delayed
 - Not handling the case where no tools are called
-- Mixing up `assistant.message` (final) with `assistant.message_delta` (chunks)
+- Mixing up `AssistantMessageData` (final) with `AssistantMessageDeltaData` (chunks)
 
 </details>
 
@@ -505,13 +498,13 @@ session = await client.create_session({
 | Mistake | What Happens | Fix |
 |---------|--------------|-----|
 | Missing `flush=True` | Text appears in bursts instead of streaming | Add `flush=True` to print: `print(..., flush=True)` |
-| Wrong event name | Handler never fires | Check exact event names: `assistant.message_delta`, not `message.delta` |
+| Wrong event class import | Handler never fires | Import from `copilot.generated.session_events`, match the exact class name |
 | Forgetting `end=""` | Each chunk on new line | Use `print(chunk, end="", flush=True)` |
-| Not enabling streaming | No delta events fire | Add `"streaming": True` to session config |
+| Not enabling streaming | No delta events fire | Add `streaming=True` to `create_session` |
 
 ### Troubleshooting
 
-**"No streaming output appears"** — Make sure `"streaming": True` is in your session config and you've registered the `assistant.message_delta` handler.
+**"No streaming output appears"** — Make sure `streaming=True` is in your `create_session` call and your `on_event` handler has a `case AssistantMessageDeltaData():` branch.
 
 **"Text appears all at once"** — You're probably missing `flush=True` in your print statement. The output buffer needs to be flushed for real-time display.
 
@@ -530,10 +523,10 @@ Test your understanding:
    - b) The model decides whether to call a tool or generate a response ✅
    - c) The model generates a response and then calls tools
 
-2. **Which event fires for each chunk of streamed text?**
-   - a) `assistant.message`
-   - b) `assistant.message_delta` ✅
-   - c) `session.text_chunk`
+2. **Which event data type fires for each chunk of streamed text?**
+   - a) `AssistantMessageData`
+   - b) `AssistantMessageDeltaData` ✅
+   - c) `SessionIdleData`
 
 3. **How can you prevent the agent from calling tools indefinitely?**
    - a) Set `streaming: False`
@@ -548,8 +541,8 @@ Test your understanding:
 
 1. **The agent loop is multi-step** — the SDK orchestrates multiple iterations of reasoning, tool calling, and response generation automatically
 2. **Streaming improves UX** — users see progress in real time instead of staring at a blank screen
-3. **Events let you hook into the process** — `assistant.message_delta` for text chunks, `tool.execution_start/complete` for tool progress
-4. **Session idle signals completion** — use `session.idle` to know when all processing is done
+3. **Events let you hook into the process** — use `session.on(handler)` with `match/case` on typed event data classes (`AssistantMessageDeltaData`, `ToolExecutionStartData`, etc.)
+4. **Session idle signals completion** — handle `SessionIdleData` to know when all processing is done
 
 > 📚 **Glossary**: New to terms like "agent loop" or "streaming"? See the [Glossary](../GLOSSARY.md) for definitions.
 

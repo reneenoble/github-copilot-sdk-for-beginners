@@ -9,6 +9,8 @@ validated with Pydantic.
 import asyncio
 import json
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 from pydantic import BaseModel, Field
 
 
@@ -56,19 +58,23 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={
             "mode": "replace",
             "content": SYSTEM_PROMPT,
-        }
-    })
+        },
+    )
 
-    response = await session.send_and_wait({
-        "prompt": f"Analyze this GitHub issue:\n\n{SAMPLE_ISSUE}"
-    })
+    response = await session.send_and_wait(
+        f"Analyze this GitHub issue:\n\n{SAMPLE_ISSUE}"
+    )
 
     try:
+        if not response or not isinstance(response.data, AssistantMessageData):
+            print("Error: No response received")
+            return
         raw = response.data.content
         data = json.loads(raw)
         analysis = IssueAnalysis(**data)
@@ -78,11 +84,12 @@ async def main():
         print(f"Level:       {analysis.recommended_level}")
     except json.JSONDecodeError:
         print("Error: Model did not return valid JSON")
-        print(f"Raw response: {response.data.content}")
+        if response and isinstance(response.data, AssistantMessageData):
+            print(f"Raw response: {response.data.content}")
     except Exception as e:
         print(f"Validation error: {e}")
 
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 

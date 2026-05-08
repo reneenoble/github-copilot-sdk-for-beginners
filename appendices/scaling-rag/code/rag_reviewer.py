@@ -11,6 +11,8 @@ import os
 import re
 from collections import Counter
 from copilot import CopilotClient, define_tool
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 from pydantic import BaseModel, Field
 from typing import Literal
 
@@ -158,17 +160,19 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {"mode": "replace", "content": SYSTEM_PROMPT},
-        "tools": [search_code],
-    })
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={"mode": "replace", "content": SYSTEM_PROMPT},
+        tools=[search_code],
+    )
 
     print("📋 Sending issue for review...\n")
-    response = await session.send_and_wait({"prompt": SAMPLE_ISSUE})
+    response = await session.send_and_wait(SAMPLE_ISSUE)
 
     # TODO 6: Parse the response and display the results
-    print(response.data.content)
+    if response and isinstance(response.data, AssistantMessageData):
+        print(response.data.content)
 
     await client.stop()
 

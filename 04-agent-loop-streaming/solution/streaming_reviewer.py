@@ -10,6 +10,14 @@ import json
 import os
 import time
 from copilot import CopilotClient, define_tool
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import (
+    AssistantMessageData,
+    AssistantMessageDeltaData,
+    SessionIdleData,
+    ToolExecutionStartData,
+    ToolExecutionCompleteData,
+)
 from pydantic import BaseModel, Field
 
 
@@ -42,17 +50,20 @@ class StatusReporter:
         self.start_time = time.time()
         self.tools_called = 0
         self.chars_received = 0
+        self._tool_names: dict[str, str] = {}  # tool_call_id → tool_name
 
     def elapsed(self) -> str:
         return f"{time.time() - self.start_time:.1f}s"
 
     def on_tool_start(self, event):
         self.tools_called += 1
+        self._tool_names[event.data.tool_call_id] = event.data.tool_name
         print(f"  [{self.elapsed()}] 🔧 Tool #{self.tools_called}: "
               f"{event.data.tool_name}")
 
     def on_tool_complete(self, event):
-        print(f"  [{self.elapsed()}] ✅ Complete: {event.data.tool_name}")
+        name = self._tool_names.get(event.data.tool_call_id, "unknown")
+        print(f"  [{self.elapsed()}] ✅ Complete: {name}")
 
     def on_delta(self, event):
         chunk = event.data.delta_content
@@ -71,11 +82,20 @@ class StatusReporter:
 
     def register(self, session):
         """Register all event listeners on the session."""
-        session.on("tool.execution_start", self.on_tool_start)
-        session.on("tool.execution_complete", self.on_tool_complete)
-        session.on("assistant.message_delta", self.on_delta)
-        session.on("assistant.message", self.on_complete)
-        session.on("session.idle", self.on_idle)
+        def on_event(event):
+            match event.data:
+                case ToolExecutionStartData():
+                    self.on_tool_start(event)
+                case ToolExecutionCompleteData():
+                    self.on_tool_complete(event)
+                case AssistantMessageDeltaData():
+                    self.on_delta(event)
+                case AssistantMessageData():
+                    self.on_complete(event)
+                case SessionIdleData():
+                    self.on_idle(event)
+
+        session.on(on_event)
 
 
 SYSTEM_PROMPT = """You are a GitHub issue reviewer. Analyze the issue,
@@ -108,15 +128,16 @@ async def main():
     await client.start()
 
     # Create session with streaming enabled
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={
             "mode": "replace",
             "content": SYSTEM_PROMPT
         },
-        "tools": [get_file_contents],
-        "streaming": True
-    })
+        tools=[get_file_contents],
+        streaming=True,
+    )
 
     # Create and register the status reporter
     status = StatusReporter()
@@ -124,7 +145,7 @@ async def main():
 
     # Send the issue — streaming events will fire automatically
     print("📋 Sending issue for review...\n")
-    response = await session.send_and_wait({"prompt": SAMPLE_ISSUE})
+    await session.send_and_wait(SAMPLE_ISSUE)
 
     await client.stop()
 

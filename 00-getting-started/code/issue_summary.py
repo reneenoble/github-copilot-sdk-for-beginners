@@ -8,6 +8,8 @@ Follow the instructions in the comments below.
 
 import asyncio
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 
 
 # A sample GitHub issue to summarize
@@ -34,13 +36,18 @@ async def main():
     # Hint: client = CopilotClient()
 
     # TODO 2: Create a session with the "gpt-4.1" model
-    # Hint: session = await client.create_session({"model": "..."})
+    # Hint: session = await client.create_session(
+    #     on_permission_request=PermissionHandler.approve_all,
+    #     model="gpt-4.1",
+    # )
 
     # TODO 3: Send the issue to the model and ask it to summarize
-    # Hint: response = await session.send_and_wait({"prompt": "..."})
+    # Hint: response = await session.send_and_wait("Summarize this issue:\n\n{SAMPLE_ISSUE}")
 
     # TODO 4: Print the response content
-    # Hint: print(response.data.content)
+    # Hint:
+    #   if response and isinstance(response.data, AssistantMessageData):
+    #       print(response.data.content)
 
     # TODO 5: Clean up — destroy the session and stop the client
     pass

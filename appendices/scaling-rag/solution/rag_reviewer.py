@@ -12,6 +12,8 @@ import os
 import re
 from collections import Counter
 from copilot import CopilotClient, define_tool
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData, ToolExecutionStartData, ToolExecutionCompleteData
 from pydantic import BaseModel, Field
 from typing import Literal
 
@@ -182,22 +184,31 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {"mode": "replace", "content": SYSTEM_PROMPT},
-        "tools": [search_code],
-        "streaming": True
-    })
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={"mode": "replace", "content": SYSTEM_PROMPT},
+        tools=[search_code],
+        streaming=True,
+    )
 
-    session.on("tool.execution_start",
-               lambda e: print(f"  🔍 Searching: {e.data.tool_name}"))
-    session.on("tool.execution_complete",
-               lambda e: print(f"  ✅ Search complete\n"))
+    def on_event(event):
+        match event.data:
+            case ToolExecutionStartData() as data:
+                print(f"  🔍 Searching: {data.tool_name}")
+            case ToolExecutionCompleteData():
+                print(f"  ✅ Search complete\n")
+
+    session.on(on_event)
 
     print("📋 Sending issue for review...\n")
-    response = await session.send_and_wait({"prompt": SAMPLE_ISSUE})
+    response = await session.send_and_wait(SAMPLE_ISSUE)
 
     try:
+        if not response or not isinstance(response.data, AssistantMessageData):
+            print("  ⚠️ No response received")
+            await client.stop()
+            return
         review = IssueReview.model_validate_json(response.data.content)
         print(f"\n{'═' * 50}")
         print(f"  📝 {review.summary}")
@@ -209,7 +220,8 @@ async def main():
         print(f"{'═' * 50}")
     except Exception as e:
         print(f"  ⚠️ Parse error: {e}")
-        print(f"  Raw: {response.data.content[:300]}")
+        if response and isinstance(response.data, AssistantMessageData):
+            print(f"  Raw: {response.data.content[:300]}")
 
     await client.stop()
 

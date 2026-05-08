@@ -8,6 +8,8 @@ A reliable issue classifier with rubric and few-shot examples.
 import asyncio
 import json
 from copilot import CopilotClient
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 from pydantic import BaseModel, Field
 
 
@@ -83,25 +85,27 @@ async def main():
     print("=== Consistency Test: 3 runs of the same issue ===\n")
 
     for i in range(3):
-        session = await client.create_session({
-            "model": "gpt-4.1",
-            "system_message": {"mode": "replace", "content": RUBRIC_PROMPT},
-        })
+        session = await client.create_session(
+            on_permission_request=PermissionHandler.approve_all,
+            model="gpt-4.1",
+            system_message={"mode": "replace", "content": RUBRIC_PROMPT},
+        )
 
-        response = await session.send_and_wait({
-            "prompt": f"Analyze:\n\n{SAMPLE_ISSUE}"
-        })
+        response = await session.send_and_wait(f"Analyze:\n\n{SAMPLE_ISSUE}")
 
         try:
-            data = json.loads(response.data.content)
-            analysis = IssueAnalysis(**data)
-            print(f"Run {i+1}: score={analysis.difficulty_score}, "
-                  f"level={analysis.recommended_level}, "
-                  f"summary={analysis.summary}")
+            if not response or not isinstance(response.data, AssistantMessageData):
+                print(f"Run {i+1}: No response received")
+            else:
+                data = json.loads(response.data.content)
+                analysis = IssueAnalysis(**data)
+                print(f"Run {i+1}: score={analysis.difficulty_score}, "
+                      f"level={analysis.recommended_level}, "
+                      f"summary={analysis.summary}")
         except Exception as e:
             print(f"Run {i+1}: Error — {e}")
 
-        await session.destroy()
+        await session.disconnect()
 
     await client.stop()
 

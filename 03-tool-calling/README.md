@@ -35,15 +35,17 @@ Now imagine you give them a **key card** to the building's file room. When they 
 |---|---|
 | "The issue mentions `login.py` but I can't see it" | Agent reads `login.py` and includes the code in its analysis |
 | Guesses based on the issue description alone | Makes informed judgments based on actual source code |
-| Limited to what's in the prompt | Can go find what it needs |
+| Limited to what's in the prompt | Can invoke tools you've defined to fetch what it needs |
 
-That's exactly what tools do. The `@define_tool` decorator is the key card — it gives the agent permission and ability to access specific resources. The agent decides *when* to use the tool (like the employee deciding when to visit the file room) and the SDK handles the back-and-forth.
+That's exactly what tools do. The `@define_tool` decorator is the key card — it gives the model permission and ability to access specific resources *that you decide to expose*. Based on your system prompt and tool descriptions, the SDK orchestrates when tools are called, and handles the back-and-forth execution.
 
 ---
 
 # Key Concepts
 
 Let's understand the core concepts behind tool calling.
+
+**The pattern here — Plan → Fetch → Reason → Respond — is how every real-world AI agent with external data access works.**
 
 <details>
 <summary>🧭 Framework You Can Reuse Later: Plan -> Fetch -> Reason -> Respond (optional on first read)</summary>
@@ -70,14 +72,16 @@ Tool calling generalizes into a reusable workflow:
 
 ## What Are Tools?
 
-A **tool** is a function you expose to the model that extends its capabilities beyond just generating text. Without tools, the model can only work with information you put directly in the prompt. With tools, the model can **reach out to the world** — call APIs, query databases, read files, send notifications, or anything else you can write a Python function for.
+A **tool** is a function you expose to the model that extends its capabilities beyond just generating text. Without tools, the model can only work with information you put directly in the prompt. With tools, you can configure the model to call APIs, query databases, read files, send notifications, or anything else you write as a Python function. **You decide which tools exist; the model can only use what you define.**
 
 Each tool has:
 
 1. **A name** — how the model refers to it (e.g., `get_weather`)
-2. **A description** — helps the model decide when to use it
+2. **A description** — signals to the model when this tool is appropriate (you write this)
 3. **Parameters** — what arguments the tool accepts (defined as a schema)
 4. **A handler** — the actual Python function that runs
+
+> 💡 **You're the Architect**: Tools are how you give models capabilities. By defining a tool, you're deciding: "This operation is safe, needed, and I want the model to consider using it." Everything the model can do flows from decisions you made in code.
 
 <img src="./images/tool-lifecycle.png" alt="Flowchart: Model sees tools, decides to call, SDK runs handler, result returned to model" style="max-width: 700px;">
 
@@ -121,16 +125,22 @@ This same pattern works for any tool. For the Issue Reviewer capstone, we'll cre
 
 ---
 
-## How the Model Chooses Tools
+## How Tool Calling Is Orchestrated
 
-When you provide tools, the model can:
-1. **Call a tool** if it needs information to answer the prompt
-2. **Call multiple tools** in sequence for multi-step reasoning
-3. **Skip tools entirely** if it can answer without them
+When you provide tools and a prompt, the SDK orchestrates tool usage based on:
 
-You don't tell the model *when* to use tools — the model decides based on the prompt and available tools.
+1. **Your system prompt** — which instructs the model to use tools for specific tasks
+2. **Tool descriptions** — which you write to signal when each tool is appropriate
+3. **The model's reasoning** — the model responds to your instructions and descriptions
 
-> 💡 **Tip:** Write clear, specific tool descriptions. The model uses the description to decide when a tool is appropriate.
+The model can:
+- **Call a tool** when your prompt directs it to gather information
+- **Call multiple tools** in sequence for multi-step reasoning (as you've instructed)
+- **Skip tools entirely** if your instructions indicate they're not needed
+
+> 💡 **Developer Control**: You control the flow through your system prompt. Write clear, specific tool descriptions. Your prompt engineering determines how often and when tools are used.
+
+> 🛡️ **Trust the Design**: The model follows your blueprint. If you've defined tools carefully and written clear instructions, the system will behave predictably.
 
 ---
 
@@ -147,6 +157,8 @@ import asyncio
 import json
 import os
 from copilot import CopilotClient, define_tool
+from copilot.session import PermissionHandler
+from copilot.generated.session_events import AssistantMessageData
 from pydantic import BaseModel, Field
 
 
@@ -232,20 +244,22 @@ async def main():
     client = CopilotClient()
     await client.start()
 
-    session = await client.create_session({
-        "model": "gpt-4.1",
-        "system_message": {"mode": "replace", "content": SYSTEM_PROMPT},
-        "tools": [get_file_contents],  # Pass your tool to the session
-    })
+    session = await client.create_session(
+        on_permission_request=PermissionHandler.approve_all,
+        model="gpt-4.1",
+        system_message={"mode": "replace", "content": SYSTEM_PROMPT},
+        tools=[get_file_contents],  # Pass your tool to the session
+    )
 
     # The model will detect file references and call get_file_contents
-    response = await session.send_and_wait({
-        "prompt": f"Analyze this issue:\n\n{ISSUE_WITH_FILE_REFS}"
-    })
+    response = await session.send_and_wait(
+        f"Analyze this issue:\n\n{ISSUE_WITH_FILE_REFS}"
+    )
 
-    print(response.data.content)
+    if response and isinstance(response.data, AssistantMessageData):
+        print(response.data.content)
 
-    await session.destroy()
+    await session.disconnect()
     await client.stop()
 
 
@@ -279,15 +293,18 @@ Use CopilotClient with async/await.
 
 ## Watching Tool Calls in Action
 
-To see when the model calls your tool, add event listeners:
+To see when the model calls your tool, register an event listener:
 
 ```python
+from copilot.generated.session_events import ToolExecutionStartData, ToolExecutionCompleteData
+
 def on_event(event):
-    if event.type.value == "tool.execution_start":
-        print(f"🔧 Tool called: {event.data.tool_name}")
-        print(f"   Arguments: {event.data.arguments}")
-    elif event.type.value == "tool.execution_complete":
-        print(f"✅ Tool complete: {event.data.tool_name}")
+    match event.data:
+        case ToolExecutionStartData():
+            print(f"🔧 Tool called: {event.data.tool_name}")
+            print(f"   Arguments: {event.data.arguments}")
+        case ToolExecutionCompleteData():
+            print(f"✅ Tool complete")
 
 session.on(on_event)
 ```
@@ -300,24 +317,12 @@ Copy this prompt into GitHub Copilot Chat or your preferred AI assistant:
 ```text
 Create an event listener function for the GitHub Copilot SDK that logs tool calls.
 The function should:
-1. Check event.type.value for "tool.execution_start" and print the tool name
-   and arguments with a wrench emoji
-2. Check for "tool.execution_complete" and print a checkmark with the tool name
+1. Import ToolExecutionStartData and ToolExecutionCompleteData from copilot.generated.session_events
+2. Define an on_event(event) function that uses match/case on event.data:
+   - case ToolExecutionStartData(): print the tool name and arguments with a wrench emoji
+   - case ToolExecutionCompleteData(): print a checkmark confirmation
 3. Register it with session.on(on_event)
 ```
-
-</details>
-
-![GIF showing the terminal: model analyzes issue, calls get_file_contents for two files, then returns the analysis](./images/tool-calling-demo.gif)
-
-<!-- TODO: Add GIF to ./03-tool-calling/images/tool-calling-demo.gif — An animated terminal recording showing: (1) User runs the script, (2) "🔧 Tool called: get_file_contents" appears with file path argument, (3) "✅ Tool complete" appears, (4) Model calls a second file, (5) Final JSON analysis is printed. Should demonstrate the tool lifecycle visually. -->
-
-<details>
-<summary>🎬 See it in action!</summary>
-
-![Tool Calling Demo](./images/tool-calling-demo.gif)
-
-*Demo output varies. Your results will differ from what's shown here.*
 
 </details>
 
